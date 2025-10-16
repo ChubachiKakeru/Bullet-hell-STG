@@ -70,7 +70,7 @@ int Field::HitCheckLeft(int px, int py)
 	return 0;
 }
 
-int Field::HitCheckDown(int px, int py)
+int Field::HitCheckUp(int px, int py)
 {
 	if (py < 400)
 		return 0;
@@ -81,7 +81,7 @@ int Field::HitCheckDown(int px, int py)
 	return 0;
 }
 
-int Field::HitCheckUp(int px, int py)
+int Field::HitCheckDown(int px, int py)
 {
 	if (py < 400)
 		return 0;
