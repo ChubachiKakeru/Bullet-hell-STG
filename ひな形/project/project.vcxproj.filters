@@ -56,7 +56,9 @@
     <ClCompile Include="Source\Player.cpp">
       <Filter>PlayScene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Boss1.cpp" />
+    <ClCompile Include="Source\Boss1.cpp">
+      <Filter>PlayScene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Screen.h" />
@@ -127,7 +129,9 @@
     <ClInclude Include="Source\Player.h">
       <Filter>PlayScene</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Boss1.h" />
+    <ClInclude Include="Source\Boss1.h">
+      <Filter>PlayScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">
