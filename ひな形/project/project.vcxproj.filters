@@ -60,6 +60,9 @@
       <Filter>PlayScene</Filter>
     </ClCompile>
     <ClCompile Include="D:\授業\花井先生\チーム制作３\ひな形\project\Source\Shot.cpp" />
+    <ClCompile Include="ソース.cpp">
+      <Filter>Library</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Screen.h" />
