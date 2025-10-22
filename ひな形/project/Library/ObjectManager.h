@@ -7,6 +7,7 @@
 
 #include <list>
 #include <string>
+
 class GameObject;
 
 namespace ObjectManager
@@ -15,6 +16,7 @@ namespace ObjectManager
 	void Update(); // XV
 	void Draw(); // •`‰æ
 	void Release(); // ŠJ•ú
+
 
 	/// <summary>
 	/// GameObject‚ğ’Ç‰Á‚µ‚Ü‚·
