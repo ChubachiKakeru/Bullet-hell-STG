@@ -59,10 +59,10 @@
     <ClCompile Include="Source\Boss1.cpp">
       <Filter>PlayScene</Filter>
     </ClCompile>
-    <ClCompile Include="D:\授業\花井先生\チーム制作３\ひな形\project\Source\Shot.cpp" />
     <ClCompile Include="ソース.cpp">
       <Filter>Library</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Shot.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Screen.h" />
@@ -136,7 +136,10 @@
     <ClInclude Include="Source\Boss1.h">
       <Filter>PlayScene</Filter>
     </ClInclude>
-    <ClInclude Include="D:\授業\花井先生\チーム制作３\ひな形\project\Source\Shot.h" />
+    <ClInclude Include="Source\define.h">
+      <Filter>PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Shot.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">
