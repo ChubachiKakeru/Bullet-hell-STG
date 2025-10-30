@@ -97,8 +97,8 @@ void Player::Update()
 	// 弾発射タイマー更新
 	shotTimer += 1.0f;
 
-	// Zキーで弾発射
-	if (CheckHitKey(KEY_INPUT_Z) && shotTimer >= 10.0f) {
+	// Hキーで弾発射
+	if (CheckHitKey(KEY_INPUT_H) && shotTimer >= 10.0f) {
 		ShootBullet();
 		shotTimer = 0.0f;  // タイマーリセット
 	}
