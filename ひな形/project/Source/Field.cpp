@@ -42,7 +42,7 @@ void Field::Draw()
 	for (int y = 0; y < maps.size(); y++) {
 		for (int x = 0; x < maps[y].size(); x++) {
 			if (maps[y][x] == 1) {
-				DrawRectGraph(x * 64/* - scrollX*/, y * 64 + 400, 0, 32, 64, 64, hImage, 1);
+				DrawRectGraph(x * 64 - scrollX, y * 64 + 400, 0, 32, 64, 64, hImage, 1);
 			}
 		}
 	}

@@ -20,4 +20,5 @@ private:
 	int hImage;
 	float x, y;
 	int scrollX;
+	int scrollY;
 };

@@ -3,7 +3,7 @@
 
 Bullet::Bullet() : GameObject()
 {
-    hImage = LoadGraph("data/image/bird.png");
+    hImage = LoadGraph("data/image/stone.png");
     x = 0;
     y = 0;
     velocityX = 0;
@@ -13,7 +13,7 @@ Bullet::Bullet() : GameObject()
 
 Bullet::Bullet(int sx, int sy, float vx, float vy) : GameObject()
 {
-    hImage = LoadGraph("data/image/bird.png");
+    hImage = LoadGraph("data/image/stone.png");
     x = sx;
     y = sy;
     velocityX = vx;
