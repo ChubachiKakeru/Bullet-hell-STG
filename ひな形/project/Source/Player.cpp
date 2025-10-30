@@ -1,16 +1,21 @@
 #include "Player.h"
 #include"Field.h"
+#include"Bullet.h"
+#include "DxLib.h"
 
-static const float Gravity = 0.2;
-static const float V0 = -7.3;
-Player::Player()
+//static const float Gravity = 0.2;
+//static const float V0 = -7.3;
+Player::Player() : GameObject()
 {
 	hImage = LoadGraph("data/image/aoi.png");
 	x = 200;
 	y = 500;
 	velocity = 0;
 	onGround = false;
+	shotTimer = 0.0f;
 }
+
+
 
 Player::Player(int sx, int sy)
 {
@@ -19,16 +24,31 @@ Player::Player(int sx, int sy)
 	y = sy;
 	velocity = 0;
 	onGround = false;
-
+	shotTimer = 0.0f;
 }
 
 Player::~Player()
 {
+	if (hImage != -1) {
+		DeleteGraph(hImage);
+	}
+}
 
+void Player::Initialize(float startX, float startY, Field* fieldPtr)
+{
+	hImage = LoadGraph("data/image/aoi.png");
+	x = startX;
+	y = startY;
+	velocity = 0;
+	onGround = false;
+	field = fieldPtr;
 }
 
 void Player::Update()
 {
+	float nextX = x;
+	float nextY = y;
+
 	if (CheckHitKey(KEY_INPUT_D))
 	{
 		x += 2;
@@ -45,46 +65,90 @@ void Player::Update()
 		int push2 = field->HitCheckLeft(x + 14, y + 63);
 		x -= max(push1, push2);
 	}
-	if (onGround == true)
-	{
-		if (CheckHitKey(KEY_INPUT_SPACE))
-		{
-			velocity = V0;
-			onGround = false;
-		}
-	}
 
-	y += velocity;
-	velocity += Gravity;
-	if (velocity >= 0)
-	{
-		Field* field = FindGameObject<Field>();
-		int push1 = field->HitCheckDown(x + 14, y + 64);
-		int push2 = field->HitCheckDown(x + 50, y + 64);
-		int push = max(push1, push2);
-		if (push > 0)
-		{
-			y -= push - 1;
-			velocity = 0;
-			onGround = true;
-		}
-		else
-		{
-			onGround = false;
-		}
-	}
-	else
-	{
+
+	// 上移動 (Wキー) - 新規追加
+	if (CheckHitKey(KEY_INPUT_W)) {
+		y -= 2;
 		Field* field = FindGameObject<Field>();
 		int push1 = field->HitCheckUp(x + 14, y + 5);
 		int push2 = field->HitCheckUp(x + 50, y + 5);
 		int push = max(push1, push2);
-		if (push > 0)
-		{
+		if (push > 0) {
 			y += push;
 			velocity = 0;
 		}
 	}
+
+	// 下移動 (Sキー) - 新規追加
+	if (CheckHitKey(KEY_INPUT_S)) {
+		y += 2;
+		Field* field = FindGameObject<Field>();
+		int push1 = field->HitCheckDown(x + 14, y + 64);
+		int push2 = field->HitCheckDown(x + 50, y + 64);
+		int push = max(push1, push2);
+		if (push > 0) {
+			y -= push - 1;
+			velocity = 0;
+			onGround = true;
+		}
+	}	
+
+	// 弾発射タイマー更新
+	shotTimer += 1.0f;
+
+	// Zキーで弾発射
+	if (CheckHitKey(KEY_INPUT_Z) && shotTimer >= 10.0f) {
+		ShootBullet();
+		shotTimer = 0.0f;  // タイマーリセット
+	}
+	/*if (onGround == true)
+		{
+			if (CheckHitKey(KEY_INPUT_SPACE))
+			{
+				velocity = V0;
+				onGround = false;
+			}
+		}
+
+		y += velocity;
+		velocity += Gravity;
+		if (velocity >= 0)
+		{
+			Field* field = FindGameObject<Field>();
+			int push1 = field->HitCheckDown(x + 14, y + 64);
+			int push2 = field->HitCheckDown(x + 50, y + 64);
+			int push = max(push1, push2);
+			if (push > 0)
+			{
+				y -= push - 1;
+				velocity = 0;
+				onGround = true;
+			}
+			else
+			{
+				onGround = false;
+			}
+		}
+		else
+		{
+			Field* field = FindGameObject<Field>();
+			int push1 = field->HitCheckUp(x + 14, y + 5);
+			int push2 = field->HitCheckUp(x + 50, y + 5);
+			int push = max(push1, push2);
+			if (push > 0)
+			{
+				y += push;
+				velocity = 0;
+			}
+		}*/
+	
+}
+
+void Player::ShootBullet()
+{
+	// プレイヤーの中心から弾を発射
+	new Bullet((int)x + 32, (int)y + 16, 0, -10.0f);
 }
 
 void Player::Draw()
@@ -92,3 +156,5 @@ void Player::Draw()
 	Field* field = FindGameObject<Field>();
 	DrawRectGraph(x , y, 0, 0, 64, 64, hImage, 1);
 }
+
+

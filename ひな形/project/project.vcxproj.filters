@@ -59,6 +59,7 @@
     <ClCompile Include="Source\Boss1.cpp">
       <Filter>PlayScene</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Bullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Screen.h" />
@@ -132,6 +133,7 @@
     <ClInclude Include="Source\Boss1.h">
       <Filter>PlayScene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Bullet.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">
