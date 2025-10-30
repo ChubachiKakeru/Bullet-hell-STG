@@ -1,5 +1,6 @@
 #include "Bullet.h"
 #include "DxLib.h"
+#include"Screen.h"
 
 Bullet::Bullet() : GameObject()
 {
@@ -36,7 +37,7 @@ void Bullet::Update() {
     y += velocityY;
 
     // âÊñ äOÇ…èoÇΩÇÁñ≥å¯âª
-    if (x < -32 || x > 640 + 32 || y < -32 || y > 480 + 32) {
+    if (x < -32 || x > 640 + 32 || y < -32 || y > Screen::HEIGHT) {
         isActive = false;
     }
 }

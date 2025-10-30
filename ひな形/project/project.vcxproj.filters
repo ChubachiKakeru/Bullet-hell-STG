@@ -60,6 +60,7 @@
       <Filter>PlayScene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Bullet.cpp" />
+    <ClCompile Include="Source\BackGround.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Screen.h" />
@@ -134,6 +135,7 @@
       <Filter>PlayScene</Filter>
     </ClInclude>
     <ClInclude Include="Source\Bullet.h" />
+    <ClInclude Include="Source\BackGround.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">

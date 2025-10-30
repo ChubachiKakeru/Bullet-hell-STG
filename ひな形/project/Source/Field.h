@@ -16,9 +16,15 @@ public:
 	int HitCheckDown(int px, int py);
 	int HitCheckUp(int px, int py);
 
+	// スクロール取得
+	int GetScrollY() const { return scrollY; }
+	float GetScrollSpeed() const { return scrollSpeed; }
+
 private:
 	int hImage;
 	float x, y;
 	int scrollX;
 	int scrollY;
+	float scrollSpeed;     // スクロール速度
+
 };

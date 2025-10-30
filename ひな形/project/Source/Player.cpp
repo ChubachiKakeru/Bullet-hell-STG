@@ -7,7 +7,7 @@
 //static const float V0 = -7.3;
 Player::Player() : GameObject()
 {
-	hImage = LoadGraph("data/image/aoi.png");
+	hImage = LoadGraph("data/image/file/chara/player.png");
 	x = 200;
 	y = 500;
 	velocity = 0;
@@ -19,7 +19,7 @@ Player::Player() : GameObject()
 
 Player::Player(int sx, int sy)
 {
-	hImage = LoadGraph("data/image/aoi.png");
+	hImage = LoadGraph("data/image/file/chara/player.png");
 	x = sx;
 	y = sy;
 	velocity = 0;
@@ -36,7 +36,7 @@ Player::~Player()
 
 void Player::Initialize(float startX, float startY, Field* fieldPtr)
 {
-	hImage = LoadGraph("data/image/aoi.png");
+	hImage = LoadGraph("data/image/file/chara/player.png");
 	x = startX;
 	y = startY;
 	velocity = 0;
@@ -51,7 +51,7 @@ void Player::Update()
 
 	if (CheckHitKey(KEY_INPUT_D))
 	{
-		x += 2;
+		x += 5;
 		Field* field = FindGameObject<Field>();
 		int push1 = field->HitCheckRight(x + 50, y + 5);
 		int push2 = field->HitCheckRight(x + 50, y + 63);
@@ -59,7 +59,7 @@ void Player::Update()
 	}
 	if (CheckHitKey(KEY_INPUT_A))
 	{
-		x -= 2;
+		x -= 5;
 		Field* field = FindGameObject<Field>();
 		int push1 = field->HitCheckLeft(x + 14, y + 5);
 		int push2 = field->HitCheckLeft(x + 14, y + 63);
@@ -69,7 +69,7 @@ void Player::Update()
 
 	// 上移動 (Wキー) - 新規追加
 	if (CheckHitKey(KEY_INPUT_W)) {
-		y -= 2;
+		y -= 5;
 		Field* field = FindGameObject<Field>();
 		int push1 = field->HitCheckUp(x + 14, y + 5);
 		int push2 = field->HitCheckUp(x + 50, y + 5);
@@ -82,7 +82,7 @@ void Player::Update()
 
 	// 下移動 (Sキー) - 新規追加
 	if (CheckHitKey(KEY_INPUT_S)) {
-		y += 2;
+		y += 5;
 		Field* field = FindGameObject<Field>();
 		int push1 = field->HitCheckDown(x + 14, y + 64);
 		int push2 = field->HitCheckDown(x + 50, y + 64);
@@ -90,7 +90,7 @@ void Player::Update()
 		if (push > 0) {
 			y -= push - 1;
 			velocity = 0;
-			onGround = true;
+			onGround = false;
 		}
 	}	
 
@@ -148,13 +148,13 @@ void Player::Update()
 void Player::ShootBullet()
 {
 	// プレイヤーの中心から弾を発射
-	new Bullet((int)x + 32, (int)y + 16, 0, -10.0f);
+	new Bullet((int)x + 320/2, (int)y + 320/2, 0, -10.0f);
 }
 
 void Player::Draw()
 {
 	Field* field = FindGameObject<Field>();
-	DrawRectGraph(x , y, 0, 0, 64, 64, hImage, 1);
+	DrawGraph(x , y, hImage, 1);
 }
 
 
