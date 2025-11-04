@@ -10,9 +10,9 @@
 
 Boss1::Boss1() : GameObject()
 {
-	hImage = LoadGraph("data/image/bird.png");
-	x = 300;
-	y = 200;
+	hImage = LoadGraph("data/image/file/chara/boss1.png");
+	x = 300/2;
+	y = 200/2;
 	centerX = 300;
 	centerY = 200;
 	hp = 50;
@@ -23,11 +23,11 @@ Boss1::Boss1() : GameObject()
 	patternTimer = 0.0f;
 	patternChangeTime = 300.0f;
 
-	radius = 100.0f;
+	radius = 150.0f;
 	angle = 0.0f;
 	angularSpeed = 0.02f;
 
-	figureEightScale = 80.0f;
+	figureEightScale = 100.0f;
 
 	speed = 3.0f;
 	direction = 1;
@@ -39,7 +39,7 @@ Boss1::Boss1() : GameObject()
 
 Boss1::Boss1(int sx, int sy)
 {
-	hImage = LoadGraph("data/image/boss1.png");
+	hImage = LoadGraph("data/image/file/chara/boss1.png");
 	x = sx;
 	y = sy;
 	centerX = sx;
@@ -56,7 +56,7 @@ Boss1::Boss1(int sx, int sy)
 	angle = 0.0f;
 	angularSpeed = 0.02f;
 
-	figureEightScale = 80.0f;
+	figureEightScale = 100.0f;
 
 	speed = 3.0f;
 	direction = 1;
@@ -80,7 +80,7 @@ void Boss1::Update()
 	if (!isActive) return;
 
 	moveTimer += 1.0f;
-	patternTimer += 1.0f;
+	patternTimer += 0.6f;
 	shotTimer += 1.0f;
 
 	// 一定時間でパターン変更
@@ -133,19 +133,28 @@ void Boss1::UpdateLeftRight() {
 	x += speed * direction;
 
 	// 画面端で反転
-	if (x <= 50 || x >= 640 - 64 - 50) {
+	if (x <= 50 || x >= 640 - 64 - 64 - 64) {
 		direction *= -1;
 	}
 }
 
 void Boss1::ChangePattern() {
-	// ランダムにパターン変更
-	int nextPattern = GetRand(2);
-	pattern = (BossPattern)nextPattern;
+	// パターン変更
+	switch (pattern) {
+	case BossPattern::CIRCLE:
+		pattern = BossPattern::FIGURE_EIGHT;
+		break;
+	case BossPattern::FIGURE_EIGHT:
+		pattern = BossPattern::LEFT_RIGHT;
+		break;
+	case BossPattern::LEFT_RIGHT:
+		pattern = BossPattern::CIRCLE;
+		break;
+	}
 
-	// 中心座標を現在位置に更新
-	centerX = x;
-	centerY = y;
+	// 中心座標を初期位置に更新
+	centerX = 200;
+	centerY = 100;
 	moveTimer = 0.0f;
 	angle = 0.0f;
 }

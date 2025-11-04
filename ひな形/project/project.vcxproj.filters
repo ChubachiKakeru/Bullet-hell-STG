@@ -59,8 +59,13 @@
     <ClCompile Include="Source\Boss1.cpp">
       <Filter>PlayScene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Bullet.cpp" />
-    <ClCompile Include="Source\BackGround.cpp" />
+    <ClCompile Include="Source\BackGround.cpp">
+      <Filter>PlayScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Bullet.cpp">
+      <Filter>PlayScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\enemy1.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Screen.h" />
@@ -134,8 +139,13 @@
     <ClInclude Include="Source\Boss1.h">
       <Filter>PlayScene</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Bullet.h" />
-    <ClInclude Include="Source\BackGround.h" />
+    <ClInclude Include="Source\BackGround.h">
+      <Filter>PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Bullet.h">
+      <Filter>PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\enemy1.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">
