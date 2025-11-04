@@ -148,7 +148,7 @@ void Player::Update()
 void Player::ShootBullet()
 {
 	// プレイヤーの中心から弾を発射
-	new Bullet((int)x + 100/2, (int)y + 100/2, 0, -10.0f);
+	new Bullet((int)x + 50/2, (int)y + 50/2, 0, -10.0f);
 }
 
 void Player::Draw()
