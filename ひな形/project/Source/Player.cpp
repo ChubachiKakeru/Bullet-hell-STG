@@ -3,8 +3,6 @@
 #include"Bullet.h"
 #include "DxLib.h"
 
-//static const float Gravity = 0.2;
-//static const float V0 = -7.3;
 Player::Player() : GameObject()
 {
 	hImage = LoadGraph("data/image/file/chara/player.png");
@@ -102,46 +100,6 @@ void Player::Update()
 		ShootBullet();
 		shotTimer = 0.0f;  // タイマーリセット
 	}
-	/*if (onGround == true)
-		{
-			if (CheckHitKey(KEY_INPUT_SPACE))
-			{
-				velocity = V0;
-				onGround = false;
-			}
-		}
-
-		y += velocity;
-		velocity += Gravity;
-		if (velocity >= 0)
-		{
-			Field* field = FindGameObject<Field>();
-			int push1 = field->HitCheckDown(x + 14, y + 64);
-			int push2 = field->HitCheckDown(x + 50, y + 64);
-			int push = max(push1, push2);
-			if (push > 0)
-			{
-				y -= push - 1;
-				velocity = 0;
-				onGround = true;
-			}
-			else
-			{
-				onGround = false;
-			}
-		}
-		else
-		{
-			Field* field = FindGameObject<Field>();
-			int push1 = field->HitCheckUp(x + 14, y + 5);
-			int push2 = field->HitCheckUp(x + 50, y + 5);
-			int push = max(push1, push2);
-			if (push > 0)
-			{
-				y += push;
-				velocity = 0;
-			}
-		}*/
 	
 }
 
