@@ -18,6 +18,11 @@ Boss1::Boss1() : GameObject()
 	hp = 50;
 	isActive = true;
 
+	// デフォルトの判定サイズ（ボスは大きめ）
+	rectWidth = 80.0f;      // 矩形: 80x80
+	rectHeight = 80.0f;
+	circleRadius = 30.0f;   // 円形: 半径30
+
 	pattern = BossPattern::CIRCLE;
 	moveTimer = 0.0f;
 	patternTimer = 0.0f;

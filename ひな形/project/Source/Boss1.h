@@ -23,12 +23,30 @@ public:
 	bool IsActive() const { return isActive; }
 	int GetHP() const { return hp; }
 	void TakeDamage(int damage);
+
+    float GetX() const { return x; }
+    float GetY() const { return y; }
+
+    // 判定サイズ取得
+    float GetRectW() const { return rectWidth; }
+    float GetRectH() const { return rectHeight; }
+    float GetRadius() const { return circleRadius; }
+
+    // 判定サイズ設定
+    void SetCollisionRect(float w, float h) { rectWidth = w; rectHeight = h; }
+    void SetCollisionCircle(float r) { circleRadius = r; }
+
 private:
 	int hImage;
 	float x, y;
     float centerX, centerY;
     int hp;
     bool isActive;
+
+    // 判定サイズ
+    float rectWidth;
+    float rectHeight;
+    float circleRadius;
 
     // 移動パターン関連
     BossPattern pattern;

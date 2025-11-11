@@ -11,6 +11,14 @@ Player::Player() : GameObject()
 	velocity = 0;
 	onGround = false;
 	shotTimer = 0.0f;
+
+	// デフォルトの判定サイズ
+	rectWidth = 32.0f;     // 矩形: 32x32
+	rectHeight = 32.0f;
+	circleRadius = 8.0f;   // 円形: 半径8
+
+	hp = 100;
+	isActive = true;
 }
 
 
@@ -23,6 +31,13 @@ Player::Player(int sx, int sy)
 	velocity = 0;
 	onGround = false;
 	shotTimer = 0.0f;
+
+	rectWidth = 32.0f;
+	rectHeight = 32.0f;
+	circleRadius = 8.0f;
+
+	hp = 100;
+	isActive = true;
 }
 
 Player::~Player()
@@ -32,15 +47,23 @@ Player::~Player()
 	}
 }
 
-void Player::Initialize(float startX, float startY, Field* fieldPtr)
-{
-	hImage = LoadGraph("data/image/file/chara/player.png");
-	x = startX;
-	y = startY;
-	velocity = 0;
-	onGround = false;
-	field = fieldPtr;
+void Player::TakeDamage(int damage) {
+    hp -= damage;
+    if (hp <= 0) {
+        hp = 0;
+        isActive = false;
+    }
 }
+
+//void Player::Initialize(float startX, float startY, Field* fieldPtr)
+//{
+//	hImage = LoadGraph("data/image/file/chara/player.png");
+//	x = startX;
+//	y = startY;
+//	velocity = 0;
+//	onGround = false;
+//	field = fieldPtr;
+//}
 
 void Player::Update()
 {

@@ -11,4 +11,5 @@ public:
 	~PlayScene();
 	void Update() override;
 	void Draw() override;
+	void CheckCollisions();
 };
