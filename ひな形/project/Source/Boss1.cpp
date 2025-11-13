@@ -85,7 +85,7 @@ void Boss1::Update()
 	if (!isActive) return;
 
 	moveTimer += 1.0f;
-	patternTimer += 0.6f;
+	patternTimer += 0.4f;
 	shotTimer += 1.0f;
 
 	// 一定時間でパターン変更
