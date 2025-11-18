@@ -5,6 +5,7 @@
 #include"BackGround.h"
 #include"CollisionManager.h"
 #include"Bullet.h"
+#include"zako1.h"
 
 
 PlayScene::PlayScene()
@@ -12,6 +13,7 @@ PlayScene::PlayScene()
 	new BackGround();
 	new Field();
 	new Boss1();
+    new zako1();
 }
 
 PlayScene::~PlayScene()

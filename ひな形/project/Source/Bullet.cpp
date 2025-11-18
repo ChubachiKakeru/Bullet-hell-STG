@@ -4,7 +4,7 @@
 
 Bullet::Bullet() : GameObject()
 {
-    hImage = LoadGraph("data/image/siratama.png");
+    hImage = LoadGraph("data/image/yaiba.png");
     x = 0;
     y = 0;
     velocityX = 0;
@@ -19,7 +19,7 @@ Bullet::Bullet() : GameObject()
 
 Bullet::Bullet(int sx, int sy, float vx, float vy) : GameObject()
 {
-    hImage = LoadGraph("data/image/siratama.png");
+    hImage = LoadGraph("data/image/yaiba.png");
     x = sx;
     y = sy;
     velocityX = vx;
@@ -46,7 +46,7 @@ void Bullet::Update() {
     y += velocityY;
 
     // âÊñ äOÇ…èoÇΩÇÁñ≥å¯âª
-    if (x < -32 || x > 640 + 32 || y < -32 || y > Screen::HEIGHT) {
+    if (x < -32 || x > 840 + 32|| y < -32 || y > Screen::HEIGHT) {
         isActive = false;
     }
 }

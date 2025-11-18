@@ -119,7 +119,7 @@ void Player::Update()
 	shotTimer += 1.0f;
 
 	// Hキーで弾発射
-	if (CheckHitKey(KEY_INPUT_H) && shotTimer >= 10.0f) {
+	if (CheckHitKey(KEY_INPUT_H) && shotTimer >= 100.0f) {
 		ShootBullet();
 		shotTimer = 0.0f;  // タイマーリセット
 	}

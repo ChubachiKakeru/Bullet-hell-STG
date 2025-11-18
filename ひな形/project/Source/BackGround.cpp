@@ -54,7 +54,7 @@ void BackGround::Draw() {
         DrawExtendGraph(
             (int)offsetX,           // 左上X
             drawY1,                 // 左上Y
-            (int)offsetX + 640,     // 右下X（画面幅）
+            (int)offsetX + 840,     // 右下X（画面幅）
             drawY1 + 1000,           // 右下Y（画面高さ）
             hImage,
             TRUE
@@ -64,7 +64,7 @@ void BackGround::Draw() {
         DrawExtendGraph(
             (int)offsetX,
             drawY2,
-            (int)offsetX + 640,
+            (int)offsetX + 840,
             drawY2 + 1000,
             hImage2,
             TRUE

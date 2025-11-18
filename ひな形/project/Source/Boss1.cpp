@@ -86,7 +86,7 @@ void Boss1::Update()
 
 	moveTimer += 1.0f;
 	patternTimer += 0.4f;
-	shotTimer += 1.0f;
+	shotTimer += 0.3f;
 
 	// 一定時間でパターン変更
 	if (patternTimer >= patternChangeTime) {
@@ -184,23 +184,25 @@ void Boss1::ShootBullet() {
 		// 中央: プレイヤー狙い
 		new Bullet((int)x + 32, (int)y + 32, dx * bulletSpeed, dy * bulletSpeed);
 
-		// 左右にばら撒き (3-way弾)
-		float offsetAngle1 = 0.3f;  // 約17度
-		float offsetAngle2 = -0.3f;
+		//// 左右にばら撒き (3-way弾)
+		//float offsetAngle1 = 0.3f;  // 約17度
+		//float offsetAngle2 = -0.3f;
+		//float offsetAngle3 = -0.5f;
+		//float offsetAngle4 = 0.5f;
 
-		// 右側の弾
-		float cos1 = cos(offsetAngle1);
-		float sin1 = sin(offsetAngle1);
-		float newDx1 = dx * cos1 - dy * sin1;
-		float newDy1 = dx * sin1 + dy * cos1;
-		new Bullet((int)x + 32, (int)y + 32, newDx1 * bulletSpeed, newDy1 * bulletSpeed);
+		//// 右側の弾
+		//float cos1 = cos(offsetAngle1);
+		//float sin1 = sin(offsetAngle1);
+		//float newDx1 = dx * cos1 - dy * sin1;
+		//float newDy1 = dx * sin1 + dy * cos1;
+		//new Bullet((int)x + 32, (int)y + 32, newDx1 * bulletSpeed, newDy1 * bulletSpeed);
 
-		// 左側の弾
-		float cos2 = cos(offsetAngle2);
-		float sin2 = sin(offsetAngle2);
-		float newDx2 = dx * cos2 - dy * sin2;
-		float newDy2 = dx * sin2 + dy * cos2;
-		new Bullet((int)x + 32, (int)y + 32, newDx2 * bulletSpeed, newDy2 * bulletSpeed);
+		//// 左側の弾
+		//float cos2 = cos(offsetAngle2);
+		//float sin2 = sin(offsetAngle2);
+		//float newDx2 = dx * cos2 - dy * sin2;
+		//float newDy2 = dx * sin2 + dy * cos2;
+		//new Bullet((int)x + 32, (int)y + 32, newDx2 * bulletSpeed, newDy2 * bulletSpeed);
 	}
 }
 
