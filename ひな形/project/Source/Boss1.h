@@ -23,18 +23,14 @@ public:
 	bool IsActive() const { return isActive; }
 	int GetHP() const { return hp; }
 	void TakeDamage(int damage);
+    void Hit();
 
     float GetX() const { return x; }
     float GetY() const { return y; }
 
-    // 判定サイズ取得
-    float GetRectW() const { return rectWidth; }
-    float GetRectH() const { return rectHeight; }
-    float GetRadius() const { return circleRadius; }
-
-    // 判定サイズ設定
-    void SetCollisionRect(float w, float h) { rectWidth = w; rectHeight = h; }
-    void SetCollisionCircle(float r) { circleRadius = r; }
+    bool IsAlive() const { return isAlive; }
+    float GetCenterX() const { return x; }
+    float GetCenterY() const { return y; }
 
 private:
 	int hImage;
@@ -42,6 +38,7 @@ private:
     float centerX, centerY;
     int hp;
     bool isActive;
+    bool isAlive;
 
     // 判定サイズ
     float rectWidth;
