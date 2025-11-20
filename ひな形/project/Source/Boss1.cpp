@@ -239,3 +239,19 @@ void Boss1::TakeDamage(int damage)
 	}
 }
 
+bool Boss1::IsHit(float bx,float by,int rad)
+{
+	float dx = bx - (x + 60);
+	float dy = by - (y + 60);
+	float d = sqrt(dx * dx + dy * dy);
+	if (d < 30 + rad)
+	{
+		//DestroyMe();
+		//deadCounter = 30;//0.5•b
+		TakeDamage(10);
+		return true;
+
+	}
+	return false;
+}
+

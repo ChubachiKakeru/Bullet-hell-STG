@@ -23,7 +23,7 @@ public:
 	bool IsActive() const { return isActive; }
 	int GetHP() const { return hp; }
 	void TakeDamage(int damage);
-    void Hit();
+    bool IsHit (float bx, float by, int rad);
 
     float GetX() const { return x; }
     float GetY() const { return y; }

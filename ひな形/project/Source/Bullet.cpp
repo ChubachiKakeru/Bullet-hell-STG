@@ -1,6 +1,7 @@
 #include "Bullet.h"
 #include "DxLib.h"
 #include"Screen.h"
+#include"Boss1.h"
 
 Bullet::Bullet() : GameObject()
 {
@@ -44,6 +45,8 @@ void Bullet::Update() {
     // íeÇÃà⁄ìÆ
     x += velocityX;
     y += velocityY;
+    Boss1* b = FindGameObject<Boss1>();
+    b->IsHit(x+40,y+40,40);
 
     // âÊñ äOÇ…èoÇΩÇÁñ≥å¯âª
     if (x < -32 || x > 840 + 32|| y < -32 || y > Screen::HEIGHT) {
@@ -55,4 +58,5 @@ void Bullet::Draw() {
     if (isActive && hImage != -1) {
         DrawGraph((int)x, (int)y, hImage, TRUE);
     }
+    DrawCircle(x, y, 60, GetColor(255, 255, 255), FALSE);
 }
