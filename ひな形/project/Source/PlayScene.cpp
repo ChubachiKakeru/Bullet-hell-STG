@@ -3,7 +3,7 @@
 #include"Field.h"
 #include"Boss1.h"
 #include"BackGround.h"
-#include"CollisionManager.h"
+//#include"CollisionManager.h"
 #include"Bullet.h"
 #include"zako1.h"
 
