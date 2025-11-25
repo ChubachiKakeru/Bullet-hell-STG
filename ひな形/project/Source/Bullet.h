@@ -21,6 +21,7 @@ public:
     float GetSize() const { return size; }
 
     void Deactivate() { isActive = false; }
+    void Hit();
 
 private:
     int hImage;

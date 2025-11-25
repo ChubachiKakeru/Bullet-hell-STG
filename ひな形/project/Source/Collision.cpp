@@ -4,122 +4,17 @@
 #include "Bullet.h"
 #include <cmath>
 
-Collision* Collision::instance = nullptr;
-
-Collision::Collision() : GameObject() {
-    instance = this;
-}
-
-Collision::~Collision() {
-    for (auto b : playerBullets) delete b;
-    for (auto b : bossBullets) delete b;
-    playerBullets.clear();
-    bossBullets.clear();
-    instance = nullptr;
-}
-
-void Collision::Update() {
-    UpdateBullets();
-    CheckCollisions();
-}
-
-void Collision::UpdateBullets() {
-    // ƒvƒŒƒCƒ„[’eXV
-    for (auto it = playerBullets.begin(); it != playerBullets.end();) {
-        (*it)->Update();
-        if (!(*it)->IsAlive()) {
-            delete* it;
-            it = playerBullets.erase(it);
-        }
-        else {
-            ++it;
-        }
-    }
-
-    // ƒ{ƒX’eXV
-    for (auto it = bossBullets.begin(); it != bossBullets.end();) {
-        (*it)->Update();
-        if (!(*it)->IsAlive()) {
-            delete* it;
-            it = bossBullets.erase(it);
-        }
-        else {
-            ++it;
-        }
-    }
-}
-
-void Collision::CheckCollisions() {
-    Player* player = FindGameObject<Player>();
-    if (player == nullptr || !player->IsAlive()) return;
-
-    Boss1* boss = FindGameObject<Boss1>();
-
-    // ƒvƒŒƒCƒ„[’e vs ƒ{ƒX
-    if (boss != nullptr && boss->IsAlive()) {
-        for (auto it = playerBullets.begin(); it != playerBullets.end();) {
-            Bullet* b = *it;
-
-            bool hit = MyCircleCheck(
-                b->GetCenterX(), b->GetCenterY(), b->GetSize(),
-                boss->GetCenterX(), boss->GetCenterY(), boss->GetSize()
-            );
-
-            if (hit) {
-                boss->Hit(10);
-                delete b;
-                it = playerBullets.erase(it);
-            }
-            else {
-                ++it;
-            }
-        }
-    }
-
-    // ƒ{ƒX’e vs ƒvƒŒƒCƒ„[
-    for (auto it = bossBullets.begin(); it != bossBullets.end();) {
-        Bullet* b = *it;
-
-        bool hit = MyCircleCheck(
-            b->GetCenterX(), b->GetCenterY(), b->GetSize(),
-            player->GetCenterX(), player->GetCenterY(), player->GetSize()
-        );
-
-        if (hit) {
-            player->Hit(10);
-            delete b;
-            it = bossBullets.erase(it);
-        }
-        else {
-            ++it;
-        }
-    }
-}
-
-bool Collision::MyCircleCheck(float x1, float y1, float r1, float x2, float y2, float r2) {
-    // ššš ‚±‚±‚É‰~Œ`“–‚½‚è”»’è‚ğÀ‘• ššš
-    // y‘æˆê’iŠKz‹éŒ`‚É‚æ‚é‘e‚¢”»’è
-    float left1 = x1 - r1;
-    float right1 = x1 + r1;
-    float top1 = y1 - r1;
-    float bottom1 = y1 + r1;
-
-    float left2 = x2 - r2;
-    float right2 = x2 + r2;
-    float top2 = y2 - r2;
-    float bottom2 = y2 + r2;
-
-    if (right1 < left2 || left1 > right2 || bottom1 < top2 || top1 > bottom2) {
-        return false;
-    }
-
-    // y‘æ“ñ’iŠKz‰~‚É‚æ‚é³Šm‚È”»’èi•½•ûª‚ğg‚í‚È‚¢j
+bool Collision::MyCircleCheck(float x1, float y1, float r1,
+    float x2, float y2, float r2) {
+    // ’†SŠÔ‚Ì‹——£‚Ì2æ‚ğŒvZ
     float dx = x2 - x1;
     float dy = y2 - y1;
-    float distanceSquared = dx * dx + dy * dy;  // ‹——£‚Ì2æ
-    float radiusSum = r1 + r2;
-    float radiusSumSquared = radiusSum * radiusSum;  // ”¼Œa‚Ì˜a‚Ì2æ
+    float distanceSquared = dx * dx + dy * dy;
 
-    // ‹——£‚Ì2æ‚Æ”¼Œa‚Ì˜a‚Ì2æ‚ğ”äŠr
+    // ”¼Œa‚Ì˜a‚Ì2æ‚ğŒvZ
+    float radiusSum = r1 + r2;
+    float radiusSumSquared = radiusSum * radiusSum;
+
+    // “–‚½‚è”»’è
     return distanceSquared < radiusSumSquared;
 }

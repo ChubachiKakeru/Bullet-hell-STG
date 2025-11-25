@@ -69,6 +69,7 @@
     <ClCompile Include="Source\zako1.cpp">
       <Filter>PlayScene</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Collision.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Screen.h" />
@@ -152,6 +153,7 @@
     <ClInclude Include="Source\zako1.h">
       <Filter>PlayScene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Collision.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">

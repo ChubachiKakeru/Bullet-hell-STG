@@ -28,9 +28,10 @@ public:
     float GetX() const { return x; }
     float GetY() const { return y; }
 
-    bool IsAlive() const { return isAlive; }
+    bool IsAlive() const { return isActive; }
     float GetCenterX() const { return x; }
     float GetCenterY() const { return y; }
+    float GetSize() const { return size; }
 
 private:
 	int hImage;
@@ -38,7 +39,7 @@ private:
     float centerX, centerY;
     int hp;
     bool isActive;
-    bool isAlive;
+    float size;
 
     // ”»’èƒTƒCƒY
     float rectWidth;

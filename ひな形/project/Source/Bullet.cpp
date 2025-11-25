@@ -60,3 +60,8 @@ void Bullet::Draw() {
     }
     DrawCircle(x+40, y+40, 60, GetColor(255, 255, 255), FALSE);
 }
+
+void Bullet::Hit()
+{
+    isAlive = false;
+}
