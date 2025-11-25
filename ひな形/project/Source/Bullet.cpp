@@ -58,5 +58,5 @@ void Bullet::Draw() {
     if (isActive && hImage != -1) {
         DrawGraph((int)x, (int)y, hImage, TRUE);
     }
-    DrawCircle(x, y, 60, GetColor(255, 255, 255), FALSE);
+    DrawCircle(x+40, y+40, 60, GetColor(255, 255, 255), FALSE);
 }
