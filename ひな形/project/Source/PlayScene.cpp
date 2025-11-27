@@ -12,9 +12,11 @@
 
 PlayScene::PlayScene()
 {
-	new BackGround();
-	new Field();
-	
+    new BackGround();
+    new Field();
+
+    //new Boss1();
+    new zako1();
 }
 
 PlayScene::~PlayScene()
