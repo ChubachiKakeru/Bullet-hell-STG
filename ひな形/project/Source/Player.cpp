@@ -1,7 +1,8 @@
 #include "Player.h"
 #include"Field.h"
-#include"Bullet.h"
-#include "DxLib.h"
+#include"playerBullet.h"
+#include"Common.h"
+
 
 Player::Player() : GameObject()
 {
@@ -51,8 +52,25 @@ void Player::TakeDamage(int damage) {
     hp -= damage;
     if (hp <= 0) {
         hp = 0;
-        isActive = false;
+		if (hp <= 0) {
+			SceneManager::ChangeScene("TITLE");
+		}
     }
+}
+
+bool Player::IsHit(float bx, float by, int rad)
+{
+	float dx = bx - (x + 60);
+	float dy = by - (y + 60);
+	float d = sqrt(dx * dx + dy * dy);
+	if (d < 30 + rad)
+	{
+	
+		TakeDamage(100);
+		return true;
+
+	}
+	return false;
 }
 
 //void Player::Initialize(float startX, float startY, Field* fieldPtr)
@@ -129,7 +147,7 @@ void Player::Update()
 void Player::ShootBullet()
 {
 	// プレイヤーの中心から弾を発射
-	new Bullet((int)x + 50/2, (int)y + 50/2, 0, -10.0f,8.0f);
+	new playerBullet((int)x + 50/2, (int)y + 50/2, 0, -10.0f,8.0f);
 }
 
 void Player::Draw()

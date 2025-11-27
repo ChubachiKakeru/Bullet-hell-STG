@@ -1,11 +1,10 @@
 #include "Boss1.h"
 #include"Field.h"
-#include"Bullet.h"
-#include"DXLib.h"
+#include"enemyBullet.h"
 #include "Player.h"
 #include <cmath>
 
-#define PI 3.14159265f
+//#define PI 3.14159265f
 
 
 Boss1::Boss1() : GameObject()
@@ -15,7 +14,7 @@ Boss1::Boss1() : GameObject()
 	y = 200/2;
 	centerX = 300;
 	centerY = 200;
-	hp = 50;
+	hp = 300;
 	isActive = true;
 
 	// デフォルトの判定サイズ（ボスは大きめ）
@@ -49,7 +48,7 @@ Boss1::Boss1(int sx, int sy)
 	y = sy;
 	centerX = sx;
 	centerY = sy;
-	hp = 50;
+	hp = 300;
 	isActive = true;
 
 	pattern = BossPattern::CIRCLE;
@@ -118,8 +117,8 @@ void Boss1::Update()
 void Boss1::UpdateCircle() {
 	// 円軌道移動
 	angle += angularSpeed;
-	if (angle > 2 * PI) {
-		angle -= 2 * PI;
+	if (angle > 2 *DX_PI) {
+		angle -= 2 *DX_PI;
 	}
 
 	x = centerX + radius * cos(angle);
@@ -182,7 +181,7 @@ void Boss1::ShootBullet() {
 		float bulletSpeed = 5.0f;
 
 		// 中央: プレイヤー狙い
-		new Bullet((float)x + 32, (float)y + 32, dx * bulletSpeed, dy * bulletSpeed,5.0f);
+		new enemyBullet((float)x + 32, (float)y + 32, dx * bulletSpeed, dy * bulletSpeed,5.0f);
 
 		//// 左右にばら撒き (3-way弾)
 		//float offsetAngle1 = 0.3f;  // 約17度
@@ -244,7 +243,7 @@ bool Boss1::IsHit(float bx,float by,int rad)
 	float dx = bx - (x + 60);
 	float dy = by - (y + 60);
 	float d = sqrt(dx * dx + dy * dy);
-	if (d < 30 + rad)
+	if (d < 60 + rad)
 	{
 		//DestroyMe();
 		//deadCounter = 30;//0.5秒

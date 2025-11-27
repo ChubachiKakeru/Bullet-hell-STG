@@ -1,5 +1,4 @@
 #include "Bullet.h"
-#include "DxLib.h"
 #include"Screen.h"
 #include"Boss1.h"
 
@@ -39,12 +38,10 @@ void Bullet::Update() {
     // ’e‚ÌˆÚ“®
     x += velocityX;
     y += velocityY;
-    Boss1* b = FindGameObject<Boss1>();
-    b->IsHit(x+40,y+40,40);
 
     // ‰æ–ÊŠO‚Éo‚½‚ç–³Œø‰»
     if (x < -32 || x > 840 + 32|| y < -32 || y > Screen::HEIGHT) {
-        isActive = false;
+        DestroyMe();
     }
 }
 

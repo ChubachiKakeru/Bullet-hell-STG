@@ -157,8 +157,11 @@
     <ClInclude Include="Source\Boss1.h" />
     <ClInclude Include="Source\Bullet.h" />
     <ClInclude Include="Source\Collision.h" />
+    <ClInclude Include="Source\Common.h" />
+    <ClInclude Include="Source\enemyBullet.h" />
     <ClInclude Include="Source\Field.h" />
     <ClInclude Include="Source\Player.h" />
+    <ClInclude Include="Source\playerBullet.h" />
     <ClInclude Include="Source\Screen.h" />
     <ClInclude Include="Source\PlayScene.h" />
     <ClInclude Include="Source\SceneFactory.h" />
@@ -184,8 +187,11 @@
     <ClCompile Include="Source\Boss1.cpp" />
     <ClCompile Include="Source\Bullet.cpp" />
     <ClCompile Include="Source\Collision.cpp" />
+    <ClCompile Include="Source\Common.cpp" />
+    <ClCompile Include="Source\enemyBullet.cpp" />
     <ClCompile Include="Source\Field.cpp" />
     <ClCompile Include="Source\Player.cpp" />
+    <ClCompile Include="Source\playerBullet.cpp" />
     <ClCompile Include="Source\PlayScene.cpp" />
     <ClCompile Include="Source\SceneFactory.cpp" />
     <ClCompile Include="Source\TitleScene.cpp" />

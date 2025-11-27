@@ -55,12 +55,12 @@ void PlayScene::Update()
         bullet->Update();
     }
 
-    // “–‚½‚è”»’è
-    CheckCollisions();
+    //// “–‚½‚è”»’è
+    //CheckCollisions();
 
-    // €‚ñ‚¾’e‚ğíœ
-    RemoveDeadBullets(playerBullets);
-    RemoveDeadBullets(bossBullets);
+    //// €‚ñ‚¾’e‚ğíœ
+    //RemoveDeadBullets(playerBullets);
+    //RemoveDeadBullets(bossBullets);
 }
 
 void PlayScene::CheckCollisions() {

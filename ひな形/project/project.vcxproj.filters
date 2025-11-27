@@ -71,6 +71,9 @@
     <ClCompile Include="Source\Collision.cpp">
       <Filter>PlayScene</Filter>
     </ClCompile>
+    <ClCompile Include="Source\playerBullet.cpp" />
+    <ClCompile Include="Source\enemyBullet.cpp" />
+    <ClCompile Include="Source\Common.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Screen.h" />
@@ -156,6 +159,9 @@
     <ClInclude Include="Source\Collision.h">
       <Filter>PlayScene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\playerBullet.h" />
+    <ClInclude Include="Source\enemyBullet.h" />
+    <ClInclude Include="Source\Common.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">

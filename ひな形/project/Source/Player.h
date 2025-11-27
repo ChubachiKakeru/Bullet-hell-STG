@@ -34,6 +34,7 @@ public:
     // ƒ_ƒ[ƒWˆ—
     void TakeDamage(int damage);
     int GetHP() const { return hp; }
+    bool IsHit(float bx, float by, int rad);
     bool IsActive() const { return isActive; }
 
     void ShootBullet();

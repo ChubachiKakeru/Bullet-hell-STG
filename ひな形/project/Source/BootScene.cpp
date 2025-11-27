@@ -1,7 +1,9 @@
 #include "BootScene.h"
+#include"Common.h"
 
 BootScene::BootScene()
 {
+	new Common();
 }
 
 BootScene::~BootScene()
