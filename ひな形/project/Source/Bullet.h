@@ -5,7 +5,7 @@ class Bullet : public GameObject
 {
 public:
     Bullet();
-    Bullet(int sx, int sy, float vx, float vy);
+    Bullet(float sx, float sy, float vx, float vy,float bulletsize);
     ~Bullet();
 
     void Update() override;

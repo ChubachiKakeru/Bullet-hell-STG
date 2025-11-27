@@ -16,12 +16,15 @@ public:
 	~PlayScene();
 	void Update() override;
 	void Draw() override;
+    // ’e‚Ì”­Ë
+    void FirePlayerBullet();
+    void FireBoss1Bullet();
 
 private:
     Player player;
     Boss1 boss;
-    std::vector<Bullet> playerBullets;
-    std::vector<Bullet> bossBullets;
+    std::vector<Bullet*> playerBullets;
+    std::vector<Bullet*> bossBullets;
 
     // “–‚½‚è”»’è—p‚ÌŠÖ”
     void CheckCollisions();

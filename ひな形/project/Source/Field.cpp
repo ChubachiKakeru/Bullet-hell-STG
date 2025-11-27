@@ -20,7 +20,7 @@ vector < vector<int>>maps = {
 
 Field::Field()
 {
-	hImage = LoadGraph("data/image/bgchar.png");
+	/*hImage = LoadGraph("data/image/bgchar.png");
 	x = 0;
 	y = 600;
 	scrollX = 0;
@@ -33,7 +33,7 @@ Field::Field()
 				new Player(x * 64, y * 64 + 400);
 			}
 		}
-	}
+	}*/
 }
 
 Field::~Field()

@@ -18,13 +18,18 @@ public:
     float GetX() const { return x; }
     float GetY() const { return y; }
 
-    float GetRectW() const { return rectWidth; }
-    float GetRectH() const { return rectHeight; }
-    float GetRadius() const { return circleRadius; }
+    bool IsAlive() const { return isActive; }
+    float GetCenterX() const { return x; }
+    float GetCenterY() const { return y; }
+    float GetSize() const { return size; }
 
-    // 判定サイズ設定
-    void SetCollisionRect(float w, float h) { rectWidth = w; rectHeight = h; }
-    void SetCollisionCircle(float r) { circleRadius = r; }
+    //float GetRectW() const { return rectWidth; }
+    //float GetRectH() const { return rectHeight; }
+    //float GetRadius() const { return circleRadius; }
+
+    //// 判定サイズ設定
+    //void SetCollisionRect(float w, float h) { rectWidth = w; rectHeight = h; }
+    //void SetCollisionCircle(float r) { circleRadius = r; }
 
     // ダメージ処理
     void TakeDamage(int damage);
@@ -40,11 +45,12 @@ private:
     bool onGround;
     Field* field;
     float shotTimer;     // 連射制限用
+    float size;
 
-    // 判定サイズ
-    float rectWidth;      // 矩形判定の幅
-    float rectHeight;     // 矩形判定の高さ
-    float circleRadius;   // 円形判定の半径
+    //// 判定サイズ
+    //float rectWidth;      // 矩形判定の幅
+    //float rectHeight;     // 矩形判定の高さ
+    //float circleRadius;   // 円形判定の半径
 
     // HP
     int hp;

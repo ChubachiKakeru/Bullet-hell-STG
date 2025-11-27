@@ -65,11 +65,12 @@
     <ClCompile Include="Source\Bullet.cpp">
       <Filter>PlayScene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\enemy1.cpp" />
     <ClCompile Include="Source\zako1.cpp">
       <Filter>PlayScene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Collision.cpp" />
+    <ClCompile Include="Source\Collision.cpp">
+      <Filter>PlayScene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Screen.h" />
@@ -149,11 +150,12 @@
     <ClInclude Include="Source\Bullet.h">
       <Filter>PlayScene</Filter>
     </ClInclude>
-    <ClInclude Include="Source\enemy1.h" />
     <ClInclude Include="Source\zako1.h">
       <Filter>PlayScene</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Collision.h" />
+    <ClInclude Include="Source\Collision.h">
+      <Filter>PlayScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">

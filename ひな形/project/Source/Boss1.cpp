@@ -182,7 +182,7 @@ void Boss1::ShootBullet() {
 		float bulletSpeed = 5.0f;
 
 		// 中央: プレイヤー狙い
-		new Bullet((int)x + 32, (int)y + 32, dx * bulletSpeed, dy * bulletSpeed);
+		new Bullet((float)x + 32, (float)y + 32, dx * bulletSpeed, dy * bulletSpeed,5.0f);
 
 		//// 左右にばら撒き (3-way弾)
 		//float offsetAngle1 = 0.3f;  // 約17度

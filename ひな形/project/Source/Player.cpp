@@ -13,9 +13,9 @@ Player::Player() : GameObject()
 	shotTimer = 0.0f;
 
 	// デフォルトの判定サイズ
-	rectWidth = 32.0f;     // 矩形: 32x32
-	rectHeight = 32.0f;
-	circleRadius = 8.0f;   // 円形: 半径8
+	//rectWidth = 32.0f;     // 矩形: 32x32
+	//rectHeight = 32.0f;
+	//circleRadius = 8.0f;   // 円形: 半径8
 
 	hp = 100;
 	isActive = true;
@@ -32,9 +32,9 @@ Player::Player(int sx, int sy)
 	onGround = false;
 	shotTimer = 0.0f;
 
-	rectWidth = 32.0f;
+	/*rectWidth = 32.0f;
 	rectHeight = 32.0f;
-	circleRadius = 8.0f;
+	circleRadius = 8.0f;*/
 
 	hp = 100;
 	isActive = true;
@@ -129,7 +129,7 @@ void Player::Update()
 void Player::ShootBullet()
 {
 	// プレイヤーの中心から弾を発射
-	new Bullet((int)x + 50/2, (int)y + 50/2, 0, -10.0f);
+	new Bullet((int)x + 50/2, (int)y + 50/2, 0, -10.0f,8.0f);
 }
 
 void Player::Draw()
