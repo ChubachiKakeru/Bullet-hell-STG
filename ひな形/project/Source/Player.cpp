@@ -66,7 +66,7 @@ bool Player::IsHit(float bx, float by, int rad)
 	if (d < 30 + rad)
 	{
 	
-		TakeDamage(100);
+		TakeDamage(0);
 		return true;
 
 	}
