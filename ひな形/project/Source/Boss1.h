@@ -11,6 +11,13 @@ enum class BossPattern {
 	LEFT_RIGHT    // 左右移動
 };
 
+// 弾幕フェーズの列挙型
+enum class BulletPhase {
+    PHASE_1,    // 1段階目：八角形の角から連続発射
+    PHASE_2,    // 2段階目：扇形イメージ + 左右移動
+    PHASE_3     // 3段階目：2段階目と同じ + 1秒溜め
+};
+
 class Boss1 : public GameObject
 {
 public:
@@ -20,18 +27,21 @@ public:
 	void Update()override;
 	void Draw() override;
 
-	bool IsActive() const { return isActive; }
 	int GetHP() const { return hp; }
 	void TakeDamage(int damage);
     bool IsHit (float bx, float by, int rad);
+	bool IsAlive() const { return isActive; }
+
+    BulletPhase GetBulletPhase() const;
+    bool IsCharging() const;
 
     float GetX() const { return x; }
     float GetY() const { return y; }
-
-    bool IsAlive() const { return isActive; }
     float GetCenterX() const { return x; }
     float GetCenterY() const { return y; }
     float GetSize() const { return size; }
+
+    bool ShouldFireBullet();
 
 private:
 	int hImage;
@@ -52,6 +62,13 @@ private:
     float patternChangeTime;
     float patternTimer;
 
+    // 弾幕フェーズ関連
+    BulletPhase bulletPhase;
+    float phaseTimer;
+    float phaseChangeTime;
+    float bulletFireTimer;
+    float bulletFireInterval;
+
     // 円軌道用
     float radius;
     float angle;
@@ -64,6 +81,13 @@ private:
     float speed;
     int direction;
 
+    // フェーズ固有の変数
+    float octagonAngle;      // 八角形の角度
+    float horizontalSpeed;   // 左右移動速度
+    float moveDirection;     // 移動方向（1: 右, -1: 左）
+    float chargeTimer;       // 溜め時間
+    bool isCharging;         // 溜め中フラグ
+
     // 弾発射関連
     float shotTimer;
     float shotInterval;
@@ -73,5 +97,13 @@ private:
     void UpdateLeftRight();
     void ChangePattern();
     void ShootBullet();
+
+    // フェーズ更新関数
+    void UpdatePhase1();
+    void UpdatePhase2();
+    void UpdatePhase3();
+
+    // フェーズ変更
+    void ChangeBulletPhase();
 };
 

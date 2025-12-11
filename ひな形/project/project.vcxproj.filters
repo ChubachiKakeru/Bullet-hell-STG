@@ -71,10 +71,15 @@
     <ClCompile Include="Source\Collision.cpp">
       <Filter>PlayScene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\playerBullet.cpp" />
-    <ClCompile Include="Source\enemyBullet.cpp" />
     <ClCompile Include="Source\Common.cpp" />
+<<<<<<< HEAD
     <ClCompile Include="Source\Boss2.cpp">
+=======
+    <ClCompile Include="Source\enemyBullet.cpp">
+      <Filter>PlayScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\playerBullet.cpp">
+>>>>>>> refs/remotes/origin/チーム制作
       <Filter>PlayScene</Filter>
     </ClCompile>
   </ItemGroup>
@@ -162,10 +167,15 @@
     <ClInclude Include="Source\Collision.h">
       <Filter>PlayScene</Filter>
     </ClInclude>
-    <ClInclude Include="Source\playerBullet.h" />
-    <ClInclude Include="Source\enemyBullet.h" />
     <ClInclude Include="Source\Common.h" />
+<<<<<<< HEAD
     <ClInclude Include="Source\Boss2.h">
+=======
+    <ClInclude Include="Source\enemyBullet.h">
+      <Filter>PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\playerBullet.h">
+>>>>>>> refs/remotes/origin/チーム制作
       <Filter>PlayScene</Filter>
     </ClInclude>
   </ItemGroup>
