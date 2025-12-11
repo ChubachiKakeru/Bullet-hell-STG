@@ -40,6 +40,7 @@ public:
     float GetCenterX() const { return x; }
     float GetCenterY() const { return y; }
     float GetSize() const { return size; }
+    void ShotBullet(float rad, float num);
 
     bool ShouldFireBullet();
 
