@@ -155,6 +155,7 @@
     <ClInclude Include="Source\BackGround.h" />
     <ClInclude Include="Source\BootScene.h" />
     <ClInclude Include="Source\Boss1.h" />
+    <ClInclude Include="Source\Boss2.h" />
     <ClInclude Include="Source\Bullet.h" />
     <ClInclude Include="Source\Collision.h" />
     <ClInclude Include="Source\Common.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="Source\BackGround.cpp" />
     <ClCompile Include="Source\BootScene.cpp" />
     <ClCompile Include="Source\Boss1.cpp" />
+    <ClCompile Include="Source\Boss2.cpp" />
     <ClCompile Include="Source\Bullet.cpp" />
     <ClCompile Include="Source\Collision.cpp" />
     <ClCompile Include="Source\Common.cpp" />

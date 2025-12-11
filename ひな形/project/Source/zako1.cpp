@@ -10,9 +10,14 @@ zako1::zako1()
 	hp = 50;
 	isActive = true;
 
+	// デフォルトの判定サイズ
+	rectWidth = 30.0f;      // 矩形: 80x80
+	rectHeight = 30.0f;
+	circleRadius = 30.0f;   // 円形: 半径30
+
+	pattern = Zako1Pattern::CIRCLE;
 	moveTimer = 0.0f;
 	patternTimer = 0.0f;
-	patternChangeTime = 300.0f;
 
 	speed = 3.0f;
 	direction = 1;
@@ -28,9 +33,14 @@ zako1::zako1(int sx, int sy)
 	hp = 50;
 	isActive = true;
 
+	// デフォルトの判定サイズ
+	rectWidth = 30.0f;      // 矩形: 80x80
+	rectHeight = 30.0f;
+	circleRadius = 30.0f;   // 円形: 半径30
+
+	pattern = Zako1Pattern::CIRCLE;
 	moveTimer = 0.0f;
 	patternTimer = 0.0f;
-	patternChangeTime = 300.0f;
 
 	speed = 3.0f;
 	direction = 1;
@@ -38,10 +48,24 @@ zako1::zako1(int sx, int sy)
 
 zako1::~zako1()
 {
+	if (hImage != -1) {
+		DeleteGraph(hImage);
+	}
 }
 
 void zako1::Update()
 {
+	if (!isActive) return;
+
+	moveTimer += 1.0f;
+	patternTimer += 0.4f;
+	
+	// パターンに応じた移動
+	switch (pattern) {
+	case Zako1Pattern::LEFT_RIGHT:
+		UpdateLeftRight();
+		break;
+	}
 }
 
 void zako1::Draw()

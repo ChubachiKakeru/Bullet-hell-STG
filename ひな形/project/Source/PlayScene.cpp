@@ -8,7 +8,7 @@
 #include"zako1.h"
 #include"Collision.h"
 #include<vector>
-
+#include"Boss2.h"
 
 PlayScene::PlayScene()
 {
@@ -17,6 +17,7 @@ PlayScene::PlayScene()
 
     //new Boss1();
     new zako1();
+    new Boss2();
 }
 
 PlayScene::~PlayScene()
