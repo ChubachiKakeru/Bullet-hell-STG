@@ -1,0 +1,77 @@
+#pragma once
+#include"Field.h"
+#include "../Library/GameObject.h"
+
+class Player;
+class Bulett;
+
+enum class BossPattern2{
+    CIRCLE,       // 円軌道
+    FIGURE_EIGHT, // 八の字
+    LEFT_RIGHT    // 左右移動
+};
+
+class Boss2 : public GameObject
+{
+public:
+    Boss2();
+    Boss2(int sx, int sy);
+    ~Boss2();
+    void Update()override;
+    void Draw() override;
+
+    bool IsActive() const { return isActive; }
+    int GetHP() const { return hp; }
+    void TakeDamage(int damage);
+    bool IsHit(float bx, float by, int rad);
+
+    float GetX() const { return x; }
+    float GetY() const { return y; }
+
+    bool IsAlive() const { return isActive; }
+    float GetCenterX() const { return x; }
+    float GetCenterY() const { return y; }
+    float GetSize() const { return size; }
+
+private:
+    int hImage;
+    float x, y;
+    float centerX, centerY;
+    int hp;
+    bool isActive;
+    float size;
+
+    // 判定サイズ
+    float rectWidth;
+    float rectHeight;
+    float circleRadius;
+
+    // 移動パターン関連
+    BossPattern2 pattern;
+    float moveTimer;
+    float patternChangeTime;
+    float patternTimer;
+
+    // 円軌道用
+    float radius;
+    float angle;
+    float angularSpeed;
+
+    // 八の字用
+    float figureEightScale;
+
+    // 左右移動用
+    float speed;
+    int direction;
+
+    // 弾発射関連
+    float shotTimer;
+    float shotInterval;
+
+    void UpdateCircle();
+    void UpdateFigureEight();
+    void UpdateLeftRight();
+    void ChangePattern();
+    void ShootBullet();
+};
+
