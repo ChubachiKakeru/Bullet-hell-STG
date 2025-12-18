@@ -60,17 +60,20 @@ void Player::TakeDamage(int damage) {
 
 bool Player::IsHit(float bx, float by, int rad)
 {
+	
 	float dx = bx - (x + 60);
 	float dy = by - (y + 60);
 	float d = sqrt(dx * dx + dy * dy);
-	if (d < 30 + rad)
-	{
 	
-		TakeDamage(0);
-		return true;
+		if (d < 30 + rad)
+		{
 
-	}
-	return false;
+			TakeDamage(0);
+			return true;
+
+		}
+		return false;
+	
 }
 
 //void Player::Initialize(float startX, float startY, Field* fieldPtr)

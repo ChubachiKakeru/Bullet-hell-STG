@@ -12,4 +12,5 @@ public:
 	int score;
 	int hiScore;
 	bool noDead;
+	
 };
