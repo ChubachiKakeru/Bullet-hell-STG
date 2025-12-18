@@ -16,6 +16,28 @@ Boss2::Boss2()
 	hp = 300;
 	isActive = true;
 
+	// デフォルトの判定サイズ（ボスは大きめ）
+	rectWidth = 80.0f;      // 矩形: 80x80
+	rectHeight = 80.0f;
+	circleRadius = 30.0f;   // 円形: 半径30
+
+	pattern = BossPattern2::CIRCLE;
+	moveTimer = 0.0f;
+	patternTimer = 0.0f;
+	patternChangeTime = 300.0f;
+
+	radius = 150.0f;
+	angle = 0.0f;
+	angularSpeed = 0.02f;
+
+	figureEightScale = 100.0f;
+
+	speed = 3.0f;
+	direction = 1;
+
+
+	shotTimer = 0.0f;      // 追加
+	shotInterval = 0.3f;  // 1秒ごと (60フレーム)
 }
 
 Boss2::Boss2(int sx, int sy)
@@ -28,6 +50,22 @@ Boss2::Boss2(int sx, int sy)
 	hp = 300;
 	isActive = true;
 
+	pattern = BossPattern2::CIRCLE;
+	moveTimer = 0.0f;
+	patternTimer = 0.0f;
+	patternChangeTime = 300.0f;
+
+	radius = 100.0f;
+	angle = 0.0f;
+	angularSpeed = 0.02f;
+
+	figureEightScale = 100.0f;
+
+	speed = 3.0f;
+	direction = 1;
+
+	shotTimer = 0.0f;
+	shotInterval = 60.0f;
 }
 
 Boss2::~Boss2()
