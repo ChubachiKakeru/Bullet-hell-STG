@@ -2,7 +2,9 @@
 #include"Field.h"
 #include"enemyBullet.h"
 #include"Player.h"
+#include"SceneFactory.h"
 #include <cmath>
+
 
 Boss2::Boss2()
 {
