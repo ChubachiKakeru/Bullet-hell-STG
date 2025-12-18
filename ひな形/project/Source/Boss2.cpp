@@ -1,4 +1,8 @@
 #include "Boss2.h"
+#include"Field.h"
+#include"enemyBullet.h"
+#include"Player.h"
+#include <cmath>
 
 Boss2::Boss2()
 {
@@ -10,33 +14,11 @@ Boss2::Boss2()
 	hp = 300;
 	isActive = true;
 
-	// デフォルトの判定サイズ（ボスは大きめ）
-	rectWidth = 80.0f;      // 矩形: 80x80
-	rectHeight = 80.0f;
-	circleRadius = 30.0f;   // 円形: 半径30
-
-	pattern = BossPattern2::CIRCLE;
-	moveTimer = 0.0f;
-	patternTimer = 0.0f;
-	patternChangeTime = 300.0f;
-
-	radius = 150.0f;
-	angle = 0.0f;
-	angularSpeed = 0.02f;
-
-	figureEightScale = 100.0f;
-
-	speed = 3.0f;
-	direction = 1;
-
-
-	shotTimer = 0.0f;      // 追加
-	shotInterval = 60.0f;  // 1秒ごと (60フレーム)
 }
 
 Boss2::Boss2(int sx, int sy)
 {
-	hImage = LoadGraph("data/image/file/chara/boss1.png");
+	hImage = LoadGraph("data/image/file/chara/boss2.png");
 	x = sx;
 	y = sy;
 	centerX = sx;
@@ -44,22 +26,6 @@ Boss2::Boss2(int sx, int sy)
 	hp = 300;
 	isActive = true;
 
-	pattern = BossPattern2::CIRCLE;
-	moveTimer = 0.0f;
-	patternTimer = 0.0f;
-	patternChangeTime = 300.0f;
-
-	radius = 100.0f;
-	angle = 0.0f;
-	angularSpeed = 0.02f;
-
-	figureEightScale = 100.0f;
-
-	speed = 3.0f;
-	direction = 1;
-
-	shotTimer = 0.0f;
-	shotInterval = 60.0f;
 }
 
 Boss2::~Boss2()
@@ -71,37 +37,7 @@ Boss2::~Boss2()
 
 void Boss2::Update()
 {
-	if (!isActive) return;
 
-	moveTimer += 1.0f;
-	patternTimer += 0.4f;
-	shotTimer += 0.3f;
-
-	// 一定時間でパターン変更
-	if (patternTimer >= patternChangeTime) {
-		ChangePattern();
-		patternTimer = 0.0f;
-
-	}
-
-	// パターンに応じた移動
-	switch (pattern) {
-	case BossPattern2::CIRCLE:
-		UpdateCircle();
-		break;
-	case BossPattern2::FIGURE_EIGHT:
-		UpdateFigureEight();
-		break;
-	case BossPattern2::LEFT_RIGHT:
-		UpdateLeftRight();
-		break;
-	}
-
-	// 弾発射
-	if (shotTimer >= shotInterval) {
-		ShootBullet();
-		shotTimer = 0.0f;
-	}
 }
 
 void Boss2::Draw()
