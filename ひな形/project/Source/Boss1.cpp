@@ -232,24 +232,15 @@ void Boss1::ChangeBulletPhase() {
 
 void Boss1::ShotBullet(float rad, float num)
 {
-	Player* player = FindGameObject<Player>();
-	float dx = player->GetX() - x;
-	float dy = player->GetY() - y;
-	float length = sqrt(dx * dx + dy * dy);
+	
 	for (int i = 1;i <= num;i++) {
 		
-		float shotAngle = angle * i * DegToRad;
+		float shotAngle = rad * i * DegToRad;
 		float c1 = cos(shotAngle);
 		float s1 = sin(shotAngle);
-		float newDx1 = dx * c1 - dy * s1;
-		float newDy1 = dx * s1 + dy * c1;
-		new enemyBullet((float)x + 32, (float)y + 32, newDx1 * 5.0f, newDy1 * 5.0f);
+		
+		new enemyBullet((float)x + 32, (float)y + 32, c1 * 5.0f, s1 * 5.0f);
 
-		float c2 = -cos(shotAngle);
-		float s2 = -sin(shotAngle);
-		float newDx2 = dx * c2 - dy * s2;
-		float newDy2 = dx * s2 + dy * c2;
-		new enemyBullet((float)x + 32, (float)y + 32, newDx2 *5.0f, newDy2 *5.0f);
 	}
 	
 }
