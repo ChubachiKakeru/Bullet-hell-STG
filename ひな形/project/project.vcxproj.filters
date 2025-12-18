@@ -59,10 +59,25 @@
     <ClCompile Include="Source\Boss1.cpp">
       <Filter>PlayScene</Filter>
     </ClCompile>
-    <ClCompile Include="ソース.cpp">
-      <Filter>Library</Filter>
+    <ClCompile Include="Source\BackGround.cpp">
+      <Filter>PlayScene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Shot.cpp" />
+    <ClCompile Include="Source\Bullet.cpp">
+      <Filter>PlayScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zako1.cpp">
+      <Filter>PlayScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Collision.cpp">
+      <Filter>PlayScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Common.cpp" />
+    <ClCompile Include="Source\enemyBullet.cpp">
+      <Filter>PlayScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\playerBullet.cpp">
+      <Filter>PlayScene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Screen.h" />
@@ -136,10 +151,25 @@
     <ClInclude Include="Source\Boss1.h">
       <Filter>PlayScene</Filter>
     </ClInclude>
-    <ClInclude Include="Source\define.h">
+    <ClInclude Include="Source\BackGround.h">
       <Filter>PlayScene</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Shot.h" />
+    <ClInclude Include="Source\Bullet.h">
+      <Filter>PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zako1.h">
+      <Filter>PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Collision.h">
+      <Filter>PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Common.h" />
+    <ClInclude Include="Source\enemyBullet.h">
+      <Filter>PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\playerBullet.h">
+      <Filter>PlayScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">

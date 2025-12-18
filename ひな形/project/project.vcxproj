@@ -152,16 +152,21 @@
     <ClInclude Include="Library\SceneBase.h" />
     <ClInclude Include="Library\SceneManager.h" />
     <ClInclude Include="Library\Time.h" />
+    <ClInclude Include="Source\BackGround.h" />
     <ClInclude Include="Source\BootScene.h" />
     <ClInclude Include="Source\Boss1.h" />
-    <ClInclude Include="Source\define.h" />
+    <ClInclude Include="Source\Bullet.h" />
+    <ClInclude Include="Source\Collision.h" />
+    <ClInclude Include="Source\Common.h" />
+    <ClInclude Include="Source\enemyBullet.h" />
     <ClInclude Include="Source\Field.h" />
     <ClInclude Include="Source\Player.h" />
+    <ClInclude Include="Source\playerBullet.h" />
     <ClInclude Include="Source\Screen.h" />
     <ClInclude Include="Source\PlayScene.h" />
     <ClInclude Include="Source\SceneFactory.h" />
-    <ClInclude Include="Source\Shot.h" />
     <ClInclude Include="Source\TitleScene.h" />
+    <ClInclude Include="Source\zako1.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImGui\imgui.cpp" />
@@ -177,15 +182,20 @@
     <ClCompile Include="Library\ObjectManager.cpp" />
     <ClCompile Include="Library\SceneManager.cpp" />
     <ClCompile Include="Library\Time.cpp" />
+    <ClCompile Include="Source\BackGround.cpp" />
     <ClCompile Include="Source\BootScene.cpp" />
     <ClCompile Include="Source\Boss1.cpp" />
+    <ClCompile Include="Source\Bullet.cpp" />
+    <ClCompile Include="Source\Collision.cpp" />
+    <ClCompile Include="Source\Common.cpp" />
+    <ClCompile Include="Source\enemyBullet.cpp" />
     <ClCompile Include="Source\Field.cpp" />
     <ClCompile Include="Source\Player.cpp" />
+    <ClCompile Include="Source\playerBullet.cpp" />
     <ClCompile Include="Source\PlayScene.cpp" />
     <ClCompile Include="Source\SceneFactory.cpp" />
-    <ClCompile Include="Source\Shot.cpp" />
     <ClCompile Include="Source\TitleScene.cpp" />
-    <ClCompile Include="ソース.cpp" />
+    <ClCompile Include="Source\zako1.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

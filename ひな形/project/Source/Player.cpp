@@ -1,198 +1,162 @@
 #include "Player.h"
-#include "Windows.h"
 #include"Field.h"
-#include"Shot.h"
+#include"playerBullet.h"
+#include"Common.h"
 
-static const float Gravity = 0.2;
-static const float V0 = -7.3;
-Player::Player()
+
+Player::Player() : GameObject()
 {
-	//画像読み込み
-	/*if (-1 == LoadDivGraph("data/aoia.png", 12, 3, 4, 29, 40, hImage))
-	{
-		OutputDebugStringA("エラー発生");
-	}*/
-	width = 29;
-	height = 40;
+	hImage = LoadGraph("data/image/file/chara/player.png");
+	x = 200;
+	y = 500;
+	velocity = 0;
+	onGround = false;
+	shotTimer = 0.0f;
 
-	//移動係数
-	move = 1.0f;
+	// デフォルトの判定サイズ
+	//rectWidth = 32.0f;     // 矩形: 32x32
+	//rectHeight = 32.0f;
+	//circleRadius = 8.0f;   // 円形: 半径8
 
-	//横方向と縦方向のカウント数
-	xcount = 0, ycount = 0;
-	//添え字用変数
-	ix = 0, iy = 0, result = 0;
-
-	//初期位置
-	x = 180;
-	y = 400;
-
-	//生きているかどうか
-	life = true;
-
-	//弾初期化
-	memset(shot, 0, sizeof(shot));
-
-	int temp = LoadGraph("data/stone.png");
-	int w, h;
-	GetGraphSize(temp, &w, &h);
-
-	
-	//グラフィックハンドルと画像のサイズを代入しとく
-	for (int i = 0;i < PSHOT_NUM;i++)
-	{
-		shot[i].flag = false;
-		shot[i].gh = temp;
-		shot[i].width = w;
-		shot[i].height = h;
-	}
-	count = 0;
+	hp = 100;
+	isActive = true;
 }
+
 
 
 Player::Player(int sx, int sy)
 {
-	hImage = LoadGraph("data/image/aoi.png");
-	//画像読み込み
-	/*if (-1 == LoadDivGraph("data/aoi.png", 12, 3, 4, 29, 40, hImage))
-	{
-		OutputDebugStringA("エラー発生");
-	}*/
-	width = 29;
-	height = 40;
-
-	//移動係数
-	move = 1.0f;
-
-	//横方向と縦方向のカウント数
-	xcount = 0, ycount = 0;
-	//添え字用変数
-	ix = 0, iy = 0, result = 0;
-
-	//初期位置
+	hImage = LoadGraph("data/image/file/chara/player.png");
 	x = sx;
 	y = sy;
-	shot(nullptr);
+	velocity = 0;
+	onGround = false;
+	shotTimer = 0.0f;
 
-	time = 0;
-	speed = 8;
+	/*rectWidth = 32.0f;
+	rectHeight = 32.0f;
+	circleRadius = 8.0f;*/
 
-	//生きているかどうか
-	life = true;
-
-	//弾初期化
-	memset(shot, 0, sizeof(shot));
-
-	int temp = LoadGraph("data/stone.png");
-	int w, h;
-	GetGraphSize(temp, &w, &h);
-
-
-	//グラフィックハンドルと画像のサイズを代入しとく
-	/*for (int i = 0;i < PSHOT_NUM;i++)
-	{
-		shot[i].flag = false;
-		shot[i].gh = temp;
-		shot[i].width = w;
-		shot[i].height = h;
-	}
-	count = 0;*/
+	hp = 100;
+	isActive = true;
 }
 
 Player::~Player()
 {
-	// 生成したShotを破棄
-	if (shot != nullptr) {
-		delete shot;
-		shot = nullptr;
+	if (hImage != -1) {
+		DeleteGraph(hImage);
 	}
 }
 
+void Player::TakeDamage(int damage) {
+    hp -= damage;
+    if (hp <= 0) {
+        hp = 0;
+		if (hp <= 0) {
+			SceneManager::ChangeScene("TITLE");
+		}
+    }
+}
+
+bool Player::IsHit(float bx, float by, int rad)
+{
+	
+	float dx = bx - (x + 60);
+	float dy = by - (y + 60);
+	float d = sqrt(dx * dx + dy * dy);
+	
+		if (d < 30 + rad)
+		{
+
+			TakeDamage(0);
+			return true;
+
+		}
+		return false;
+	
+}
+
+//void Player::Initialize(float startX, float startY, Field* fieldPtr)
+//{
+//	hImage = LoadGraph("data/image/file/chara/player.png");
+//	x = startX;
+//	y = startY;
+//	velocity = 0;
+//	onGround = false;
+//	field = fieldPtr;
+//}
+
 void Player::Update()
 {
+	float nextX = x;
+	float nextY = y;
+
 	if (CheckHitKey(KEY_INPUT_D))
 	{
-		x += speed;
-		if (x > 640 - 64) x = 640 - 64;
+		x += 5;
+		Field* field = FindGameObject<Field>();
+		int push1 = field->HitCheckRight(x + 50, y + 5);
+		int push2 = field->HitCheckRight(x + 50, y + 63);
+		x -= max(push1, push2);
 	}
 	if (CheckHitKey(KEY_INPUT_A))
 	{
-		x -= speed;
-		if (x < 0) x = 0;
+		x -= 5;
+		Field* field = FindGameObject<Field>();
+		int push1 = field->HitCheckLeft(x + 14, y + 5);
+		int push2 = field->HitCheckLeft(x + 14, y + 63);
+		x -= max(push1, push2);
 	}
-	if (CheckHitKey(KEY_INPUT_W))
-	{
-		y -= speed;
-		if (y < 0) x = 0;
+
+
+	// 上移動 (Wキー) - 新規追加
+	if (CheckHitKey(KEY_INPUT_W)) {
+		y -= 5;
+		Field* field = FindGameObject<Field>();
+		int push1 = field->HitCheckUp(x + 14, y + 5);
+		int push2 = field->HitCheckUp(x + 50, y + 5);
+		int push = max(push1, push2);
+		if (push > 0) {
+			y += push;
+			velocity = 0;
+		}
 	}
-	if (CheckHitKey(KEY_INPUT_S))
-	{
-		y += speed;
+
+	// 下移動 (Sキー) - 新規追加
+	if (CheckHitKey(KEY_INPUT_S)) {
+		y += 5;
+		Field* field = FindGameObject<Field>();
+		int push1 = field->HitCheckDown(x + 14, y + 64);
+		int push2 = field->HitCheckDown(x + 50, y + 64);
+		int push = max(push1, push2);
+		if (push > 0) {
+			y -= push - 1;
+			velocity = 0;
+			onGround = false;
+		}
+	}	
+
+	// 弾発射タイマー更新
+	shotTimer += 1.0f;
+
+	// Hキーで弾発射
+	if (CheckHitKey(KEY_INPUT_H) && shotTimer >= 100.0f) {
+		ShootBullet();
+		shotTimer = 0.0f;  // タイマーリセット
 	}
+	
+}
+
+void Player::ShootBullet()
+{
+	// プレイヤーの中心から弾を発射
+	new playerBullet((int)x + 50/2, (int)y + 50/2, 0, -10.0f,8.0f);
 }
 
 void Player::Draw()
 {
-	//弾描画
-	/*for (int i = 0;i < PSHOT_NUM;i++)
-	{
-		if (shot[i].flag)
-		{
-			DrawGraph(shot[i].x - shot[i].width / 2, shot[i].y - shot[i].height / 2, shot[i].gh, TRUE);
-		}
-	}*/
-
-	
-	time++;
-	
-	if (time > 63) time = 0;
-	int viewType = time / 16;
-
-	//生きていれば描画
-	if (life)
-		//描画
-		DrawRectGraph(x, y, viewType * 64, 0, 64, 64, hImage, TRUE);
+	Field* field = FindGameObject<Field>();
+	DrawGraph(x , y, hImage, 1);
 }
 
-void Player::Shot()
-{
-	//キーが押されてかつ、6ループに一回発射
-	if (CheckHitKey(KEY_INPUT_SPACE) == 1 && count % 6 == 0)
-	{
-		for (int i = 0;i < PSHOT_NUM;i++)
-		{
-			if (shot[i].flag == false)
-			{
-				shot[i].flag == true;
-				shot[i].x = x;
-				shot[i].y = y;
-				break;
-			}
-		}
-	}
 
-	//弾を移動させる処理
-	for (int i = 0;i < PSHOT_NUM;i++)
-	{
-		//発射している弾だけ
-		if (shot[i].flag)
-		{
-			shot[i].y -= PSHOT_SPEED;
-
-			//画面の外にはみ出したらフラグを戻す
-			if (shot[i].y < -10)
-			{
-				shot[i].flag = false;
-			}
-		}
-	}
-}
-
-void Player::All()
-{
-	Update();
-	Shot();
-	Draw();
-
-	count++;
-}
