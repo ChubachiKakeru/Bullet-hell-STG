@@ -219,6 +219,7 @@ void Boss1::ChangeBulletPhase() {
 	}
 	else if (bulletPhase == BulletPhase::PHASE_2) {
 		shotInterval = 60.0f;  // è≠ÇµíxÇﬂ
+		
 	}
 	else if (bulletPhase == BulletPhase::PHASE_3) {
 		shotInterval = 60.0f;  // òAë±î≠éÀ
