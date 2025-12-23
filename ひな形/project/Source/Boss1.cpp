@@ -10,8 +10,8 @@
 Boss1::Boss1() : GameObject()
 {
 	hImage = LoadGraph("data/image/file/chara/boss1.png");
-	x = 300/2;
-	y = 200/2;
+	x = 300 / 2;
+	y = 200 / 2;
 	centerX = 300;
 	centerY = 200;
 	hp = 300;
@@ -35,7 +35,7 @@ Boss1::Boss1() : GameObject()
 
 	bulletPhase = BulletPhase::PHASE_1;
 	phaseTimer = 0.0f;
-	phaseChangeTime =15.0f;  // 15秒ごとにフェーズ変更
+	phaseChangeTime = 15.0f;  // 15秒ごとにフェーズ変更
 	shotTimer = 0.0f;
 	bulletFireInterval = 0.1f; // 連続発射
 	octagonAngle = 0.0f;
@@ -89,7 +89,7 @@ Boss1::Boss1(int sx, int sy)
 	shotInterval = 60.0f;
 }
 
-	
+
 
 
 Boss1::~Boss1()
@@ -106,7 +106,7 @@ void Boss1::Update()
 	moveTimer += 1.0f;
 	patternTimer += 0.4f;
 	phaseTimer += 1.0f;
-	shotTimer += 60.0f;  // ★shotTimerを更新
+	shotTimer += 1.0f;  // ★shotTimerを更新
 
 	// 一定時間でパターン変更
 	if (patternTimer >= patternChangeTime) {
@@ -116,7 +116,7 @@ void Boss1::Update()
 	}
 
 	// パターンに応じた移動
-	switch (pattern) {
+	/*switch (pattern) {
 	case BossPattern::CIRCLE:
 		UpdateCircle();
 		break;
@@ -126,7 +126,7 @@ void Boss1::Update()
 	case BossPattern::LEFT_RIGHT:
 		UpdateLeftRight();
 		break;
-	}
+	}*/
 
 	// 一定時間でフェーズ変更
 	if (phaseTimer >= phaseChangeTime) {
@@ -134,43 +134,44 @@ void Boss1::Update()
 		phaseTimer = 0.0f;
 	}
 
-	// フェーズに応じた処理
-	switch (bulletPhase) {
-	case BulletPhase::PHASE_1:
-		UpdatePhase1();
-		break;
-	case BulletPhase::PHASE_2:
-		UpdatePhase2();
-		break;
-	case BulletPhase::PHASE_3:
-		UpdatePhase3();
-		break;
-	}
+
 
 	// 弾発射
 	if (shotTimer >= shotInterval) {
-		ShootBullet();
+		// フェーズに応じた処理
+		switch (bulletPhase) {
+		case BulletPhase::PHASE_1:
+			UpdatePhase1();
+			break;
+		case BulletPhase::PHASE_2:
+			UpdatePhase2();
+			UpdateLeftRight();
+			break;
+		case BulletPhase::PHASE_3:
+			UpdatePhase3();
+			break;
+		}
 		shotTimer = 0.0f;
 	}
 }
 
-void Boss1::UpdateCircle() {
-	// 円軌道移動
-	angle += angularSpeed;
-	if (angle > 2 *DX_PI) {
-		angle -= 2 *DX_PI;
-	}
-
-	x = centerX + radius * cos(angle);
-	y = centerY + radius * sin(angle);
-}
-
-void Boss1::UpdateFigureEight() {
-	// 八の字移動 (リサージュ曲線)
-	float t = moveTimer * 0.02f;
-	x = centerX + figureEightScale * sin(t);
-	y = centerY + figureEightScale * sin(2 * t) / 2;
-}
+//void Boss1::UpdateCircle() {
+//	// 円軌道移動
+//	angle += angularSpeed;
+//	if (angle > 2 *DX_PI) {
+//		angle -= 2 *DX_PI;
+//	}
+//
+//	x = centerX + radius * cos(angle);
+//	y = centerY + radius * sin(angle);
+//}
+//
+//void Boss1::UpdateFigureEight() {
+//	// 八の字移動 (リサージュ曲線)
+//	float t = moveTimer * 0.02f;
+//	x = centerX + figureEightScale * sin(t);
+//	y = centerY + figureEightScale * sin(2 * t) / 2;
+//}
 
 void Boss1::UpdateLeftRight() {
 	// 左右移動
@@ -210,14 +211,15 @@ void Boss1::ChangeBulletPhase() {
 	octagonAngle = 0.0f;
 	chargeTimer = 0.0f;
 	isCharging = false;
-	shotTimer = 0.0f;  // ★リセット
+	//	shotTimer = 0.0f;  // ★リセット
 
-	// フェーズごとに発射間隔を調整
+		// フェーズごとに発射間隔を調整
 	if (bulletPhase == BulletPhase::PHASE_1) {
-		shotInterval =60.0f;  // 連続発射
+		shotInterval = 60.0f;  // 連続発射
 	}
 	else if (bulletPhase == BulletPhase::PHASE_2) {
 		shotInterval = 60.0f;  // 少し遅め
+
 	}
 	else if (bulletPhase == BulletPhase::PHASE_3) {
 		shotInterval = 60.0f;  // 連続発射
@@ -227,6 +229,21 @@ void Boss1::ChangeBulletPhase() {
 		x = 100.0f;
 		moveDirection = 60.0f;
 	}
+}
+
+void Boss1::ShotBullet(float rad, float num)
+{
+
+	for (int i = 1;i <= num;i++) {
+
+		float shotAngle = rad * i * DegToRad;
+		float c1 = cos(shotAngle);
+		float s1 = sin(shotAngle);
+
+		new enemyBullet((float)x + 32, (float)y + 32, c1 * 5.0f, s1 * 5.0f);
+
+	}
+
 }
 
 bool Boss1::ShouldFireBullet() {
@@ -248,6 +265,7 @@ void Boss1::UpdatePhase1() {
 	y = 100.0f;
 	octagonAngle += 2.0f;
 	shotInterval = 60.0f;  // 連続発射
+	ShotBullet(45.0f, 8.0f);
 }
 
 void Boss1::UpdatePhase2() {
@@ -263,6 +281,7 @@ void Boss1::UpdatePhase2() {
 	}
 
 	shotInterval = 60.0f;
+	ShotBullet(270.0f, 5.0f);
 }
 
 void Boss1::UpdatePhase3() {
@@ -294,15 +313,7 @@ void Boss1::UpdatePhase3() {
 
 	shotInterval = 60.0f;
 }
-void ShootBullet(float angle, float num) {
-	
-	for (int i = 1;i <= num;i++) {
-		float shotAngle = angle * i * DegToRad;
-		float c = cos(shotAngle);
-		float s = sin(shotAngle);
 
-	}
-}
 void Boss1::ShootBullet() {
 	// プレイヤーを探す
 	Player* player = FindGameObject<Player>();
@@ -321,14 +332,14 @@ void Boss1::ShootBullet() {
 		float bulletSpeed = 5.0f;
 
 		// 中央: プレイヤー狙い
-		new enemyBullet((float)x + 32, (float)y + 32, dx * bulletSpeed, dy * bulletSpeed,5.0f);
+		new enemyBullet((float)x + 32, (float)y + 32, dx * bulletSpeed, dy * bulletSpeed, 5.0f);
 
 		// 左右にばら撒き (3-way弾)
 		float offsetAngle1 = 0.3f;  // 約17度
 		float offsetAngle2 = -0.3f;
 		float offsetAngle3 = -0.5f;
 		float offsetAngle4 = 0.5f;
-	
+
 
 		// 右側の弾
 		float cos1 = cos(offsetAngle1);
@@ -391,7 +402,7 @@ void Boss1::TakeDamage(int damage)
 	}
 }
 
-bool Boss1::IsHit(float bx,float by,int rad)
+bool Boss1::IsHit(float bx, float by, int rad)
 {
 	float dx = bx - (x + 60);
 	float dy = by - (y + 60);

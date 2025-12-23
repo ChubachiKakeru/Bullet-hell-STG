@@ -6,9 +6,9 @@ class Player;
 class Bulett;
 
 enum class BossPattern {
-	CIRCLE,       // ‰~‹O“¹
-	FIGURE_EIGHT, // ”ª‚Ìš
-	LEFT_RIGHT    // ¶‰EˆÚ“®
+    CIRCLE,       // ‰~‹O“¹
+    FIGURE_EIGHT, // ”ª‚Ìš
+    LEFT_RIGHT    // ¶‰EˆÚ“®
 };
 
 // ’e–‹ƒtƒF[ƒY‚Ì—ñ‹“Œ^
@@ -21,16 +21,16 @@ enum class BulletPhase {
 class Boss1 : public GameObject
 {
 public:
-	Boss1();
-	Boss1(int sx, int sy);
-	~Boss1();
-	void Update()override;
-	void Draw() override;
+    Boss1();
+    Boss1(int sx, int sy);
+    ~Boss1();
+    void Update()override;
+    void Draw() override;
 
-	int GetHP() const { return hp; }
-	void TakeDamage(int damage);
-    bool IsHit (float bx, float by, int rad);
-	bool IsAlive() const { return isActive; }
+    int GetHP() const { return hp; }
+    void TakeDamage(int damage);
+    bool IsHit(float bx, float by, int rad);
+    bool IsAlive() const { return isActive; }
 
     BulletPhase GetBulletPhase() const;
     bool IsCharging() const;
@@ -40,12 +40,13 @@ public:
     float GetCenterX() const { return x; }
     float GetCenterY() const { return y; }
     float GetSize() const { return size; }
+    void ShotBullet(float rad, float num);
 
     bool ShouldFireBullet();
 
 private:
-	int hImage;
-	float x, y;
+    int hImage;
+    float x, y;
     float centerX, centerY;
     int hp;
     bool isActive;
