@@ -84,6 +84,7 @@ private:
 
     // フェーズ固有の変数
     float octagonAngle;      // 八角形の角度
+	float fanAngle;          // 扇形の中心角度
     float horizontalSpeed;   // 左右移動速度
     float moveDirection;     // 移動方向（1: 右, -1: 左）
     float chargeTimer;       // 溜め時間
@@ -98,6 +99,7 @@ private:
     void UpdateLeftRight();
     void ChangePattern();
     void ShootBullet();
+    void ShootFanDown();
 
     // フェーズ更新関数
     void UpdatePhase1();

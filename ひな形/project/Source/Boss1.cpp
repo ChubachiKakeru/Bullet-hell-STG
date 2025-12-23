@@ -39,6 +39,7 @@ Boss1::Boss1() : GameObject()
 	shotTimer = 0.0f;
 	bulletFireInterval = 0.1f; // 連続発射
 	octagonAngle = 0.0f;
+	fanAngle = 0.0f;
 	chargeTimer = 0.0f;
 
 	isCharging = false;
@@ -49,6 +50,8 @@ Boss1::Boss1() : GameObject()
 
 	shotTimer = 0.0f;      // 追加
 	shotInterval = 0.3f;  // 1秒ごと (60フレーム)
+
+	float angleStep = 180.0f / (7 - 1);
 }
 
 Boss1::Boss1(int sx, int sy)
@@ -78,6 +81,7 @@ Boss1::Boss1(int sx, int sy)
 	bulletFireTimer = 0.0f;
 	bulletFireInterval = 0.1f; // 連続発射
 	octagonAngle = 0.0f;
+	fanAngle = 0.0f;
 	chargeTimer = 0.0f;
 
 	isCharging = false;
@@ -87,6 +91,8 @@ Boss1::Boss1(int sx, int sy)
 
 	shotTimer = 0.0f;
 	shotInterval = 60.0f;
+
+	float angleStep = 180.0f / (7 - 1);
 }
 
 
@@ -209,6 +215,7 @@ void Boss1::ChangeBulletPhase() {
 	bulletPhase = static_cast<BulletPhase>(nextPhase);
 
 	octagonAngle = 0.0f;
+	fanAngle = 0.0f;
 	chargeTimer = 0.0f;
 	isCharging = false;
 	//	shotTimer = 0.0f;  // ★リセット
@@ -222,7 +229,7 @@ void Boss1::ChangeBulletPhase() {
 
 	}
 	else if (bulletPhase == BulletPhase::PHASE_3) {
-		shotInterval = 60.0f;  // 連続発射
+		shotInterval = 120.0f;  // 連続発射
 	}
 
 	if (bulletPhase == BulletPhase::PHASE_2 || bulletPhase == BulletPhase::PHASE_3) {
@@ -242,8 +249,7 @@ void Boss1::ShotBullet(float rad, float num)
 
 		new enemyBullet((float)x + 32, (float)y + 32, c1 * 5.0f, s1 * 5.0f);
 
-	}
-
+	}	
 }
 
 bool Boss1::ShouldFireBullet() {
@@ -269,23 +275,6 @@ void Boss1::UpdatePhase1() {
 }
 
 void Boss1::UpdatePhase2() {
-	x += horizontalSpeed * moveDirection;
-
-	if (x <= 100.0f) {
-		x = 100.0f;
-		moveDirection = 60.0f;
-	}
-	else if (x >= 700.0f) {
-		x = 700.0f;
-		moveDirection = -60.0f;
-	}
-
-	shotInterval = 60.0f;
-	ShotBullet(270.0f, 5.0f);
-}
-
-void Boss1::UpdatePhase3() {
-	if (!isCharging) {
 		x += horizontalSpeed * moveDirection;
 
 		if (x <= 100.0f) {
@@ -297,21 +286,21 @@ void Boss1::UpdatePhase3() {
 			moveDirection = -60.0f;
 		}
 
-		chargeTimer += 60.0f;
-		if (chargeTimer >= 3.0f) {
-			isCharging = true;
-			chargeTimer = 0.0f;
-		}
-	}
-	else {
-		chargeTimer += 60.0f;
-		if (chargeTimer >= 1.0f) {
-			isCharging = false;
-			chargeTimer = 0.0f;
-		}
-	}
+		shotInterval = 60.0f;
+		ShotBullet(270.0f, 5.0f);
 
-	shotInterval = 60.0f;
+}
+
+void Boss1::UpdatePhase3() {
+	x = 400.0f;
+	y = 100.0f;
+	if (hp <= 100) {
+		return;
+	}
+	// 発射間隔
+	shotInterval = 60.0f; // 1秒ごと
+
+	ShootFanDown();
 }
 
 void Boss1::ShootBullet() {
@@ -368,6 +357,33 @@ void Boss1::ShootBullet() {
 		new enemyBullet((int)x + 32, (int)y + 32, newDx3 * bulletSpeed, newDy3 * bulletSpeed);
 	}
 }
+
+void Boss1::ShootFanDown()
+{
+	const int bulletCount = 7;
+	const float startAngle = 0.0f;     // 右
+	const float endAngle = 180.0f;   // 左
+	const float speed = 5.0f;
+
+	float angleStep = (endAngle - startAngle) / (bulletCount - 1);
+
+	for (int i = 0; i < bulletCount; i++)
+	{
+		float angleDeg = startAngle + angleStep * i;
+		float angleRad = angleDeg * DX_PI / 180.0f;
+
+		float vx = cos(angleRad) * speed;
+		float vy = sin(angleRad) * speed;
+
+		new enemyBullet(
+			x + 32.0f,
+			y + 32.0f,
+			vx,
+			vy
+		);
+	}
+}
+
 
 void Boss1::Draw()
 {
