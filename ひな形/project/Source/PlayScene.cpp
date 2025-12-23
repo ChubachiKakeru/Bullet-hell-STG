@@ -8,13 +8,16 @@
 #include"zako1.h"
 #include"Collision.h"
 #include<vector>
-
+#include"Boss2.h"
 
 PlayScene::PlayScene()
 {
-	new BackGround();
-	new Field();
-	
+    new BackGround();
+    new Field();
+
+    //new Boss1();
+    new zako1();
+    new Boss2();
 }
 
 PlayScene::~PlayScene()

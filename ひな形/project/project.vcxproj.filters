@@ -72,6 +72,7 @@
       <Filter>PlayScene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Common.cpp" />
+    <ClCompile Include="Source\Boss2.cpp">
     <ClCompile Include="Source\enemyBullet.cpp">
       <Filter>PlayScene</Filter>
     </ClCompile>
@@ -164,6 +165,7 @@
       <Filter>PlayScene</Filter>
     </ClInclude>
     <ClInclude Include="Source\Common.h" />
+    <ClInclude Include="Source\Boss2.h">
     <ClInclude Include="Source\enemyBullet.h">
       <Filter>PlayScene</Filter>
     </ClInclude>
