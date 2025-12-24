@@ -1,419 +1,292 @@
-#include "Boss1.h"
-#include"Field.h"
-#include"enemyBullet.h"
+ï»¿#include "Boss1.h"
+#include "Field.h"
+#include "enemyBullet.h"
 #include "Player.h"
 #include <cmath>
 
-//#define PI 3.14159265f
-
-
 Boss1::Boss1() : GameObject()
 {
-	hImage = LoadGraph("data/image/file/chara/boss1.png");
-	x = 300/2;
-	y = 200/2;
-	centerX = 300;
-	centerY = 200;
-	hp = 300;
-	isActive = true;
+    hImage = LoadGraph("data/image/file/chara/boss1.png");
+    x = 300.0f;
+    y = 200.0f;
+    centerX = 300.0f;
+    centerY = 200.0f;
 
-	// ƒfƒtƒHƒ‹ƒg‚Ì”»’èƒTƒCƒYiƒ{ƒX‚Í‘å‚«‚ßj
-	rectWidth = 80.0f;      // ‹éŒ`: 80x80
-	rectHeight = 80.0f;
-	circleRadius = 30.0f;   // ‰~Œ`: ”¼Œa30
+    maxHp = 300;
+    currentHp = maxHp;
+    Phase2Hp = 200;
+    Phase3Hp = 100;
 
-	pattern = BossPattern::CIRCLE;
-	moveTimer = 0.0f;
-	patternTimer = 0.0f;
-	patternChangeTime = 300.0f;
+    bulletPhase = BulletPhase::PHASE_1;
+    previousPhase = BulletPhase::PHASE_1;
 
-	radius = 150.0f;
-	angle = 0.0f;
-	angularSpeed = 0.02f;
+    shotTimer = 0.0f;
+    shotInterval = 60.0f;
 
-	figureEightScale = 100.0f;
+    moveDirection = 1.0f;
 
-	bulletPhase = BulletPhase::PHASE_1;
-	phaseTimer = 0.0f;
-	phaseChangeTime =15.0f;  // 15•b‚²‚Æ‚ÉƒtƒF[ƒY•ÏX
-	shotTimer = 0.0f;
-	bulletFireInterval = 0.1f; // ˜A‘±”­Ë
-	octagonAngle = 0.0f;
-	chargeTimer = 0.0f;
+    isCharging = false;
+    chargeTimer = 0.0f;
 
-	isCharging = false;
-
-	speed = 3.0f;
-	direction = 1;
-
-
-	shotTimer = 0.0f;      // ’Ç‰Á
-	shotInterval = 0.3f;  // 1•b‚²‚Æ (60ƒtƒŒ[ƒ€)
+    isActive = true;
 }
 
 Boss1::Boss1(int sx, int sy)
 {
-	hImage = LoadGraph("data/image/file/chara/boss1.png");
-	x = sx;
-	y = sy;
-	centerX = sx;
-	centerY = sy;
-	hp = 300;
-	isActive = true;
+    hImage = LoadGraph("data/image/file/chara/boss1.png");
+    x = (float)sx;
+    y = (float)sy;
+    centerX = (float)sx;
+    centerY = (float)sy;
 
-	pattern = BossPattern::CIRCLE;
-	moveTimer = 0.0f;
-	patternTimer = 0.0f;
-	patternChangeTime = 300.0f;
+    maxHp = 300;
+    currentHp = maxHp;
+    Phase2Hp = 200;
+    Phase3Hp = 100;
 
-	radius = 100.0f;
-	angle = 0.0f;
-	angularSpeed = 0.02f;
+    bulletPhase = BulletPhase::PHASE_1;
+    previousPhase = BulletPhase::PHASE_1;
 
-	figureEightScale = 100.0f;
+    shotTimer = 0.0f;
+    shotInterval = 60.0f;
 
-	bulletPhase = BulletPhase::PHASE_1;
-	phaseTimer = 0.0f;
-	phaseChangeTime = 15.0f;  // 15•b‚²‚Æ‚ÉƒtƒF[ƒY•ÏX
-	bulletFireTimer = 0.0f;
-	bulletFireInterval = 0.1f; // ˜A‘±”­Ë
-	octagonAngle = 0.0f;
-	chargeTimer = 0.0f;
+    moveDirection = 1.0f;
 
-	isCharging = false;
+    isCharging = false;
+    chargeTimer = 0.0f;
 
-	speed = 3.0f;
-	direction = 1;
-
-	shotTimer = 0.0f;
-	shotInterval = 60.0f;
+    isActive = true;
 }
-
-	
-
 
 Boss1::~Boss1()
 {
-	if (hImage != -1) {
-		DeleteGraph(hImage);
-	}
+    if (hImage != -1) {
+        DeleteGraph(hImage);
+    }
 }
 
 void Boss1::Update()
 {
-	if (!isActive) return;
+    if (!isActive) return;
 
-	moveTimer += 1.0f;
-	patternTimer += 0.4f;
-	phaseTimer += 1.0f;
-	shotTimer += 1.0f;  // šshotTimer‚ğXV
+    // HPãƒ™ãƒ¼ã‚¹ã®ãƒ•ã‚§ãƒ¼ã‚ºãƒã‚§ãƒƒã‚¯
+    CheckPhaseTransition();
 
-	// ˆê’èŠÔ‚Åƒpƒ^[ƒ“•ÏX
-	if (patternTimer >= patternChangeTime) {
-		ChangePattern();
-		patternTimer = 0.0f;
+    // å¼¾ç™ºå°„ã‚¿ã‚¤ãƒãƒ¼æ›´æ–°
+    shotTimer += 1.0f;
 
-	}
+    // å„ãƒ•ã‚§ãƒ¼ã‚ºã®æ›´æ–°
+    switch (bulletPhase) {
+    case BulletPhase::PHASE_1:
+        UpdatePhase1();
+        break;
+    case BulletPhase::PHASE_2:
+        UpdatePhase2();
+        break;
+    case BulletPhase::PHASE_3:
+        UpdatePhase3();
+        break;
+    }
 
-	// ƒpƒ^[ƒ“‚É‰‚¶‚½ˆÚ“®
-	/*switch (pattern) {
-	case BossPattern::CIRCLE:
-		UpdateCircle();
-		break;
-	case BossPattern::FIGURE_EIGHT:
-		UpdateFigureEight();
-		break;
-	case BossPattern::LEFT_RIGHT:
-		UpdateLeftRight();
-		break;
-	}*/
-
-	// ˆê’èŠÔ‚ÅƒtƒF[ƒY•ÏX
-	if (phaseTimer >= phaseChangeTime) {
-		ChangeBulletPhase();
-		phaseTimer = 0.0f;
-	}
-
-	
-
-	// ’e”­Ë
-	if (shotTimer >= shotInterval) {
-		// ƒtƒF[ƒY‚É‰‚¶‚½ˆ—
-		switch (bulletPhase) {
-		case BulletPhase::PHASE_1:
-			UpdatePhase1();
-			break;
-		case BulletPhase::PHASE_2:
-			UpdatePhase2();
-			UpdateLeftRight();
-			break;
-		case BulletPhase::PHASE_3:
-			UpdatePhase3();
-			break;
-		}
-		shotTimer = 0.0f;
-	}
+    // å¼¾ç™ºå°„åˆ¤å®š
+    if (shotTimer >= shotInterval) {
+        switch (bulletPhase) {
+        case BulletPhase::PHASE_1:
+            ShotBullet(45.0f, 8.0f);
+            break;
+        case BulletPhase::PHASE_2:
+            ShotBullet(60.0f, 3.0f);
+            break;
+        case BulletPhase::PHASE_3:
+            if (!isCharging) {
+                ShotBullet(25.0f,5.0f);  // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç‹™ã„
+            }
+            break;
+        }
+        shotTimer = 0.0f;
+    }
 }
 
-//void Boss1::UpdateCircle() {
-//	// ‰~‹O“¹ˆÚ“®
-//	angle += angularSpeed;
-//	if (angle > 2 *DX_PI) {
-//		angle -= 2 *DX_PI;
-//	}
-//
-//	x = centerX + radius * cos(angle);
-//	y = centerY + radius * sin(angle);
-//}
-//
-//void Boss1::UpdateFigureEight() {
-//	// ”ª‚ÌšˆÚ“® (ƒŠƒT[ƒWƒ…‹Èü)
-//	float t = moveTimer * 0.02f;
-//	x = centerX + figureEightScale * sin(t);
-//	y = centerY + figureEightScale * sin(2 * t) / 2;
-//}
+void Boss1::CheckPhaseTransition()
+{
+    previousPhase = bulletPhase;
 
-void Boss1::UpdateLeftRight() {
-	// ¶‰EˆÚ“®
-	x += speed * direction;
+    if (currentHp <= Phase3Hp) {
+        bulletPhase = BulletPhase::PHASE_3;
+    }
+    else if (currentHp <= Phase2Hp) {
+        bulletPhase = BulletPhase::PHASE_2;
+    }
+    else {
+        bulletPhase = BulletPhase::PHASE_1;
+    }
 
-	// ‰æ–Ê’[‚Å”½“]
-	if (x <= 50 || x >= 640 - 64 - 64 - 64) {
-		direction *= -1;
-	}
+    if (bulletPhase != previousPhase) {
+        OnPhaseChanged(GetCurrentPhaseNumber());
+    }
 }
 
-void Boss1::ChangePattern() {
-	// ƒpƒ^[ƒ“•ÏX
-	switch (pattern) {
-	case BossPattern::CIRCLE:
-		pattern = BossPattern::FIGURE_EIGHT;
-		break;
-	case BossPattern::FIGURE_EIGHT:
-		pattern = BossPattern::LEFT_RIGHT;
-		break;
-	case BossPattern::LEFT_RIGHT:
-		pattern = BossPattern::CIRCLE;
-		break;
-	}
+void Boss1::OnPhaseChanged(int newPhase)
+{
+    printfDx("ãƒ•ã‚§ãƒ¼ã‚º %d ã«ç§»è¡Œï¼HP: %d\n", newPhase, currentHp);
 
-	// ’†SÀ•W‚ğ‰ŠúˆÊ’u‚ÉXV
-	centerX = 200;
-	centerY = 100;
-	moveTimer = 0.0f;
-	angle = 0.0f;
+    // ãƒ•ã‚§ãƒ¼ã‚ºã”ã¨ã®åˆæœŸåŒ–
+    switch (bulletPhase) {
+    case BulletPhase::PHASE_1:
+        x = 400.0f;
+        y = 100.0f;
+        shotInterval = 60.0f;
+        break;
+
+    case BulletPhase::PHASE_2:
+        x = 100.0f;
+        y = 100.0f;
+        moveDirection = 2.0f;
+        shotInterval = 60.0f;
+        break;
+
+    case BulletPhase::PHASE_3:
+        x = 400.0f;
+        y = 100.0f;
+        shotInterval = 60.0f;
+        isCharging = false;
+        chargeTimer = 0.0f;
+        break;
+    }
 }
 
-void Boss1::ChangeBulletPhase() {
-	int nextPhase = (static_cast<int>(bulletPhase) + 1) % 3;
-	bulletPhase = static_cast<BulletPhase>(nextPhase);
+void Boss1::UpdatePhase1()
+{
+    // ãƒ•ã‚§ãƒ¼ã‚º1: å›ºå®šä½ç½®
+    x = 400.0f;
+    y = 100.0f;
+}
 
-	octagonAngle = 0.0f;
-	chargeTimer = 0.0f;
-	isCharging = false;
-//	shotTimer = 0.0f;  // šƒŠƒZƒbƒg
+void Boss1::UpdatePhase2()
+{
+    // ãƒ•ã‚§ãƒ¼ã‚º2: å·¦å³ç§»å‹•
+    x += moveDirection;
 
-	// ƒtƒF[ƒY‚²‚Æ‚É”­ËŠÔŠu‚ğ’²®
-	if (bulletPhase == BulletPhase::PHASE_1) {
-		shotInterval =60.0f;  // ˜A‘±”­Ë
-	}
-	else if (bulletPhase == BulletPhase::PHASE_2) {
-		shotInterval = 60.0f;  // ­‚µ’x‚ß
-	}
-	else if (bulletPhase == BulletPhase::PHASE_3) {
-		shotInterval = 60.0f;  // ˜A‘±”­Ë
-	}
+    if (x <= 100.0f) {
+        x = 100.0f;
+        moveDirection = 2.0f;
+    }
+    else if (x >= 700.0f) {
+        x = 700.0f;
+        moveDirection = -2.0f;
+    }
+}
 
-	if (bulletPhase == BulletPhase::PHASE_2 || bulletPhase == BulletPhase::PHASE_3) {
-		x = 100.0f;
-		moveDirection = 60.0f;
-	}
+void Boss1::UpdatePhase3()
+{
+   
+    // ãƒ•ã‚§ãƒ¼ã‚º3: å·¦å³ç§»å‹• + ãƒãƒ£ãƒ¼ã‚¸
+    if (!isCharging) {
+        x += moveDirection;
+
+        if (x <= 100.0f) {
+            x = 100.0f;
+            moveDirection = 2.0f;
+        }
+        else if (x >= 700.0f) {
+            x = 700.0f;
+            moveDirection = -2.0f;
+        }
+
+        chargeTimer += 1.0f;
+        if (chargeTimer >= 180.0f) {  // 3ç§’
+            isCharging = true;
+            chargeTimer = 0.0f;
+        }
+    }
+    else {
+        chargeTimer += 1.0f;
+        if (chargeTimer >= 60.0f) {  // 1ç§’
+            isCharging = false;
+            chargeTimer = 0.0f;
+        }
+    }
 }
 
 void Boss1::ShotBullet(float rad, float num)
 {
-	
-	for (int i = 1;i <= num;i++) {
-		
-		float shotAngle = rad * i * DegToRad;
-		float c1 = cos(shotAngle);
-		float s1 = sin(shotAngle);
-		
-		new enemyBullet((float)x + 32, (float)y + 32, c1 * 5.0f, s1 * 5.0f);
+    for (int i = 0; i < num; i++) {
+        float shotAngle = rad * i * DegToRad;
+        float c1 = cos(shotAngle);
+        float s1 = sin(shotAngle);
 
-	}
-	
+        new enemyBullet(x + 32, y + 32, c1 * 5.0f, s1 * 5.0f);
+    }
 }
 
-bool Boss1::ShouldFireBullet() {
-	// —­‚ß’†‚Í”­Ë‚µ‚È‚¢
-	if (isCharging) {
-		return false;
-	}
+void Boss1::ShootBullet()
+{
+    Player* player = FindGameObject<Player>();
+    if (player == nullptr) return;
 
-	// šshotTimer‚Å”»’è
-	if (shotTimer >= shotInterval) {
-		shotTimer = 0.0f;  // šƒŠƒZƒbƒg
-		return true;
-	}
-	return false;
-}
+    float dx = player->GetX() - x;
+    float dy = player->GetY() - y;
+    float length = sqrt(dx * dx + dy * dy);
 
-void Boss1::UpdatePhase1() {
-	x = 400.0f;
-	y = 100.0f;
-	octagonAngle += 2.0f;
-	shotInterval = 60.0f;  // ˜A‘±”­Ë
-	ShotBullet(45.0f, 8.0f);
-}
+    if (length > 0) {
+        dx /= length;
+        dy /= length;
+    }
 
-void Boss1::UpdatePhase2() {
-	x += horizontalSpeed * moveDirection;
+    float bulletSpeed = 5.0f;
 
-	if (x <= 100.0f) {
-		x = 100.0f;
-		moveDirection = 60.0f;
-	}
-	else if (x >= 700.0f) {
-		x = 700.0f;
-		moveDirection = -60.0f;
-	}
+    // 5-wayå¼¾
+    float angles[] = { 0.0f, 0.3f, -0.3f, 0.5f, -0.5f };
 
-	shotInterval = 60.0f;
-	ShotBullet(270.0f, 5.0f);
-}
+    for (int i = 0; i < 5; i++) {
+        float angle = angles[i];
+        float cosA = cos(angle);
+        float sinA = sin(angle);
+        float newDx = dx * cosA - dy * sinA;
+        float newDy = dx * sinA + dy * cosA;
 
-void Boss1::UpdatePhase3() {
-	if (!isCharging) {
-		x += horizontalSpeed * moveDirection;
-
-		if (x <= 100.0f) {
-			x = 100.0f;
-			moveDirection = 60.0f;
-		}
-		else if (x >= 700.0f) {
-			x = 700.0f;
-			moveDirection = -60.0f;
-		}
-
-		chargeTimer += 60.0f;
-		if (chargeTimer >= 3.0f) {
-			isCharging = true;
-			chargeTimer = 0.0f;
-		}
-	}
-	else {
-		chargeTimer += 60.0f;
-		if (chargeTimer >= 1.0f) {
-			isCharging = false;
-			chargeTimer = 0.0f;
-		}
-	}
-
-	shotInterval = 60.0f;
-}
-
-void Boss1::ShootBullet() {
-	// ƒvƒŒƒCƒ„[‚ğ’T‚·
-	Player* player = FindGameObject<Player>();
-
-	if (player != nullptr) {
-		// ƒvƒŒƒCƒ„[‚Ö‚Ì•ûŒü‚ğŒvZ
-		float dx = player->GetX() - x;
-		float dy = player->GetY() - y;
-		float length = sqrt(dx * dx + dy * dy);
-
-		if (length > 0) {
-			dx /= length;
-			dy /= length;
-		}
-
-		float bulletSpeed = 5.0f;
-
-		// ’†‰›: ƒvƒŒƒCƒ„[‘_‚¢
-		new enemyBullet((float)x + 32, (float)y + 32, dx * bulletSpeed, dy * bulletSpeed,5.0f);
-		
-		// ¶‰E‚É‚Î‚çT‚« (3-way’e)
-		float offsetAngle1 = 0.3f;  // –ñ17“x
-		float offsetAngle2 = -0.3f;
-		float offsetAngle3 = -0.5f;
-		float offsetAngle4 = 0.5f;
-	
-
-		// ‰E‘¤‚Ì’e
-		float cos1 = cos(offsetAngle1);
-		float sin1 = sin(offsetAngle1);
-		float newDx1 = dx * cos1 - dy * sin1;
-		float newDy1 = dx * sin1 + dy * cos1;
-		new enemyBullet((int)x + 32, (int)y + 32, newDx1 * bulletSpeed, newDy1 * bulletSpeed);
-
-		float cos4 = cos(offsetAngle4);
-		float sin4 = sin(offsetAngle4);
-		float newDx4 = dx * cos4 - dy * sin4;
-		float newDy4 = dx * sin4 + dy * cos4;
-		new enemyBullet((int)x + 32, (int)y + 32, newDx4 * bulletSpeed, newDy4 * bulletSpeed);
-
-		// ¶‘¤‚Ì’e
-		float cos2 = cos(offsetAngle2);
-		float sin2 = sin(offsetAngle2);
-		float newDx2 = dx * cos2 - dy * sin2;
-		float newDy2 = dx * sin2 + dy * cos2;
-		new enemyBullet((int)x + 32, (int)y + 32, newDx2 * bulletSpeed, newDy2 * bulletSpeed);
-
-		float cos3 = cos(offsetAngle3);
-		float sin3 = sin(offsetAngle3);
-		float newDx3 = dx * cos3 - dy * sin3;
-		float newDy3 = dx * sin3 + dy * cos3;
-		new enemyBullet((int)x + 32, (int)y + 32, newDx3 * bulletSpeed, newDy3 * bulletSpeed);
-	}
+        new enemyBullet(x + 32, y + 32, newDx * bulletSpeed, newDy * bulletSpeed);
+    }
 }
 
 void Boss1::Draw()
 {
-	if (isActive && hImage != -1) {
-		DrawGraph((int)x, (int)y, hImage, TRUE);
-
-		// HP•\¦
-		DrawFormatString(10, 40, GetColor(255, 0, 0), "Boss HP: %d", hp);
-
-		// ƒfƒoƒbƒO: ƒpƒ^[ƒ“•\¦
-		const char* patternName = "";
-		switch (pattern) {
-		case BossPattern::CIRCLE:
-			patternName = "CIRCLE";
-			break;
-		case BossPattern::FIGURE_EIGHT:
-			patternName = "FIGURE_8";
-			break;
-		case BossPattern::LEFT_RIGHT:
-			patternName = "LEFT_RIGHT";
-			break;
-		}
-		DrawFormatString(10, 60, GetColor(255, 255, 0), "Pattern: %s", patternName);
-	}
+    if (isActive && hImage != -1) {
+        DrawGraph((int)x, (int)y, hImage, TRUE);
+        DrawFormatString(10, 40, GetColor(255, 0, 0), "Boss HP: %d", currentHp);
+    }
 }
 
 void Boss1::TakeDamage(int damage)
 {
-	hp -= damage;
-	if (hp <= 0) {
-		isActive = false;
-	}
+    if (!isActive) return;
+    currentHp -= damage;
+    if (currentHp <= 0) {
+        currentHp = 0;
+        isActive = false;
+    }
 }
 
-bool Boss1::IsHit(float bx,float by,int rad)
+bool Boss1::IsHit(float bx, float by, int rad)
 {
-	float dx = bx - (x + 60);
-	float dy = by - (y + 60);
-	float d = sqrt(dx * dx + dy * dy);
-	if (d < 60 + rad)
-	{
-		//DestroyMe();
-		//deadCounter = 30;//0.5•b
-		TakeDamage(10);
-		return true;
+    float dx = bx - (x + 60);
+    float dy = by - (y + 60);
+    float d = sqrt(dx * dx + dy * dy);
 
-	}
-	return false;
+    if (d < 60 + rad) {
+        TakeDamage(100);
+        return true;
+    }
+    return false;
 }
 
+float Boss1::GetHpPercent() const
+{
+    if (maxHp == 0) return 0.0f;
+    return (float)currentHp / (float)maxHp;
+}
+
+int Boss1::GetCurrentPhaseNumber() const
+{
+    return (int)bulletPhase + 1;
+}

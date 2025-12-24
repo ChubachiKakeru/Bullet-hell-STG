@@ -29,7 +29,9 @@ void enemyBullet::Update() {
     // “G’e“Á—L‚Ìˆ—‚ª‚ ‚ê‚Î‚±‚±‚É’Ç‰Á
     // —áF‰æ–ÊŠO”»’è
     if (y > Screen::HEIGHT) {  // ‰æ–Ê‰º’[
-        DestroyMe();
+        if(x > Screen::WIDTH || x < 0) {
+            DestroyMe();
+		}
     }
 }
 

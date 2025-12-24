@@ -91,8 +91,8 @@ void PlayScene::CheckCollisions() {
                 bullet->GetCenterX(),
                 bullet->GetCenterY(),
                 bullet->GetSize(),
-                boss.GetCenterX(),
-                boss.GetCenterY(),
+                boss.GetX(),
+                boss.GetY(),
                 boss.GetSize()
             )) {
                 bullet->Hit();
@@ -153,8 +153,8 @@ void PlayScene::FireBoss1Bullet()
 {
     // ボスの弾を生成
     Bullet* newBullet = new Bullet(
-        boss.GetCenterX(),    // 開始X座標
-        boss.GetCenterY(),    // 開始Y座標
+        boss.GetX(),    // 開始X座標
+        boss.GetY(),    // 開始Y座標
         0.0f,                 // X方向の速度
         5.0f,                 // Y方向の速度（下向き）
         5.0f                  // 弾のサイズ（半径）

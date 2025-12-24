@@ -1,110 +1,142 @@
-#pragma once
+ï»¿#pragma once
 #include"Field.h"
+#include "../Library/GameObject.h"
+
+#pragma once
+#include "Field.h"
 #include "../Library/GameObject.h"
 
 class Player;
 class Bulett;
 
-enum class BossPattern {
-	CIRCLE,       // ‰~‹O“¹
-	FIGURE_EIGHT, // ”ª‚Ìš
-	LEFT_RIGHT    // ¶‰EˆÚ“®
-};
+// ========================================
+// åˆ—æŒ™å‹
+// ========================================
 
-// ’e–‹ƒtƒF[ƒY‚Ì—ñ‹“Œ^
+// å¼¾å¹•ãƒ•ã‚§ãƒ¼ã‚º
 enum class BulletPhase {
-    PHASE_1,    // 1’iŠK–ÚF”ªŠpŒ`‚ÌŠp‚©‚ç˜A‘±”­Ë
-    PHASE_2,    // 2’iŠK–ÚFîŒ`ƒCƒ[ƒW + ¶‰EˆÚ“®
-    PHASE_3     // 3’iŠK–ÚF2’iŠK–Ú‚Æ“¯‚¶ + 1•b—­‚ß
+    PHASE_1,    // ãƒ•ã‚§ãƒ¼ã‚º1ï¼š8æ–¹å‘å¼¾
+    PHASE_2,    // ãƒ•ã‚§ãƒ¼ã‚º2ï¼šå·¦å³ç§»å‹• + å¼¾å¹•
+    PHASE_3     // ãƒ•ã‚§ãƒ¼ã‚º3ï¼šå·¦å³ç§»å‹• + ãƒãƒ£ãƒ¼ã‚¸ + ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç‹™ã„
 };
 
-class Boss1 : public GameObject
-{
+// ========================================
+// Boss1ã‚¯ãƒ©ã‚¹
+// ========================================
+class Boss1 : public GameObject {
 public:
-	Boss1();
-	Boss1(int sx, int sy);
-	~Boss1();
-	void Update()override;
-	void Draw() override;
+    // ========================================
+    // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ»ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+    // ========================================
+    Boss1();
+    Boss1(int sx, int sy);
+    ~Boss1();
 
-	int GetHP() const { return hp; }
-	void TakeDamage(int damage);
-    bool IsHit (float bx, float by, int rad);
-	bool IsAlive() const { return isActive; }
+    // ========================================
+    // åŸºæœ¬ãƒ¡ã‚½ãƒƒãƒ‰
+    // ========================================
+    void Update() override;
+    void Draw() override;
 
-    BulletPhase GetBulletPhase() const;
-    bool IsCharging() const;
+    // ========================================
+    // HPé–¢é€£
+    // ========================================
+    void TakeDamage(int damage);
+    bool IsAlive() const { return currentHp > 0; }
+    int GetCurrentHp() const { return currentHp; }
+    int GetMaxHp() const { return maxHp; }
+    float GetHpPercent() const;
 
+    // ========================================
+    // å½“ãŸã‚Šåˆ¤å®š
+    // ========================================
+    bool IsHit(float bx, float by, int rad);
+
+    // ========================================
+    // ä½ç½®å–å¾—
+    // ========================================
     float GetX() const { return x; }
     float GetY() const { return y; }
-    float GetCenterX() const { return x; }
-    float GetCenterY() const { return y; }
     float GetSize() const { return size; }
-    void ShotBullet(float rad, float num);
 
-    bool ShouldFireBullet();
+    // ========================================
+    // ãƒ•ã‚§ãƒ¼ã‚ºé–¢é€£
+    // ========================================
+    BulletPhase GetBulletPhase() const { return bulletPhase; }
+    int GetCurrentPhaseNumber() const;
+    bool IsCharging() const { return isCharging; }
+
+    // ========================================
+    // å¼¾ç™ºå°„
+    // ========================================
+    void ShotBullet(float rad, float num);
+    void ShootBullet();  // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç‹™ã„å¼¾
 
 private:
-	int hImage;
-	float x, y;
+    // ========================================
+    // å®šæ•°
+    // ========================================
+    static constexpr float DegToRad = 3.14159265f / 180.0f;
+    static constexpr float PI = 3.14159265f;
+
+    // ========================================
+    // ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯
+    // ========================================
+    int hImage;
+
+    // ========================================
+    // ä½ç½®
+    // ========================================
+    float x, y;
     float centerX, centerY;
-    int hp;
-    bool isActive;
     float size;
 
-    // ”»’èƒTƒCƒY
-    float rectWidth;
-    float rectHeight;
-    float circleRadius;
+    // ========================================
+    // HPç®¡ç†
+    // ========================================
+    int maxHp;          // æœ€å¤§HP
+    int currentHp;      // ç¾åœ¨ã®HP
+    int Phase2Hp;       // ãƒ•ã‚§ãƒ¼ã‚º2ã«ç§»è¡Œã™ã‚‹HPé–¾å€¤
+    int Phase3Hp;       // ãƒ•ã‚§ãƒ¼ã‚º3ã«ç§»è¡Œã™ã‚‹HPé–¾å€¤
 
-    // ˆÚ“®ƒpƒ^[ƒ“ŠÖ˜A
-    BossPattern pattern;
-    float moveTimer;
-    float patternChangeTime;
-    float patternTimer;
+    // ========================================
+    // ãƒ•ã‚§ãƒ¼ã‚ºç®¡ç†
+    // ========================================
+    BulletPhase bulletPhase;      // ç¾åœ¨ã®ãƒ•ã‚§ãƒ¼ã‚º
+    BulletPhase previousPhase;    // å‰å›ã®ãƒ•ã‚§ãƒ¼ã‚ºï¼ˆå¤‰åŒ–æ¤œçŸ¥ç”¨ï¼‰
 
-    // ’e–‹ƒtƒF[ƒYŠÖ˜A
-    BulletPhase bulletPhase;
-    float phaseTimer;
-    float phaseChangeTime;
-    float bulletFireTimer;
-    float bulletFireInterval;
+    // ========================================
+    // å¼¾ç™ºå°„ç®¡ç†
+    // ========================================
+    float shotTimer;        // å¼¾ç™ºå°„ã‚¿ã‚¤ãƒãƒ¼
+    float shotInterval;     // å¼¾ç™ºå°„é–“éš”
 
-    // ‰~‹O“¹—p
-    float radius;
-    float angle;
-    float angularSpeed;
+    // ========================================
+    // ç§»å‹•ç®¡ç†ï¼ˆãƒ•ã‚§ãƒ¼ã‚º2,3ç”¨ï¼‰
+    // ========================================
+    float moveDirection;    // ç§»å‹•é€Ÿåº¦å…¼æ–¹å‘
 
-    // ”ª‚Ìš—p
-    float figureEightScale;
+    // ========================================
+    // ãƒãƒ£ãƒ¼ã‚¸ç®¡ç†ï¼ˆãƒ•ã‚§ãƒ¼ã‚º3ç”¨ï¼‰
+    // ========================================
+    bool isCharging;        // ãƒãƒ£ãƒ¼ã‚¸ä¸­ãƒ•ãƒ©ã‚°
+    float chargeTimer;      // ãƒãƒ£ãƒ¼ã‚¸ã‚¿ã‚¤ãƒãƒ¼
 
-    // ¶‰EˆÚ“®—p
-    float speed;
-    int direction;
+    // ========================================
+    // çŠ¶æ…‹ãƒ•ãƒ©ã‚°
+    // ========================================
+    bool isActive;
 
-    // ƒtƒF[ƒYŒÅ—L‚Ì•Ï”
-    float octagonAngle;      // ”ªŠpŒ`‚ÌŠp“x
-    float horizontalSpeed;   // ¶‰EˆÚ“®‘¬“x
-    float moveDirection;     // ˆÚ“®•ûŒüi1: ‰E, -1: ¶j
-    float chargeTimer;       // —­‚ßŠÔ
-    bool isCharging;         // —­‚ß’†ƒtƒ‰ƒO
+    // ========================================
+    // éå…¬é–‹ãƒ¡ã‚½ãƒƒãƒ‰
+    // ========================================
 
-    // ’e”­ËŠÖ˜A
-    float shotTimer;
-    float shotInterval;
+    // ãƒ•ã‚§ãƒ¼ã‚ºç®¡ç†
+    void CheckPhaseTransition();              // HPãƒ™ãƒ¼ã‚¹ã§ãƒ•ã‚§ãƒ¼ã‚ºã‚’ãƒã‚§ãƒƒã‚¯
+    void OnPhaseChanged(int newPhase);        // ãƒ•ã‚§ãƒ¼ã‚ºå¤‰æ›´æ™‚ã®å‡¦ç†
 
-    void UpdateCircle();
-    void UpdateFigureEight();
-    void UpdateLeftRight();
-    void ChangePattern();
-    void ShootBullet();
-
-    // ƒtƒF[ƒYXVŠÖ”
-    void UpdatePhase1();
-    void UpdatePhase2();
-    void UpdatePhase3();
-
-    // ƒtƒF[ƒY•ÏX
-    void ChangeBulletPhase();
+    // ãƒ•ã‚§ãƒ¼ã‚ºåˆ¥æ›´æ–°
+    void UpdatePhase1();                      // ãƒ•ã‚§ãƒ¼ã‚º1ã®æ›´æ–°
+    void UpdatePhase2();                      // ãƒ•ã‚§ãƒ¼ã‚º2ã®æ›´æ–°
+    void UpdatePhase3();                      // ãƒ•ã‚§ãƒ¼ã‚º3ã®æ›´æ–°
 };
-
