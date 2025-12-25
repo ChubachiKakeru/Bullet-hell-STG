@@ -1,163 +1,50 @@
 #include "PlayScene.h"
-#include"Player.h"
-#include"Field.h"
-#include"Boss1.h"
-#include"BackGround.h"
-//#include"CollisionManager.h"
-#include"Bullet.h"
-#include"zako1.h"
-#include"Collision.h"
-#include<vector>
-#include"Boss2.h"
+#include "Player.h"
+#include "Field.h"
+#include "Boss1.h"
+#include "BackGround.h"
+#include "Bullet.h"
+#include "zako1.h"
+#include "Boss2.h"
 
+// ========================================
+// コンストラクタ / デストラクタ
+// ========================================
 PlayScene::PlayScene()
 {
     new BackGround();
     new Field();
-
-    //new Boss1();
     new zako1();
     new Boss2();
 }
 
 PlayScene::~PlayScene()
 {
-    // プレイヤーの弾を全て削除
-    for (auto* bullet : playerBullets) {
-        delete bullet;
-    }
-    playerBullets.clear();
-
-    // ボスの弾を全て削除
-    for (auto* bullet : bossBullets) {
-        delete bullet;
-    }
-    bossBullets.clear();
+    // 弾の削除は各Bulletクラスのデストラクタで処理される想定
 }
 
+// ========================================
+// 更新処理
+// ========================================
 void PlayScene::Update()
 {
-	if (CheckHitKey(KEY_INPUT_T)) {
-		SceneManager::ChangeScene("TITLE");
-	}
-    //// プレイヤーの弾を更新
-    //for (Bullet* bullet : playerBullets) {
-    //    bullet->Update();
-    //}
-      // 各オブジェクトの更新
-    player.Update();
-    boss.Update();
-
-    // プレイヤーの弾を更新
-    for (Bullet* bullet : playerBullets) {
-        bullet->Update();
+    // タイトルへの遷移
+    if (CheckHitKey(KEY_INPUT_T)) {
+        SceneManager::ChangeScene("TITLE");
     }
 
-    // ボスの弾を更新
-    for (Bullet* bullet : bossBullets) {
-        bullet->Update();
-    }
-
-    //// 当たり判定
-    //CheckCollisions();
-
-    //// 死んだ弾を削除
-    //RemoveDeadBullets(playerBullets);
-    //RemoveDeadBullets(bossBullets);
+    // 注意: GameObjectシステムで各オブジェクトのUpdate()が自動的に呼ばれる想定
+    // Player, Boss1, Boss2, zako1, playerBullet, enemyBullet等は
+    // GameObjectManagerによって更新される
 }
 
-void PlayScene::CheckCollisions() {
-    // ボスの弾 vs プレイヤー
-    for (Bullet* bullet : bossBullets) {
-        if (bullet->IsAlive() && player.IsAlive()) {
-            if (Collision::MyCircleCheck(
-                bullet->GetCenterX(),
-                bullet->GetCenterY(),
-                bullet->GetSize(),
-                player.GetCenterX(),
-                player.GetCenterY(),
-                player.GetSize()
-            )) {
-                bullet->Hit();
-                player.TakeDamage(10);
-            }
-        }
-    }
-
-    // プレイヤーの弾 vs ボス
-    for (Bullet* bullet : playerBullets) {
-        if (bullet->IsAlive() && boss.IsAlive()) {
-            if (Collision::MyCircleCheck(
-                bullet->GetCenterX(),
-                bullet->GetCenterY(),
-                bullet->GetSize(),
-                boss.GetX(),
-                boss.GetY(),
-                boss.GetSize()
-            )) {
-                bullet->Hit();
-                boss.TakeDamage(20);
-            }
-        }
-    }
-}
-
-void PlayScene::RemoveDeadBullets(std::vector<Bullet*>& bullets)
-{
-    auto it = bullets.begin();
-    while (it != bullets.end()) {
-        if (!(*it)->IsAlive()) {
-            delete* it;  // メモリ解放
-            it = bullets.erase(it);  // vectorから削除
-        }
-        else {
-            ++it;
-        }
-    }
-}
-
+// ========================================
+// 描画処理
+// ========================================
 void PlayScene::Draw()
 {
-	DrawString(0, 0, "PLAY SCENE", GetColor(255, 255, 255));
-	DrawString(100, 400, "Push [T]Key To Title", GetColor(255, 255, 255));
-    // プレイヤーとボスを描画
-    player.Draw();
-    boss.Draw();
+    DrawString(0, 0, "PLAY SCENE", GetColor(255, 255, 255));
+    DrawString(100, 400, "Push [T]Key To Title", GetColor(255, 255, 255));
 
-    // プレイヤーの弾を描画
-    for (Bullet* bullet : playerBullets) {
-        bullet->Draw();
-    }
-
-    // ボスの弾を描画
-    for (Bullet* bullet : bossBullets) {
-        bullet->Draw();
-    }
+    // 注意: GameObjectシステムで各オブジェクトのDraw()が自動的に呼ばれる想定
 }
-
-void PlayScene::FirePlayerBullet()
-{
-    // プレイヤーの弾を生成
-    Bullet* newBullet = new Bullet(
-        player.GetCenterX(),  // 開始X座標
-        player.GetCenterY(),  // 開始Y座標
-        0.0f,                 // X方向の速度
-        -10.0f,               // Y方向の速度（上向き）
-        6.0f                  // 弾のサイズ（半径）
-    );
-
-    playerBullets.push_back(newBullet);
-}
-
-void PlayScene::FireBoss1Bullet()
-{
-    // ボスの弾を生成
-    Bullet* newBullet = new Bullet(
-        boss.GetX(),    // 開始X座標
-        boss.GetY(),    // 開始Y座標
-        0.0f,                 // X方向の速度
-        5.0f,                 // Y方向の速度（下向き）
-        5.0f                  // 弾のサイズ（半径）
-    );
-}
-
