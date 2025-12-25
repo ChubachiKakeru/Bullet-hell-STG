@@ -160,6 +160,7 @@
     <ClInclude Include="Source\Collision.h" />
     <ClInclude Include="Source\Common.h" />
     <ClInclude Include="Source\enemyBullet.h" />
+    <ClInclude Include="Source\EnemyManager.h" />
     <ClInclude Include="Source\Field.h" />
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\playerBullet.h" />
@@ -191,6 +192,7 @@
     <ClCompile Include="Source\Collision.cpp" />
     <ClCompile Include="Source\Common.cpp" />
     <ClCompile Include="Source\enemyBullet.cpp" />
+    <ClCompile Include="Source\EnemyManager.cpp" />
     <ClCompile Include="Source\Field.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\playerBullet.cpp" />

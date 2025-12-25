@@ -95,11 +95,11 @@ void Boss1::Update()
             ShotBullet(45.0f, 8.0f);
             break;
         case BulletPhase::PHASE_2:
-            ShotBullet(60.0f, 3.0f);
+            ShotBullet(30.0f, 3.0f);
             break;
         case BulletPhase::PHASE_3:
             if (!isCharging) {
-                ShotBullet(25.0f,5.0f);  // プレイヤー狙い
+                ShotBullet(25.0f,5.0f);  
             }
             break;
         }
@@ -208,10 +208,11 @@ void Boss1::UpdatePhase3()
     }
 }
 
-void Boss1::ShotBullet(float rad, float num)
+void Boss1::ShotBullet(float angle, float num)
 {
+    
     for (int i = 0; i < num; i++) {
-        float shotAngle = rad * i * DegToRad;
+        float shotAngle = angle * i * DegToRad;
         float c1 = cos(shotAngle);
         float s1 = sin(shotAngle);
 

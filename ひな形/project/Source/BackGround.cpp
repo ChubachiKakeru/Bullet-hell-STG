@@ -29,7 +29,8 @@ BackGround::~BackGround() {
 
 void BackGround::Update() {
      //ゆっくりスクロール
-    scrollY += scrollSpeed;
+    totalscrollY += scrollSpeed;
+	scrollY += scrollSpeed;
 
      //背景画像の高さを超えたらループ
     int bgHeight = 1000;
