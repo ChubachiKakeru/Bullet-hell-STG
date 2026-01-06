@@ -22,8 +22,8 @@ namespace {
 Player::Player() : GameObject()
 {
     hImage = LoadGraph("data/image/file/chara/player.png");
-    x = 200;
-    y = 500;
+    x = 300;
+    y = 900;
     velocity = 0;
     onGround = false;
     shotTimer = 0.0f;
@@ -136,9 +136,6 @@ void Player::Update()
         shotTimer = 0.0f;
     }
 
-	if (hImage != -1) {
-		DeleteGraph(hImage);
-	}
 }
 
 
@@ -160,8 +157,7 @@ void Player::Draw()
 {
 
     DrawGraph(x, y, hImage, TRUE);
-	Field* field = FindGameObject<Field>();
-	DrawGraph(x , y, hImage, 1);
+    Field* field = FindGameObject<Field>();
 }
 
 

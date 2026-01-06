@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include"Field.h"
-#include "../Library/GameObject.h"
+#include"Enemy.h"
 
 class Player;
 class Bulett;
@@ -24,7 +24,7 @@ enum class BossPattern {
 };
 
 
-class Boss1 : public GameObject {
+class Boss1 : public Enemy {
 public:
     // ========================================
     // コンストラクタ・デストラクタ
@@ -36,8 +36,8 @@ public:
     // ========================================
     // 基本メソッド
     // ========================================
-    void Update() override;
-    void Draw() override;
+    void Update();
+    void Draw();
 
     // ========================================
     // HP関連

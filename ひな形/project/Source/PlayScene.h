@@ -21,8 +21,7 @@ public:
     void FireBoss1Bullet();
 
 private:
-    Player player;
-    Boss1 boss;
+    
     std::vector<Bullet*> playerBullets;
     std::vector<Bullet*> bossBullets;
 

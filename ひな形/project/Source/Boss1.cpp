@@ -4,10 +4,10 @@
 #include "Player.h"
 #include <cmath>
 
-Boss1::Boss1() : GameObject()
+Boss1::Boss1() : Enemy()
 {
     hImage = LoadGraph("data/image/file/chara/boss1.png");
-    x = 300.0f;
+    x = 200.0f;
     y = 200.0f;
     centerX = 300.0f;
     centerY = 200.0f;
@@ -158,7 +158,7 @@ void Boss1::OnPhaseChanged(int newPhase)
 void Boss1::UpdatePhase1()
 {
     // フェーズ1: 固定位置
-    x = 400.0f;
+    x = 300.0f;
     y = 100.0f;
 }
 
@@ -179,19 +179,20 @@ void Boss1::UpdatePhase2()
 
 void Boss1::UpdatePhase3()
 {
-    // フェーズ3: 左右移動 + チャージ
+    // フェーズ3: 左右移動（チャージ中も継続）
+    x += moveDirection;
+
+    if (x <= 100.0f) {
+        x = 100.0f;
+        moveDirection = 2.0f;
+    }
+    else if (x >= 700.0f) {
+        x = 700.0f;
+        moveDirection = -2.0f;
+    }
+
+    // チャージタイマー管理
     if (!isCharging) {
-        x += moveDirection;
-
-        if (x <= 100.0f) {
-            x = 100.0f;
-            moveDirection = 2.0f;
-        }
-        else if (x >= 700.0f) {
-            x = 700.0f;
-            moveDirection = -2.0f;
-        }
-
         chargeTimer += 1.0f;
         if (chargeTimer >= 180.0f) {  // 3秒
             isCharging = true;
@@ -209,13 +210,56 @@ void Boss1::UpdatePhase3()
 
 void Boss1::ShotBullet(float angle, float num)
 {
-    for (int i = 0; i < num; i++) {
-        float shotAngle = angle * i * DegToRad;
-        float c1 = cos(shotAngle);
-        float s1 = sin(shotAngle);
+    // フェーズ1の場合は全方位放射状 + 真下だけ自機狙い
+    if (bulletPhase == BulletPhase::PHASE_1) {
+        float angleStep = 360.0f / num;
+        Player* player = FindGameObject<Player>();
 
-        new enemyBullet(x + 32, y + 32, c1 * 5.0f, s1 * 5.0f);
+        for (int i = 0; i < num; i++) {
+            float shotAngle = (angleStep * i) * DegToRad;
+
+            // 真下方向（90度付近）かチェック
+            float angleDeg = angleStep * i;
+            bool isDownward = (angleDeg >= 67.5f && angleDeg <= 112.5f); // 90度±22.5度
+
+            if (isDownward && player != nullptr) {
+                // 真下の弾は自機狙い
+                float dx = player->GetX() - x;
+                float dy = player->GetY() - y;
+                float length = sqrt(dx * dx + dy * dy);
+
+                if (length > 0) {
+                    dx /= length;
+                    dy /= length;
+                }
+
+                new enemyBullet(x + 32, y + 32, dx * 10.0f, dy * 10.0f);
+            }
+            else {
+                // その他の方向は通常の放射状
+                float c1 = cos(shotAngle);
+                float s1 = sin(shotAngle);
+                new enemyBullet(x + 32, y + 32, c1 * 5.0f, s1 * 5.0f);
+            }
+        }
     }
+    // フェーズ2とフェーズ3は真下に広がる弾幕
+    else {
+        float baseAngle = 90.0f * DegToRad; // 真下の角度(ラジアン)
+        float spreadAngle = angle * DegToRad; // 広がり角度
+
+        for (int i = 0; i < num; i++) {
+            // 中央から左右に広がるように計算
+            float offset = (i - (num - 1) / 2.0f) * spreadAngle;
+            float shotAngle = baseAngle + offset;
+
+            float c1 = cos(shotAngle);
+            float s1 = sin(shotAngle);
+
+            new enemyBullet(x + 32, y + 32, c1 * 5.0f, s1 * 5.0f);
+        }
+    }
+
 }
 
 void Boss1::ShootBullet()

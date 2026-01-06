@@ -192,6 +192,7 @@
     <ClCompile Include="Source\Bullet.cpp" />
     <ClCompile Include="Source\Collision.cpp" />
     <ClCompile Include="Source\Common.cpp" />
+    <ClCompile Include="Source\Enemy.cpp" />
     <ClCompile Include="Source\enemyBullet.cpp" />
     <ClCompile Include="Source\EnemyManager.cpp" />
     <ClCompile Include="Source\Field.cpp" />
