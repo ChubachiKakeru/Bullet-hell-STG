@@ -135,7 +135,12 @@ void Player::Update()
         ShootBullet();
         shotTimer = 0.0f;
     }
+
+	if (hImage != -1) {
+		DeleteGraph(hImage);
+	}
 }
+
 
 // ========================================
 // íeî≠éÀèàóù
@@ -153,5 +158,10 @@ void Player::ShootBullet()
 // ========================================
 void Player::Draw()
 {
+
     DrawGraph(x, y, hImage, TRUE);
+	Field* field = FindGameObject<Field>();
+	DrawGraph(x , y, hImage, 1);
 }
+
+

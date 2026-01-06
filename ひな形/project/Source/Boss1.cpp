@@ -99,7 +99,7 @@ void Boss1::Update()
             break;
         case BulletPhase::PHASE_3:
             if (!isCharging) {
-                ShotBullet(25.0f,5.0f);  
+                ShotBullet(25.0f, 5.0f);
             }
             break;
         }
@@ -179,7 +179,6 @@ void Boss1::UpdatePhase2()
 
 void Boss1::UpdatePhase3()
 {
-   
     // フェーズ3: 左右移動 + チャージ
     if (!isCharging) {
         x += moveDirection;
@@ -210,7 +209,6 @@ void Boss1::UpdatePhase3()
 
 void Boss1::ShotBullet(float angle, float num)
 {
-    
     for (int i = 0; i < num; i++) {
         float shotAngle = angle * i * DegToRad;
         float c1 = cos(shotAngle);

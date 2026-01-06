@@ -18,4 +18,8 @@ void Common::Draw()
 	//ImGui::InputInt("StageNumber", &stageNumber);
 	//ImGui::Checkbox("noDead", &noDead);
 	//ImGui::End();
+	ImGui::Begin("Common");
+	ImGui::InputInt("StageNumber", &stageNumber);
+	ImGui::Checkbox("noDead", &noDead);
+	ImGui::End();
 }

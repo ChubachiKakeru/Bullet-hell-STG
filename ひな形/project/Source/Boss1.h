@@ -2,10 +2,6 @@
 #include"Field.h"
 #include "../Library/GameObject.h"
 
-#pragma once
-#include "Field.h"
-#include "../Library/GameObject.h"
-
 class Player;
 class Bulett;
 
@@ -20,9 +16,14 @@ enum class BulletPhase {
     PHASE_3     // フェーズ3：左右移動 + チャージ + プレイヤー狙い
 };
 
-// ========================================
-// Boss1クラス
-// ========================================
+
+enum class BossPattern {
+	CIRCLE,       // �~�O��
+	FIGURE_EIGHT, // ���̎�
+	LEFT_RIGHT    // ���E�ړ�
+};
+
+
 class Boss1 : public GameObject {
 public:
     // ========================================

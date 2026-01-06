@@ -10,6 +10,7 @@
 #include "SceneManager.h"
 #include "Time.h"
 
+
 /// <summary>
 /// これを継承したクラスのインスタンスは、ObjectManagerで管理され、
 /// Update()とDraw()が自動で呼ばれます
@@ -93,6 +94,8 @@ private:
 	bool destroy;
 	bool dontDestroy;
 	int drawOrder;
+	int hImage;
+	float x, y;
 };
 
 // 旧バージョンとの互換性のため残しています。
