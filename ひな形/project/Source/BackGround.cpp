@@ -22,55 +22,69 @@ BackGround::BackGround(float offX, float offY) : GameObject() {
 }
 
 BackGround::~BackGround() {
-   if (hImage != -1) {
+    if (hImage != -1) {
         DeleteGraph(hImage);
+    }
+    if (hImage2 != -1 && hImage2 != hImage) {
+        DeleteGraph(hImage2);
     }
 }
 
 void BackGround::Update() {
-     //ゆっくりスクロール
-    totalscrollY += scrollSpeed;
-	scrollY += scrollSpeed;
+    // スクロール更新
+    scrollY += scrollSpeed;
 
-     //背景画像の高さを超えたらループ
-    int bgHeight = 1000;
-   // GetGraphSize(hImage, nullptr, &bgHeight);
-
+    // 背景画像の高さを超えたらリセット
+    int bgHeight = 960;
     if (scrollY >= bgHeight) {
         scrollY -= bgHeight;
-        int temp = hImage;
-        hImage = hImage2;
-        hImage2 = temp;
     }
 }
 
 void BackGround::Draw() {
-    if (hImage != -1) {
-        int bgHeight = 1000;
-       
-        int drawY1 = -(int)scrollY + (int)offsetY;
-        int drawY2 = drawY1 + bgHeight;
+    if (hImage == -1) return;
 
-        // 1枚目
-        DrawExtendGraph(
-            (int)offsetX,           // 左上X
-            drawY1,                 // 左上Y
-            (int)offsetX + 840,     // 右下X（画面幅）
-            drawY1 + 1000,           // 右下Y（画面高さ）
-            hImage,
-            TRUE
-        );
+    int bgHeight = 960;
+    int screenWidth = 840;
+    int screenHeight = 960;
 
-        // 2枚目（ループ用）
+    // スクロール位置を計算
+    int drawY1 = (int)offsetY - (int)scrollY;
+    int drawY2 = drawY1 + bgHeight;
+
+    // 1枚目の背景
+    DrawExtendGraph(
+        (int)offsetX,
+        drawY1,
+        (int)offsetX + screenWidth,
+        drawY1 + bgHeight,
+        hImage,
+        TRUE
+    );
+
+    // 2枚目の背景（シームレスループ用）
+    // 1枚目が画面外に出たら2枚目を表示
+    if (drawY1 + bgHeight < screenHeight) {
         DrawExtendGraph(
             (int)offsetX,
             drawY2,
-            (int)offsetX + 840,
-            drawY2 + 1000,
-            hImage2,
+            (int)offsetX + screenWidth,
+            drawY2 + bgHeight,
+            hImage,  // 同じ画像を使う
             TRUE
         );
     }
-    
+
+    // 上にスクロールする場合も考慮（念のため）
+    if (drawY1 > 0) {
+        DrawExtendGraph(
+            (int)offsetX,
+            drawY1 - bgHeight,
+            (int)offsetX + screenWidth,
+            drawY1,
+            hImage,
+            TRUE
+        );
+    }
 }
 

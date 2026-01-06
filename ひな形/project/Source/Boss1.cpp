@@ -133,21 +133,21 @@ void Boss1::OnPhaseChanged(int newPhase)
     // フェーズごとの初期化
     switch (bulletPhase) {
     case BulletPhase::PHASE_1:
-        x = 400.0f;
-        y = 100.0f;
+        x = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f - 60.0f;
+        y = Field::STAGE_TOP + 20.0f;
         shotInterval = 60.0f;
         break;
 
     case BulletPhase::PHASE_2:
-        x = 100.0f;
-        y = 100.0f;
+        x = Field::STAGE_LEFT + 50.0f;
+        y = Field::STAGE_TOP + 20.0f;
         moveDirection = 2.0f;
         shotInterval = 60.0f;
         break;
 
     case BulletPhase::PHASE_3:
-        x = 400.0f;
-        y = 100.0f;
+        x = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f - 60.0f;
+        y = Field::STAGE_TOP + 20.0f;
         shotInterval = 60.0f;
         isCharging = false;
         chargeTimer = 0.0f;
@@ -157,37 +157,39 @@ void Boss1::OnPhaseChanged(int newPhase)
 
 void Boss1::UpdatePhase1()
 {
-    // フェーズ1: 固定位置
-    x = 300.0f;
-    y = 100.0f;
+    // フェーズ1: 固定位置（ステージ中央上部）
+    x = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f - 60.0f;  // 中央に配置
+    y = Field::STAGE_TOP + 20.0f;  // 上部に配置
 }
 
 void Boss1::UpdatePhase2()
 {
-    // フェーズ2: 左右移動
+    // フェーズ2: 左右移動（ステージ範囲内）
     x += moveDirection;
 
-    if (x <= 100.0f) {
-        x = 100.0f;
+    // ボスの画像サイズ（120px程度）を考慮して範囲制限
+    if (x <= Field::STAGE_LEFT + 10.0f) {
+        x = Field::STAGE_LEFT + 10.0f;
         moveDirection = 2.0f;
     }
-    else if (x >= 700.0f) {
-        x = 700.0f;
+    else if (x >= Field::STAGE_RIGHT - 130.0f) {  // 画像幅を考慮
+        x = Field::STAGE_RIGHT - 130.0f;
         moveDirection = -2.0f;
     }
 }
 
 void Boss1::UpdatePhase3()
 {
-    // フェーズ3: 左右移動（チャージ中も継続）
+    // フェーズ3: 左右移動（チャージ中も継続、ステージ範囲内）
     x += moveDirection;
 
-    if (x <= 100.0f) {
-        x = 100.0f;
+    // ボスの画像サイズを考慮して範囲制限
+    if (x <= Field::STAGE_LEFT + 10.0f) {
+        x = Field::STAGE_LEFT + 10.0f;
         moveDirection = 2.0f;
     }
-    else if (x >= 700.0f) {
-        x = 700.0f;
+    else if (x >= Field::STAGE_RIGHT - 130.0f) {
+        x = Field::STAGE_RIGHT - 130.0f;
         moveDirection = -2.0f;
     }
 

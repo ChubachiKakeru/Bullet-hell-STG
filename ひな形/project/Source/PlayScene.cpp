@@ -6,18 +6,17 @@
 #include "Bullet.h"
 #include "zako1.h"
 #include "Boss2.h"
+#include"EnemyManager.h"
 
 // ========================================
 // コンストラクタ / デストラクタ
 // ========================================
 PlayScene::PlayScene()
 { 
-    new BackGround();
-    new Player();
+    BackGround* bg = new BackGround();
     new Field();
-	new Boss1();
-    new zako1();
-    new Boss2();
+    new Player();
+    new EnemyManager(bg);  // BackGroundを渡してEnemyManager生成
   
 }
 
@@ -48,6 +47,17 @@ void PlayScene::Draw()
 {
     DrawString(0, 0, "PLAY SCENE", GetColor(255, 255, 255));
     DrawString(100, 400, "Push [T]Key To Title", GetColor(255, 255, 255));
+    // デバッグ情報
+    BackGround* bg = FindGameObject<BackGround>();
+    EnemyManager* em = FindGameObject<EnemyManager>();
+
+    if (bg) {
+        DrawFormatString(10, 60, GetColor(255, 255, 0), "Scroll: %.1f", bg->GetscrollY());
+    }
+
+    if (em) {
+        DrawFormatString(10, 80, GetColor(255, 255, 0), "Enemy Count: %d", em->GetEnemyCount());
+    }
 
     // 注意: GameObjectシステムで各オブジェクトのDraw()が自動的に呼ばれる想定
 }

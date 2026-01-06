@@ -7,7 +7,7 @@
 // 定数定義
 // ========================================
 namespace {
-    constexpr float MOVE_SPEED = 5.0f;
+    constexpr float MOVE_SPEED = 7.0f;
     constexpr float SHOT_COOLDOWN = 100.0f;
     constexpr int INITIAL_HP = 100;
     constexpr float PLAYER_COLLISION_RADIUS = 30.0f;
@@ -86,11 +86,15 @@ void Player::Update()
     Field* field = FindGameObject<Field>();
     if (!field) return;
 
+    // 移動前の座標を保存
+    float prevX = x;
+    float prevY = y;
+
     // 右移動 (Dキー)
     if (CheckHitKey(KEY_INPUT_D)) {
         x += MOVE_SPEED;
-        int push1 = field->HitCheckRight(x + 50, y + 5);
-        int push2 = field->HitCheckRight(x + 50, y + 63);
+        int push1 = field->HitCheckRight(x + 50/2, y + 5);
+        int push2 = field->HitCheckRight(x + 50/2, y + 63);
         x -= max(push1, push2);
     }
 
@@ -106,7 +110,7 @@ void Player::Update()
     if (CheckHitKey(KEY_INPUT_W)) {
         y -= MOVE_SPEED;
         int push1 = field->HitCheckUp(x + 14, y + 5);
-        int push2 = field->HitCheckUp(x + 50, y + 5);
+        int push2 = field->HitCheckUp(x + 50/2, y + 5);
         int push = max(push1, push2);
         if (push > 0) {
             y += push;
@@ -118,7 +122,7 @@ void Player::Update()
     if (CheckHitKey(KEY_INPUT_S)) {
         y += MOVE_SPEED;
         int push1 = field->HitCheckDown(x + 14, y + 64);
-        int push2 = field->HitCheckDown(x + 50, y + 64);
+        int push2 = field->HitCheckDown(x + 50/2, y + 64);
         int push = max(push1, push2);
         if (push > 0) {
             y -= push - 1;
@@ -126,6 +130,12 @@ void Player::Update()
             onGround = false;
         }
     }
+
+    // ステージ境界内に制限（画面の青い部分のみ）
+    if (x < Field::STAGE_LEFT) x = Field::STAGE_LEFT;
+    if (x > Field::STAGE_RIGHT - 50/2) x = Field::STAGE_RIGHT - 50/2;  // プレイヤー幅を考慮
+    if (y < Field::STAGE_TOP) y = Field::STAGE_TOP;
+    if (y > Field::STAGE_BOTTOM - 50/2) y = Field::STAGE_BOTTOM;  // プレイヤー高さを考慮
 
     // 弾発射タイマー更新
     shotTimer += 1.0f;
@@ -135,7 +145,6 @@ void Player::Update()
         ShootBullet();
         shotTimer = 0.0f;
     }
-
 }
 
 

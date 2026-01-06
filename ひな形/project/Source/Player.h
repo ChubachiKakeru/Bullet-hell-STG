@@ -23,14 +23,9 @@ public:
     float GetCenterY() const { return y; }
     float GetSize() const { return size; }
 
-    //float GetRectW() const { return rectWidth; }
-    //float GetRectH() const { return rectHeight; }
-    //float GetRadius() const { return circleRadius; }
-
-    //// 判定サイズ設定
-    //void SetCollisionRect(float w, float h) { rectWidth = w; rectHeight = h; }
-    //void SetCollisionCircle(float r) { circleRadius = r; }
-
+    VECTOR3 GetPosition() {
+        return VECTOR3(x, y, 0);
+    }
     // ダメージ処理
     void TakeDamage(int damage);
     int GetHP() const { return hp; }

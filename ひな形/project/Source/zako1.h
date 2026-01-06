@@ -1,61 +1,45 @@
 #pragma once
-#include"Field.h"
-#include"../Library/GameObject.h"
+#include "Field.h"
+#include "Enemy.h"
 
 class Player;
-class Bulett;
 
+// 雑魚敵の移動パターン（1→2→3の順で進行）
 enum class Zako1Pattern {
-	CIRCLE,       // 円軌道
-	FIGURE_EIGHT, // 八の字
-	LEFT_RIGHT    // 左右移動
+    PATTERN_1,    // 左から横並び、真下に弾
+    PATTERN_2,    // 右から横並び、真下に弾
+    PATTERN_3     // 左右移動、自機狙い5way弾
 };
 
-class zako1 : public GameObject
+class zako1 : public Enemy
 {
 public:
-	zako1();
-	zako1(int sx, int sy);
-	~zako1();
-	void Update()override;
-	void Draw() override;
+    zako1(int sx, int sy, Zako1Pattern pat = Zako1Pattern::PATTERN_1);
+    ~zako1();
 
-	bool IsActive() const { return isActive; }
-	int GetHP() const { return hp; }
-	void TakeDamage(int damage);
-	bool IsHit(float bx, float by, int rad);
+    void Update() override;
+    void Draw() override;
 
-	float GetX() const { return x; }
-	float GetY() const { return y; }
+    bool IsActive() const { return isActive; }
+    int GetHP() const { return hp; }
+    float GetX() const { return x; }
+    float GetY() const { return y; }
+    bool IsPatternComplete() const { return patternComplete; }
 
-	bool IsAlive() const { return isActive; }
-	float GetCenterX() const { return x; }
-	float GetCenterY() const { return y; }
-	float GetSize() const { return size; }
+    void TakeDamage(int damage);
+    bool IsHit(float bx, float by, int rad);
 
 private:
-	int hImage;
-	float x, y;
-	float centerX, centerY;
-	int hp;
-	bool isActive;
-	float size;
+    int hImage;
+    float x, y;
+    int hp;
+    bool isActive;
+    bool patternComplete;
 
-	// 判定サイズ
-	Zako1Pattern pattern;
-	float rectWidth;
-	float rectHeight;
-	float circleRadius;
+    Zako1Pattern pattern;
+    float moveTimer;
+    float shotTimer;
+    int movePhase;  // パターン3の左右移動フェーズ
 
-	// 移動パターン関連
-	float moveTimer;
-	float patternChangeTime;
-	float patternTimer;
-
-	// 左右移動用
-	float speed;
-	int direction;
-
-	void UpdateLeftRight();
+    void ShootBullet();
 };
-

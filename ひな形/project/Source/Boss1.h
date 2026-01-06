@@ -52,6 +52,8 @@ public:
     // 当たり判定
     // ========================================
     bool IsHit(float bx, float by, int rad);
+    VECTOR3 position;
+    VECTOR3 velocity;
 
     // ========================================
     // 位置取得
