@@ -2,114 +2,187 @@
 #include"Field.h"
 #include"enemyBullet.h"
 #include"Player.h"
+#include"Boss1.h"
 #include"SceneFactory.h"
 #include <cmath>
 
 
-Boss2::Boss2()
+Boss2::Boss2() : GameObject()
 {
-	hImage = LoadGraph("data/image/file/chara/boss2.png");
-	x = 300 / 2;
-	y = 200 / 2;
-	centerX = 300;
-	centerY = 200;
-	hp = 300;
-	isActive = true;
+    hImage = LoadGraph("data/image/file/chara/boss2.png");
+    x = 300.0f;
+    y = 200.0f;
+    centerX = 300.0f;
+    centerY = 200.0f;
 
-	// デフォルトの判定サイズ（ボスは大きめ）
-	rectWidth = 80.0f;      // 矩形: 80x80
-	rectHeight = 80.0f;
-	circleRadius = 30.0f;   // 円形: 半径30
+    maxHp = 300;
+    currentHp = maxHp;
+    Phase2Hp = 200;
+    Phase3Hp = 100;
 
-	pattern = BossPattern2::CIRCLE;
-	moveTimer = 0.0f;
-	patternTimer = 0.0f;
-	patternChangeTime = 300.0f;
+    bulletPhase2 = BulletPhase2::PHASE_1;
+    previousPhase2 = BulletPhase2::PHASE_1;
 
-	radius = 150.0f;
-	angle = 0.0f;
-	angularSpeed = 0.02f;
+    shotTimer = 0.0f;
+    shotInterval = 60.0f;
 
-	figureEightScale = 100.0f;
+    moveDirection = 1.0f;
 
-	speed = 3.0f;
-	direction = 1;
+    isCharging = false;
+    chargeTimer = 0.0f;
 
-
-	shotTimer = 0.0f;      // 追加
-	shotInterval = 0.3f;  // 1秒ごと (60フレーム)
+    isActive = true;
 }
 
 Boss2::Boss2(int sx, int sy)
 {
-	hImage = LoadGraph("data/image/file/chara/boss2.png");
-	x = sx;
-	y = sy;
-	centerX = sx;
-	centerY = sy;
-	hp = 300;
-	isActive = true;
+    hImage = LoadGraph("data/image/file/chara/boss2.png");
+    x = (float)sx;
+    y = (float)sy;
+    centerX = (float)sx;
+    centerY = (float)sy;
 
-	pattern = BossPattern2::CIRCLE;
-	moveTimer = 0.0f;
-	patternTimer = 0.0f;
-	patternChangeTime = 300.0f;
+    maxHp = 300;
+    currentHp = maxHp;
+    Phase2Hp = 200;
+    Phase3Hp = 100;
 
-	radius = 100.0f;
-	angle = 0.0f;
-	angularSpeed = 0.02f;
+    bulletPhase2 = BulletPhase2::PHASE_1;
+    previousPhase2 = BulletPhase2::PHASE_1;
 
-	figureEightScale = 100.0f;
+    shotTimer = 0.0f;
+    shotInterval = 60.0f;
 
-	speed = 3.0f;
-	direction = 1;
+    moveDirection = 1.0f;
 
-	shotTimer = 0.0f;
-	shotInterval = 60.0f;
+    isCharging = false;
+    chargeTimer = 0.0f;
+
+    isActive = true;
 }
 
 Boss2::~Boss2()
 {
-	if (hImage != -1) {
-		DeleteGraph(hImage);
-	}
+    if (hImage != -1) {
+        DeleteGraph(hImage);
+    }
 }
 
 void Boss2::Update()
 {
+    if (!isActive) return;
+
+    // HPベースのフェーズチェック
+    CheckPhaseTransition();
+
+    // 弾発射タイマー更新
+    shotTimer += 1.0f;
+
+    // 各フェーズの更新
+    switch (bulletPhase2) {
+    case BulletPhase2::PHASE_1:
+        UpdatePhase1();
+        break;
+    case BulletPhase2::PHASE_2:
+        UpdatePhase2();
+        break;
+    case BulletPhase2::PHASE_3:
+        UpdatePhase3();
+        break;
+    }
+
+    // 弾発射判定
+    if (shotTimer >= shotInterval) {
+        switch (bulletPhase2) {
+        case BulletPhase2::PHASE_1:
+            ShotBullet(45.0f, 8.0f);
+            break;
+        case BulletPhase2::PHASE_2:
+            ShotBullet(30.0f, 3.0f);
+            break;
+        case BulletPhase2::PHASE_3:
+            if (!isCharging) {
+                ShotBullet(25.0f, 5.0f);
+            }
+            break;
+        }
+        shotTimer = 0.0f;
+    }
+}
+
+void Boss2::CheckPhaseTransition()
+{
+    previousPhase2 = bulletPhase2;
+
+    if (currentHp <= Phase3Hp) {
+        bulletPhase2 = BulletPhase2::PHASE_3;
+    }
+    else if (currentHp <= Phase2Hp) {
+        bulletPhase2 = BulletPhase2::PHASE_2;
+    }
+    else {
+        bulletPhase2 = BulletPhase2::PHASE_1;
+    }
+
+    if (bulletPhase2 != previousPhase2) {
+        OnPhaseChanged(GetCurrentPhaseNumber());
+    }
+}
+
+void Boss2::OnPhaseChanged(int newPhase)
+{
+    printfDx("フェーズ %d に移行！HP: %d\n", newPhase, currentHp);
+
+    // フェーズごとの初期化
+    switch (bulletPhase2) {
+    case BulletPhase2::PHASE_1:
+        x = 400.0f;
+        y = 100.0f;
+        shotInterval = 60.0f;
+        break;
+
+    case BulletPhase2::PHASE_2:
+        x = 100.0f;
+        y = 100.0f;
+        moveDirection = 2.0f;
+        shotInterval = 60.0f;
+        break;
+
+    case BulletPhase2::PHASE_3:
+        x = 400.0f;
+        y = 100.0f;
+        shotInterval = 60.0f;
+        isCharging = false;
+        chargeTimer = 0.0f;
+        break;
+    }
+}
+
+void Boss2::UpdatePhase1()
+{
 
 }
 
-void Boss2::Draw()
+void Boss2::UpdatePhase2()
 {
-	DrawGraph(x, y, hImage, TRUE);
+
 }
 
-void Boss2::TakeDamage(int damage)
+void Boss2::UpdatePhase3()
 {
+
 }
 
-bool Boss2::IsHit(float bx, float by, int rad)
+void Boss2::ShotBullet(float angle, float num)
 {
-	return false;
+
 }
 
-void Boss2::UpdateCircle()
-{
+void Boss2::Draw() {
+
 }
 
-void Boss2::UpdateFigureEight()
+int Boss2::GetCurrentPhaseNumber() const
 {
-}
-
-void Boss2::UpdateLeftRight()
-{
-}
-
-void Boss2::ChangePattern()
-{
-}
-
-void Boss2::ShootBullet()
-{
+    return (int)bulletPhase2 + 1;
 }
