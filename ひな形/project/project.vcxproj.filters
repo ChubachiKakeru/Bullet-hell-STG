@@ -66,5 +66,6 @@
     <ClInclude Include="Source\TitleScene.h" />
     <ClInclude Include="Source\zako1.h" />
     <ClInclude Include="Source\EnemyManager.h" />
+    <ClInclude Include="Source\Enemy.h" />
   </ItemGroup>
 </Project>

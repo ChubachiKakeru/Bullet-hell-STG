@@ -11,11 +11,11 @@
 // コンストラクタ / デストラクタ
 // ========================================
 PlayScene::PlayScene()
-{
-    new BackGround();
+{ 
     new Field();
     new zako1();
     new Boss2();
+    new BackGround();
 }
 
 PlayScene::~PlayScene()

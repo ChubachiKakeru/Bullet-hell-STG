@@ -159,6 +159,7 @@
     <ClInclude Include="Source\Bullet.h" />
     <ClInclude Include="Source\Collision.h" />
     <ClInclude Include="Source\Common.h" />
+    <ClInclude Include="Source\Enemy.h" />
     <ClInclude Include="Source\enemyBullet.h" />
     <ClInclude Include="Source\EnemyManager.h" />
     <ClInclude Include="Source\Field.h" />
