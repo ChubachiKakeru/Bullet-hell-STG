@@ -35,9 +35,9 @@ void EnemyManager::InitializeSpawnData() {
     for (int i = 0; i < 3; i++) {
         phaseSpawnData[0].push_back({
             0,  // type 0 = zako1
-            Field::STAGE_LEFT + 150.0f + (i * ENEMY_SPACING),
-            Field::STAGE_TOP - 50.0f,
-           Zako1Pattern::PATTERN_LEFT_TO_RIGHT  // PATTERN_1 ‚ð’u‚«Š·‚¦
+            Field::STAGE_LEFT + /*150.0f +*/ (i * ENEMY_SPACING),
+            Field::STAGE_TOP + 50.0f,
+            Zako1Pattern::PATTERN_LEFT_TO_RIGHT
             });
     }
 
@@ -45,9 +45,9 @@ void EnemyManager::InitializeSpawnData() {
     for (int i = 0; i < 3; i++) {
         phaseSpawnData[1].push_back({
             0,
-            Field::STAGE_RIGHT - 150.0f - (i * ENEMY_SPACING),
-            Field::STAGE_TOP - 50.0f,
-            Zako1Pattern::PATTERN_LEFT_TO_RIGHT  // PATTERN_1 ‚ð’u‚«Š·‚¦
+            Field::STAGE_RIGHT - /*150.0f -*/ (i * ENEMY_SPACING),
+            Field::STAGE_TOP + 50.0f,
+            Zako1Pattern::PATTERN_RIGHT_TO_LEFT
             });
     }
 
@@ -56,9 +56,9 @@ void EnemyManager::InitializeSpawnData() {
     for (int i = 0; i < 3; i++) {
         phaseSpawnData[2].push_back({
             0,
-            Field::STAGE_LEFT + 150.0f + (i * ENEMY_SPACING),
-            Field::STAGE_TOP - 50.0f,
-            Zako1Pattern::PATTERN_LEFT_TO_RIGHT  // PATTERN_1 ‚ð’u‚«Š·‚¦
+            Field::STAGE_LEFT - /*150.0f + */(i * ENEMY_SPACING),
+            Field::STAGE_TOP + 50.0f,
+            Zako1Pattern::PATTERN_LEFT_TO_RIGHT
             });
     }
 
@@ -180,10 +180,10 @@ void EnemyManager::SpawnSecondWave() {
     float rightStart = Field::STAGE_RIGHT - 150.0f;
 
     for (int i = 0; i < 3; i++) {
-        SpawnEnemy(0, rightStart - (i * ENEMY_SPACING), Field::STAGE_TOP - 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT);
+        SpawnEnemy(0, rightStart - (i * ENEMY_SPACING), Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT);
 
         printfDx("‘æ2”g: “GoŒ» X=%.1f, Y=%.1f\n",
-            rightStart - (i * ENEMY_SPACING), Field::STAGE_TOP - 50.0f);
+            rightStart - (i * ENEMY_SPACING), Field::STAGE_TOP + 70.0f);
     }
 }
 

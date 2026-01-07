@@ -136,7 +136,7 @@ void Player::Update()
     if (x < Field::STAGE_LEFT) x = Field::STAGE_LEFT;
     if (x > Field::STAGE_RIGHT - 50/2) x = Field::STAGE_RIGHT - 50/2;  // プレイヤー幅を考慮
     if (y < Field::STAGE_TOP) y = Field::STAGE_TOP;
-    if (y > Screen::HEIGHT) y = Screen::HEIGHT;  // プレイヤー高さを考慮
+    if (y > Screen::HEIGHT - 100) y = Screen::HEIGHT - 100;  // 画面下端まで移動可能
 
     // 弾発射タイマー更新
     shotTimer += 1.0f;

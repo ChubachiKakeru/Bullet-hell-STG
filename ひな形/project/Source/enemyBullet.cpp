@@ -32,7 +32,7 @@ void enemyBullet::Update() {
 
     // ステージ範囲外判定（余裕を持たせて50px外まで）
     if (x < Field::STAGE_LEFT - 50 || x > Field::STAGE_RIGHT + 50 ||
-        y < Field::STAGE_TOP - 50 || y > Field::STAGE_BOTTOM -50) {
+        y < -1 || y > Field::STAGE_BOTTOM -50) {
         DestroyMe();
         return;
     }

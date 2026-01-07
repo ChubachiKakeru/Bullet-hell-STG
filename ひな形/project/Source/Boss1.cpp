@@ -22,7 +22,7 @@ Boss1::Boss1() : Enemy()
     previousPhase = BulletPhase::PHASE_1;
 
     shotTimer = 0.0f;
-    shotInterval = 60.0f;
+    shotInterval = 120.0f;
 
     moveDirection = 1.0f;
 
@@ -54,7 +54,7 @@ Boss1::Boss1(float sx, float sy) : Enemy()
     previousPhase = BulletPhase::PHASE_1;
 
     shotTimer = 0.0f;
-    shotInterval = 60.0f;
+    shotInterval = 120.0f;
 
     moveDirection = 1.0f;
 
