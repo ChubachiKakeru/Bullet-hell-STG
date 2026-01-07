@@ -1,7 +1,7 @@
 #include "Enemy.h"
-#include"Screen.h"
+#include "Screen.h"
 
-Enemy::Enemy()
+Enemy::Enemy() : GameObject()  // 追加: GameObject()を呼び出す
 {
     x = 0.0f;
     y = 0.0f;
@@ -12,12 +12,12 @@ Enemy::Enemy()
     hImage = -1;
 }
 
-Enemy::Enemy(float sx, float sy, float vx, float vy, int health)
+Enemy::Enemy(float sx, float sy, float svx, float svy, int health) : GameObject()  // 追加: GameObject()を呼び出す、引数名修正
 {
     x = sx;
     y = sy;
-    vx = 0.0f;
-    vy = 0.0f;
+    vx = svx;  // 修正: 引数の値を正しく設定
+    vy = svy;  // 修正: 引数の値を正しく設定
     hp = health;
     isDead = false;
     hImage = -1;

@@ -2,6 +2,7 @@
 #include "Field.h"
 #include "playerBullet.h"
 #include "Common.h"
+#include"Screen.h"
 
 // ========================================
 // 定数定義
@@ -122,7 +123,7 @@ void Player::Update()
     if (CheckHitKey(KEY_INPUT_S)) {
         y += MOVE_SPEED;
         int push1 = field->HitCheckDown(x + 14, y + 64);
-        int push2 = field->HitCheckDown(x + 50/2, y + 64);
+        int push2 = field->HitCheckDown(x + 50, y + 64);
         int push = max(push1, push2);
         if (push > 0) {
             y -= push - 1;
@@ -135,7 +136,7 @@ void Player::Update()
     if (x < Field::STAGE_LEFT) x = Field::STAGE_LEFT;
     if (x > Field::STAGE_RIGHT - 50/2) x = Field::STAGE_RIGHT - 50/2;  // プレイヤー幅を考慮
     if (y < Field::STAGE_TOP) y = Field::STAGE_TOP;
-    if (y > Field::STAGE_BOTTOM - 50/2) y = Field::STAGE_BOTTOM;  // プレイヤー高さを考慮
+    if (y > Screen::HEIGHT) y = Screen::HEIGHT;  // プレイヤー高さを考慮
 
     // 弾発射タイマー更新
     shotTimer += 1.0f;

@@ -6,11 +6,12 @@
 
 Boss1::Boss1() : Enemy()
 {
-    hImage = LoadGraph("data/image/file/chara/boss1.png");
+    bossImage = LoadGraph("data/image/file/chara/boss1.png");
     x = 200.0f;
     y = 200.0f;
     centerX = 300.0f;
     centerY = 200.0f;
+    size = 60.0f;
 
     maxHp = 300;
     currentHp = maxHp;
@@ -29,15 +30,20 @@ Boss1::Boss1() : Enemy()
     chargeTimer = 0.0f;
 
     isActive = true;
+
+    // 基底クラスの変数も初期化
+    hp = maxHp;
+    isDead = false;
 }
 
-Boss1::Boss1(int sx, int sy)
+Boss1::Boss1(float sx, float sy) : Enemy()
 {
-    hImage = LoadGraph("data/image/file/chara/boss1.png");
-    x = (float)sx;
-    y = (float)sy;
-    centerX = (float)sx;
-    centerY = (float)sy;
+    bossImage = LoadGraph("data/image/file/chara/boss1.png");
+    x = sx;
+    y = sy;
+    centerX = sx;
+    centerY = sy;
+    size = 60.0f;
 
     maxHp = 300;
     currentHp = maxHp;
@@ -56,18 +62,26 @@ Boss1::Boss1(int sx, int sy)
     chargeTimer = 0.0f;
 
     isActive = true;
+
+    // 基底クラスの変数も初期化
+    hp = maxHp;
+    isDead = false;
 }
 
 Boss1::~Boss1()
 {
-    if (hImage != -1) {
-        DeleteGraph(hImage);
+    if (bossImage != -1) {
+        DeleteGraph(bossImage);
+        bossImage = -1;
     }
 }
 
 void Boss1::Update()
 {
-    if (!isActive) return;
+    if (!isActive) {
+        isDead = true;
+        return;
+    }
 
     // HPベースのフェーズチェック
     CheckPhaseTransition();
@@ -158,8 +172,8 @@ void Boss1::OnPhaseChanged(int newPhase)
 void Boss1::UpdatePhase1()
 {
     // フェーズ1: 固定位置（ステージ中央上部）
-    x = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f - 60.0f;  // 中央に配置
-    y = Field::STAGE_TOP + 20.0f;  // 上部に配置
+    x = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f - 60.0f;
+    y = Field::STAGE_TOP + 20.0f;
 }
 
 void Boss1::UpdatePhase2()
@@ -172,7 +186,7 @@ void Boss1::UpdatePhase2()
         x = Field::STAGE_LEFT + 10.0f;
         moveDirection = 2.0f;
     }
-    else if (x >= Field::STAGE_RIGHT - 130.0f) {  // 画像幅を考慮
+    else if (x >= Field::STAGE_RIGHT - 130.0f) {
         x = Field::STAGE_RIGHT - 130.0f;
         moveDirection = -2.0f;
     }
@@ -222,7 +236,7 @@ void Boss1::ShotBullet(float angle, float num)
 
             // 真下方向（90度付近）かチェック
             float angleDeg = angleStep * i;
-            bool isDownward = (angleDeg >= 67.5f && angleDeg <= 112.5f); // 90度±22.5度
+            bool isDownward = (angleDeg >= 67.5f && angleDeg <= 112.5f);
 
             if (isDownward && player != nullptr) {
                 // 真下の弾は自機狙い
@@ -247,11 +261,10 @@ void Boss1::ShotBullet(float angle, float num)
     }
     // フェーズ2とフェーズ3は真下に広がる弾幕
     else {
-        float baseAngle = 90.0f * DegToRad; // 真下の角度(ラジアン)
-        float spreadAngle = angle * DegToRad; // 広がり角度
+        float baseAngle = 90.0f * DegToRad;
+        float spreadAngle = angle * DegToRad;
 
         for (int i = 0; i < num; i++) {
-            // 中央から左右に広がるように計算
             float offset = (i - (num - 1) / 2.0f) * spreadAngle;
             float shotAngle = baseAngle + offset;
 
@@ -261,7 +274,6 @@ void Boss1::ShotBullet(float angle, float num)
             new enemyBullet(x + 32, y + 32, c1 * 5.0f, s1 * 5.0f);
         }
     }
-
 }
 
 void Boss1::ShootBullet()
@@ -296,8 +308,8 @@ void Boss1::ShootBullet()
 
 void Boss1::Draw()
 {
-    if (isActive && hImage != -1) {
-        DrawGraph((int)x, (int)y, hImage, TRUE);
+    if (isActive && bossImage != -1) {
+        DrawGraph((int)x, (int)y, bossImage, TRUE);
         DrawFormatString(10, 40, GetColor(255, 0, 0), "Boss HP: %d", currentHp);
     }
 }
@@ -306,20 +318,26 @@ void Boss1::TakeDamage(int damage)
 {
     if (!isActive) return;
     currentHp -= damage;
+    hp = currentHp;  // 基底クラスのhpも同期
+
     if (currentHp <= 0) {
         currentHp = 0;
+        hp = 0;
         isActive = false;
+        isDead = true;
     }
 }
 
 bool Boss1::IsHit(float bx, float by, int rad)
 {
+    if (!isActive) return false;
+
     float dx = bx - (x + 60);
     float dy = by - (y + 60);
     float d = sqrt(dx * dx + dy * dy);
 
     if (d < 60 + rad) {
-        TakeDamage(100);
+        TakeDamage(100);  // 1ダメージに変更
         return true;
     }
     return false;

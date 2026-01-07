@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include"Field.h"
-#include"Enemy.h"
+#include "Field.h"
+#include "Enemy.h"
 
 class Player;
 class Bulett;
@@ -16,13 +16,11 @@ enum class BulletPhase {
     PHASE_3     // フェーズ3：左右移動 + チャージ + プレイヤー狙い
 };
 
-
 enum class BossPattern {
-	CIRCLE,       // �~�O��
-	FIGURE_EIGHT, // ���̎�
-	LEFT_RIGHT    // ���E�ړ�
+    CIRCLE,       // 円運動
+    FIGURE_EIGHT, // 8の字
+    LEFT_RIGHT    // 左右移動
 };
-
 
 class Boss1 : public Enemy {
 public:
@@ -30,20 +28,20 @@ public:
     // コンストラクタ・デストラクタ
     // ========================================
     Boss1();
-    Boss1(int sx, int sy);
-    ~Boss1();
+    Boss1(float sx, float sy);
+    virtual ~Boss1();
 
     // ========================================
     // 基本メソッド
     // ========================================
-    void Update();
-    void Draw();
+    void Update() override;
+    void Draw() override;
 
     // ========================================
     // HP関連
     // ========================================
     void TakeDamage(int damage);
-    bool IsAlive() const { return currentHp > 0; }
+    bool IsAlive() const { return isActive && currentHp > 0; }
     int GetCurrentHp() const { return currentHp; }
     int GetMaxHp() const { return maxHp; }
     float GetHpPercent() const;
@@ -52,11 +50,9 @@ public:
     // 当たり判定
     // ========================================
     bool IsHit(float bx, float by, int rad);
-    VECTOR3 position;
-    VECTOR3 velocity;
 
     // ========================================
-    // 位置取得
+    // 位置取得（基底クラスのx, yを使用）
     // ========================================
     float GetX() const { return x; }
     float GetY() const { return y; }
@@ -85,12 +81,11 @@ private:
     // ========================================
     // グラフィック
     // ========================================
-    int hImage;
+    int bossImage;  // Boss1専用の画像ハンドル（hImageではない）
 
     // ========================================
-    // 位置
+    // 位置（x, yは基底クラスから継承 - ここで定義しない）
     // ========================================
-    float x, y;
     float centerX, centerY;
     float size;
 

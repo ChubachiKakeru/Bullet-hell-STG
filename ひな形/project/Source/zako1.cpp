@@ -2,108 +2,102 @@
 #include "Field.h"
 #include "enemyBullet.h"
 #include "Player.h"
+#include "BackGround.h"
 #include <cmath>
 
 namespace {
-    constexpr float SHOT_INTERVAL = 120.0f;
-    constexpr float PATTERN_TIME = 300.0f;
-    constexpr float SPEED_NORMAL = 1.5f;
-    constexpr float SPEED_SLOW = 0.8f;
-    constexpr float MOVE_SPEED = 2.0f;
+    constexpr float SHOT_INTERVAL = 120.0f;  // 2秒（60FPS想定）
+    constexpr float PATTERN_TIME = 300.0f;   // 5秒で消える
     constexpr float RADIUS = 20.0f;
-    constexpr float EDGE_MARGIN = 100.0f;
 }
 
-zako1::zako1(int sx, int sy, Zako1Pattern pat) : Enemy(),
-hImage(LoadGraph("data/image/file/chara/enemy.png")),
-x(sx), y(sy), hp(1), isActive(true), patternComplete(false),
-pattern(pat), moveTimer(0), shotTimer(0), movePhase(0) {
+zako1::zako1(float sx, float sy, Zako1Pattern pat) : Enemy(),
+zakoImage(LoadGraph("data/image/file/chara/enemy.png")),
+isActive(true), patternComplete(false),
+pattern(pat), moveTimer(0), shotTimer(0),
+shotInterval(SHOT_INTERVAL), moveSpeed(0.0f)
+{
+    x = sx;
+    y = sy;
+    hp = 1;
+    isDead = false;
+
+    // パターンに応じて移動速度を設定
+    switch (pattern) {
+    case Zako1Pattern::PATTERN_LEFT_TO_RIGHT:
+        moveSpeed = 1.0f;  // 右へ（3.0fから1.0fに変更）
+        break;
+    case Zako1Pattern::PATTERN_RIGHT_TO_LEFT:
+        moveSpeed = -1.0f;  // 左へ（-3.0fから-1.0fに変更）
+        break;
+    }
 }
 
-zako1::~zako1() { if (hImage != -1) DeleteGraph(hImage); }
+zako1::~zako1()
+{
+    if (zakoImage != -1) {
+        DeleteGraph(zakoImage);
+        zakoImage = -1;
+    }
+}
 
 void zako1::Update()
 {
-    if (!isActive) return;
+    if (!isActive) {
+        isDead = true;
+        return;
+    }
 
     moveTimer++;
     shotTimer++;
 
-    // 移動（下には動かない）
-    if (pattern == Zako1Pattern::PATTERN_3) {
-        // パターン3のみ左右移動
-        x += (movePhase == 0 ? MOVE_SPEED : -MOVE_SPEED);
-        float edge = (movePhase == 0 ? Field::STAGE_RIGHT : Field::STAGE_LEFT);
-        float limit = edge + (movePhase == 0 ? -EDGE_MARGIN : EDGE_MARGIN);
+    // 横方向に移動（パターンに応じて左右）
+    x += moveSpeed;
 
-        if ((movePhase == 0 && x >= limit) || (movePhase == 1 && x <= limit)) {
-            x = limit;
-            if (movePhase == 0) movePhase = 1;
-            else patternComplete = true;
-        }
-    }
-
-    // パターン完了判定（パターン1, 2）
-    if (pattern != Zako1Pattern::PATTERN_3) {
-        if (moveTimer >= PATTERN_TIME) patternComplete = true;
-    }
-
-    // 弾発射
-    if (shotTimer >= SHOT_INTERVAL) {
+    // 弾発射（2秒ごと）
+    if (shotTimer >= shotInterval) {
         ShootBullet();
         shotTimer = 0;
     }
 
-    // 画面外判定（念のため）
-    if (y > Field::STAGE_BOTTOM + 200 || x < Field::STAGE_LEFT - 200 || x > Field::STAGE_RIGHT + 200) {
+    // 画面外判定（画面外に出たら削除）
+    if (x < Field::STAGE_LEFT - 100.0f || x > Field::STAGE_RIGHT + 100.0f) {
         isActive = false;
+        isDead = true;
+        DestroyMe();
     }
 }
 
 void zako1::ShootBullet()
 {
-    if (pattern != Zako1Pattern::PATTERN_3) {
-        new enemyBullet(x, y, 0, 5, 8);
-        return;
-    }
-
-    Player* p = FindGameObject<Player>();
-    if (!p) return;
-
-    float dx = p->GetX() - x, dy = p->GetY() - y;
-    float len = sqrt(dx * dx + dy * dy);
-    if (len > 0) { dx /= len; dy /= len; }
-
-    for (float ang : {0.0f, 0.3f, -0.3f, 0.5f, -0.5f}) {
-        float c = cos(ang), s = sin(ang);
-        new enemyBullet(x, y, (dx * c - dy * s) * 5, (dx * s + dy * c) * 5, 8);
-    }
+    // 真下に弾を発射
+    new enemyBullet(x, y, 0, 5, 8);
 }
 
 void zako1::Draw()
 {
-    if (isActive && hImage != -1) DrawGraph(x - 16, y - 16, hImage, TRUE);
+    if (isActive && zakoImage != -1) {
+        DrawGraph((int)(x - 16), (int)(y - 16), zakoImage, TRUE);
+    }
 
     // デバッグ用：当たり判定を表示
     if (isActive) {
-        DrawCircle(x, y, RADIUS, GetColor(255, 0, 0), FALSE);
-        DrawFormatString(x - 20, y - 30, GetColor(255, 255, 255), "ZAKO");
+        DrawCircle((int)x, (int)y, (int)RADIUS, GetColor(255, 0, 0), FALSE);
     }
-}
-
-void zako1::TakeDamage(int damage)
-{
-    if (!isActive) return;
-    hp -= damage;
-    if (hp <= 0) { hp = 0; isActive = false; }
 }
 
 bool zako1::IsHit(float bx, float by, int rad)
 {
     if (!isActive) return false;
-    float dx = bx - x, dy = by - y;
-    if (sqrt(dx * dx + dy * dy) < RADIUS + rad) {
-        TakeDamage(1);
+
+    float dx = bx - x;
+    float dy = by - y;
+    float distance = sqrt(dx * dx + dy * dy);
+
+    if (distance < RADIUS + rad) {
+        // 当たったら無効化（EnemyManagerが削除する）
+        isActive = false;
+        isDead = true;
         return true;
     }
     return false;
