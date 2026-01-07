@@ -9,6 +9,10 @@ BackGround::BackGround() : GameObject() {
     offsetX = 0.0f;     // ’†‰›
     offsetY = 0.0f;     // ã’[
     scale = 1.0f;       // “™”{
+
+    SetDrawOrder(100); // ”š‚ğ‘å‚«‚­i‰œj
+    hImage = LoadGraph("data/image/hosizora.png");
+    hImage2 = LoadGraph("data/image/hosizora2.png");
 }
 
 BackGround::BackGround(float offX, float offY) : GameObject() {

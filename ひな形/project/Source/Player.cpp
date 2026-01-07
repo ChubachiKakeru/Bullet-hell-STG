@@ -29,6 +29,8 @@ Player::Player() : GameObject()
     shotTimer = 0.0f;
     hp = INITIAL_HP;
     isActive = true;
+
+    SetDrawOrder(0); // 小さい数（手前）
 }
 
 Player::Player(int sx, int sy) : GameObject()
@@ -41,6 +43,8 @@ Player::Player(int sx, int sy) : GameObject()
     shotTimer = 0.0f;
     hp = INITIAL_HP;
     isActive = true;
+
+    SetDrawOrder(0); // 小さい数（手前）
 }
 
 Player::~Player()
@@ -135,10 +139,6 @@ void Player::Update()
         ShootBullet();
         shotTimer = 0.0f;
     }
-
-	if (hImage != -1) {
-		DeleteGraph(hImage);
-	}
 }
 
 
@@ -158,10 +158,7 @@ void Player::ShootBullet()
 // ========================================
 void Player::Draw()
 {
-
-    DrawGraph(x, y, hImage, TRUE);
-	Field* field = FindGameObject<Field>();
-	DrawGraph(x , y, hImage, 1);
+	DrawGraph(x , y, hImage, TRUE);
 }
 
 
