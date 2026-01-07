@@ -72,6 +72,7 @@ void Boss2::Update()
 {
     if (!isActive) return;
 
+
     // HPベースのフェーズチェック
     CheckPhaseTransition();
 
@@ -178,8 +179,14 @@ void Boss2::ShotBullet(float angle, float num)
 
 }
 
-void Boss2::Draw() {
-
+void Boss2::Draw() 
+{
+    if (isActive && hImage != -1)
+    {
+        DrawGraph((int)x, (int)y, hImage, TRUE);
+        DrawFormatString(10, 60, GetColor(255, 0, 0),
+            "Boss2 HP: %d", currentHp);
+    }
 }
 
 int Boss2::GetCurrentPhaseNumber() const
