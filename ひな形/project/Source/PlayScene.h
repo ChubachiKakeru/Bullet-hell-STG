@@ -30,11 +30,11 @@ private:
     void CheckCollisions();
     void RemoveDeadBullets(std::vector<Bullet*>& bullets);  // 死んだ弾削除用
 
-    Boss1* boss1;
-    Boss2* boss2;
+    Boss1* boss1 = nullptr;
+    Boss2* boss2 = nullptr;
 
-    bool boss1Dead;          // Boss1が倒されたか
-    bool boss2Spawned;       // Boss2を出したか
-    int boss2SpawnTimer;     // 出現待ちタイマー
+    bool boss1Dead = false;          // Boss1が倒されたか
+    bool boss2Spawned = false;       // Boss2を出したか
+    int boss2SpawnTimer = 0;     // 出現待ちタイマー
 
 };

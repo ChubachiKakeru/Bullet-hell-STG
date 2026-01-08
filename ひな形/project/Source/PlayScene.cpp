@@ -35,7 +35,7 @@ PlayScene::~PlayScene()
 void PlayScene::Update()
 {
     // É^ÉCÉgÉãÇ÷ÇÃëJà⁄
-    if (CheckHitKey(KEY_INPUT_T)) {
+    if (CheckHitKey(KEY_INPUT_O)) {
         SceneManager::ChangeScene("TITLE");
     }
 
@@ -44,24 +44,44 @@ void PlayScene::Update()
     // GameObjectManagerÇ…ÇÊÇ¡ÇƒçXêVÇ≥ÇÍÇÈ
 
     // Boss1 Ç™Ç‹Çæê∂Ç´ÇƒÇ¢ÇÈÇ©äƒéã
+//    if (!boss1Dead && boss1 && !boss1->IsAlive())
+//    {
+//        boss1Dead = true;
+//        boss2SpawnTimer = 0;
+//        printfDx("Boss1 åÇîjÅIBoss2èoåªèÄîıäJén\n");
+//    }
+//
+//    // Boss1 åÇîjå„ÅA5ïbë“Ç¬
+//    if (boss1Dead && !boss2Spawned)
+//    {
+//        boss2SpawnTimer++;
+//
+//        // 5ïbÅi60fps Å~ 5Åj
+//        if (boss2SpawnTimer >= 60 * 5)
+//        {
+//            boss2 = new Boss2(300, 100);
+//            boss2Spawned = true;
+//            printfDx("Boss2 èoåªÅI\n");
+//        }
+//    }
+
+    // Boss1éÄñSäƒéã
     if (!boss1Dead && boss1 && !boss1->IsAlive())
     {
         boss1Dead = true;
         boss2SpawnTimer = 0;
-        printfDx("Boss1 åÇîjÅIBoss2èoåªèÄîıäJén\n");
+        printfDx("Boss1 åÇîj\n");
     }
 
-    // Boss1 åÇîjå„ÅA5ïbë“Ç¬
+    // Boss1åÇîjå„ 5ïbë“Ç¬
     if (boss1Dead && !boss2Spawned)
     {
         boss2SpawnTimer++;
 
-        // 5ïbÅi60fps Å~ 5Åj
         if (boss2SpawnTimer >= 60 * 5)
         {
-            boss2 = new Boss2(300, 100);
             boss2Spawned = true;
-            printfDx("Boss2 èoåªÅI\n");
+            printfDx("Boss2 èoåª\n");
         }
     }
 }
