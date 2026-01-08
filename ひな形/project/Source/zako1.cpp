@@ -8,27 +8,37 @@
 namespace {
     constexpr float SHOT_INTERVAL = 120.0f;  // 2秒（60FPS想定）
     constexpr float PATTERN_TIME = 300.0f;   // 5秒で消える
-    constexpr float RADIUS = 20.0f;
+    constexpr float RADIUS = 40.0f;
 }
 
-zako1::zako1(float sx, float sy, Zako1Pattern pat) : Enemy(),
-zakoImage(LoadGraph("data/image/file/chara/enemy.png")),
-isActive(true), patternComplete(false),
-pattern(pat), moveTimer(0), shotTimer(0),
-shotInterval(SHOT_INTERVAL), moveSpeed(0.0f)
+zako1::zako1(float sx, float sy, Zako1Pattern pat) : Enemy()
 {
+    // Boss1と同じスタイルで本体内で初期化
+    zakoImage = LoadGraph("data/image/zako1.png");
+
     x = sx;
     y = sy;
+
+    pattern = pat;
+    moveTimer = 0;
+    shotTimer = 0;
+    shotInterval = SHOT_INTERVAL;
+    moveSpeed = 0.0f;
+
+    isActive = true;
+    patternComplete = false;
+
+    // 基底クラスの変数も初期化
     hp = 1;
     isDead = false;
 
     // パターンに応じて移動速度を設定
     switch (pattern) {
     case Zako1Pattern::PATTERN_LEFT_TO_RIGHT:
-        moveSpeed = 1.0f;  // 右へ（3.0fから1.0fに変更）
+        moveSpeed = 1.0f;  // 右へ
         break;
     case Zako1Pattern::PATTERN_RIGHT_TO_LEFT:
-        moveSpeed = -1.0f;  // 左へ（-3.0fから-1.0fに変更）
+        moveSpeed = -1.0f;  // 左へ
         break;
     }
 }
@@ -70,28 +80,36 @@ void zako1::Update()
 
 void zako1::ShootBullet()
 {
-    // 真下に弾を発射
+    // 真下に弾を発射（画像の中心から）
     new enemyBullet(x, y, 0, 5, 8);
 }
-
 void zako1::Draw()
 {
     if (isActive && zakoImage != -1) {
-        DrawGraph((int)(x - 16), (int)(y - 16), zakoImage, TRUE);
+        // 100x100の画像の中心をx, yに合わせる
+        DrawGraph((int)(x - 50), (int)(y - 50), zakoImage, TRUE);
     }
 
     // デバッグ用：当たり判定を表示
     if (isActive) {
+        // 当たり判定の円（赤）
         DrawCircle((int)x, (int)y, (int)RADIUS, GetColor(255, 0, 0), FALSE);
+
+        // 中心点（黄色）
+        DrawCircle((int)x, (int)y, 3, GetColor(255, 255, 0), TRUE);
+
+        // 画像の矩形範囲（緑）- デバッグ用
+        DrawBox((int)(x - 50), (int)(y - 50),
+            (int)(x + 50), (int)(y + 50),
+            GetColor(0, 255, 0), FALSE);
     }
 }
-
 bool zako1::IsHit(float bx, float by, int rad)
 {
     if (!isActive) return false;
 
-    float dx = bx - x;
-    float dy = by - y;
+    float dx = bx - x ;
+    float dy = by - y ;
     float distance = sqrt(dx * dx + dy * dy);
 
     if (distance < RADIUS + rad) {
@@ -102,3 +120,4 @@ bool zako1::IsHit(float bx, float by, int rad)
     }
     return false;
 }
+

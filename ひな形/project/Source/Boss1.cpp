@@ -223,7 +223,6 @@ void Boss1::UpdatePhase3()
         }
     }
 }
-
 void Boss1::ShotBullet(float angle, float num)
 {
     // フェーズ1の場合は全方位放射状 + 真下だけ自機狙い
@@ -239,7 +238,7 @@ void Boss1::ShotBullet(float angle, float num)
             bool isDownward = (angleDeg >= 67.5f && angleDeg <= 112.5f);
 
             if (isDownward && player != nullptr) {
-                // 真下の弾は自機狙い
+                // 真下の弾は自機狙い（画像タイプ1を指定）
                 float dx = player->GetX() - x;
                 float dy = player->GetY() - y;
                 float length = sqrt(dx * dx + dy * dy);
@@ -249,17 +248,20 @@ void Boss1::ShotBullet(float angle, float num)
                     dy /= length;
                 }
 
-                new enemyBullet(x + 32, y + 32, dx * 10.0f, dy * 10.0f);
+                // ★ここを修正：第6引数に1を追加（自機狙い用画像）
+                new enemyBullet(x + 32, y + 32, dx * 10.0f, dy * 10.0f, 8.0f, 1);
             }
             else {
-                // その他の方向は通常の放射状
+                // その他の方向は通常の放射状（画像タイプ0を明示）
                 float c1 = cos(shotAngle);
                 float s1 = sin(shotAngle);
-                new enemyBullet(x + 32, y + 32, c1 * 5.0f, s1 * 5.0f);
+
+                // ★第6引数に0を追加（通常画像）
+                new enemyBullet(x + 32, y + 32, c1 * 5.0f, s1 * 5.0f, 8.0f, 0);
             }
         }
     }
-    // フェーズ2とフェーズ3は真下に広がる弾幕
+    // フェーズ2とフェーズ3は真下に広がる弾幕（通常画像）
     else {
         float baseAngle = 90.0f * DegToRad;
         float spreadAngle = angle * DegToRad;
@@ -271,11 +273,11 @@ void Boss1::ShotBullet(float angle, float num)
             float c1 = cos(shotAngle);
             float s1 = sin(shotAngle);
 
-            new enemyBullet(x + 32, y + 32, c1 * 5.0f, s1 * 5.0f);
+            // ★通常画像（画像タイプ0）
+            new enemyBullet(x + 32, y + 32, c1 * 5.0f, s1 * 5.0f, 8.0f, 0);
         }
     }
 }
-
 void Boss1::ShootBullet()
 {
     Player* player = FindGameObject<Player>();
@@ -337,7 +339,7 @@ bool Boss1::IsHit(float bx, float by, int rad)
     float d = sqrt(dx * dx + dy * dy);
 
     if (d < 60 + rad) {
-        TakeDamage(100);  // 1ダメージに変更
+        TakeDamage(100);  
         return true;
     }
     return false;

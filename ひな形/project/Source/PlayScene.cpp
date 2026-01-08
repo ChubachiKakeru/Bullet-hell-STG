@@ -7,6 +7,7 @@
 #include "zako1.h"
 #include "Boss2.h"
 #include "EnemyManager.h"
+#include"Common.h"
 
 // ========================================
 // コンストラクタ / デストラクタ
@@ -17,6 +18,7 @@ PlayScene::PlayScene()
     new Field();
     new Player();
     new EnemyManager(bg);  // BackGroundを渡してEnemyManager生成
+    //Common*c = find
 }
 
 PlayScene::~PlayScene()
@@ -30,7 +32,7 @@ PlayScene::~PlayScene()
 void PlayScene::Update()
 {
     // タイトルへの遷移
-    if (CheckHitKey(KEY_INPUT_T)) {
+    if (CheckHitKey(KEY_INPUT_O)) {
         SceneManager::ChangeScene("TITLE");
     }
     // 注意: GameObjectシステムで各オブジェクトのUpdate()が自動的に呼ばれる想定

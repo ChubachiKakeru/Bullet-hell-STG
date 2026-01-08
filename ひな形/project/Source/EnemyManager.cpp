@@ -32,43 +32,52 @@ void EnemyManager::InitializeSpawnData() {
     float centerX = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f;
 
     // フェーズ1: 左から3体横並び（真下に弾）
-    for (int i = 0; i < 3; i++) {
-        phaseSpawnData[0].push_back({
-            0,  // type 0 = zako1
-            Field::STAGE_LEFT + /*150.0f +*/ (i * ENEMY_SPACING),
-            Field::STAGE_TOP + 50.0f,
-            Zako1Pattern::PATTERN_LEFT_TO_RIGHT
-            });
-    }
+    //for (int i = 0; i < 3; i++) {
+    //    phaseSpawnData[0].push_back({
+    //        0,  // type 0 = zako1
+    //        Field::STAGE_LEFT + 150.0f + (i * ENEMY_SPACING),
+    //        Field::STAGE_TOP + 50.0f,
+    //        Zako1Pattern::PATTERN_LEFT_TO_RIGHT
+    //        });
+    //}
+    phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 150.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 300.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 450.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 600.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 750.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
 
-    // フェーズ2: 右から3体横並び（真下に弾）
-    for (int i = 0; i < 3; i++) {
-        phaseSpawnData[1].push_back({
-            0,
-            Field::STAGE_RIGHT - /*150.0f -*/ (i * ENEMY_SPACING),
-            Field::STAGE_TOP + 50.0f,
-            Zako1Pattern::PATTERN_RIGHT_TO_LEFT
-            });
-    }
 
+    //// フェーズ2: 右から3体横並び（真下に弾）
+    //for (int i = 0; i < 3; i++) {
+    //    phaseSpawnData[1].push_back({
+    //        0,
+    //        Field::STAGE_RIGHT - /*150.0f -*/ (i * ENEMY_SPACING),
+    //        Field::STAGE_TOP + 50.0f,
+    //        Zako1Pattern::PATTERN_RIGHT_TO_LEFT
+    //        });
+    //}
+    phaseSpawnData[1].push_back({ 0, Field::STAGE_LEFT + 150.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT });
+    phaseSpawnData[1].push_back({ 0, Field::STAGE_LEFT + 300.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT });
+    phaseSpawnData[1].push_back({ 0, Field::STAGE_LEFT + 450.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT });
+    phaseSpawnData[1].push_back({ 0, Field::STAGE_LEFT + 600.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT });
+    phaseSpawnData[1].push_back({ 0, Field::STAGE_LEFT + 750.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT });
     // フェーズ3: 左から3体横並び（真下に弾）
     // ※2秒後に右から3体追加される（SpawnSecondWaveで処理）
-    for (int i = 0; i < 3; i++) {
+    /*for (int i = 0; i < 3; i++) {
         phaseSpawnData[2].push_back({
             0,
-            Field::STAGE_LEFT - /*150.0f + */(i * ENEMY_SPACING),
-            Field::STAGE_TOP + 50.0f,
+            Field::STAGE_LEFT - 150.0f + (i * ENEMY_SPACING),
+            Field::STAGE_TOP + 70.0f,
             Zako1Pattern::PATTERN_LEFT_TO_RIGHT
             });
-    }
-
+    }*/
+    phaseSpawnData[2].push_back({ 0, Field::STAGE_LEFT + 150.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[2].push_back({ 0, Field::STAGE_LEFT + 300.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[2].push_back({ 0, Field::STAGE_LEFT + 450.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[2].push_back({ 0, Field::STAGE_LEFT + 600.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[2].push_back({ 0, Field::STAGE_LEFT + 750.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
     // フェーズ4: ボス
-    phaseSpawnData[3].push_back({
-        1,  // type 1 = Boss1
-        centerX - 60.0f,
-        Field::STAGE_TOP + 20.0f,
-        Zako1Pattern::PATTERN_LEFT_TO_RIGHT  // ボスは使用しない
-        });
+    phaseSpawnData[3].push_back({1,  /* type 1 = Boss1*/centerX - 60.0f,Field::STAGE_TOP + 20.0f,Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
 }
 
 void EnemyManager::Update() {

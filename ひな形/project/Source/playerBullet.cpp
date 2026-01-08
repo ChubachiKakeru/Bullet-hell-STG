@@ -6,7 +6,7 @@
 playerBullet::playerBullet(float sx, float sy, float vx, float vy, float bulletsize)
     : Bullet(sx, sy, vx, vy, bulletsize)
 {
-    hImage = LoadGraph("data/image/siratama.png");
+    hImage = LoadGraph("data/image/pbullet.png");
     x = sx;
     y = sy;
     velocityX = vx;
