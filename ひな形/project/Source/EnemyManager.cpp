@@ -40,11 +40,11 @@ void EnemyManager::InitializeSpawnData() {
     //        Zako1Pattern::PATTERN_LEFT_TO_RIGHT
     //        });
     //}
-    phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 150.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
-    phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 300.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
-    phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 450.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
-    phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 600.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
-    phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 750.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + -100.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 50.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 200.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 350.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 500.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
 
 
     //// フェーズ2: 右から3体横並び（真下に弾）
@@ -56,11 +56,11 @@ void EnemyManager::InitializeSpawnData() {
     //        Zako1Pattern::PATTERN_RIGHT_TO_LEFT
     //        });
     //}
-    phaseSpawnData[1].push_back({ 0, Field::STAGE_LEFT + 150.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT });
-    phaseSpawnData[1].push_back({ 0, Field::STAGE_LEFT + 300.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT });
-    phaseSpawnData[1].push_back({ 0, Field::STAGE_LEFT + 450.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT });
-    phaseSpawnData[1].push_back({ 0, Field::STAGE_LEFT + 600.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT });
-    phaseSpawnData[1].push_back({ 0, Field::STAGE_LEFT + 750.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT });
+    phaseSpawnData[1].push_back({ 0, Field::STAGE_LEFT + 190.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT });
+    phaseSpawnData[1].push_back({ 0, Field::STAGE_LEFT + 340.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT });
+    phaseSpawnData[1].push_back({ 0, Field::STAGE_LEFT + 490.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT });
+    phaseSpawnData[1].push_back({ 0, Field::STAGE_LEFT + 640.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT });
+    phaseSpawnData[1].push_back({ 0, Field::STAGE_LEFT + 790.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT });
     // フェーズ3: 左から3体横並び（真下に弾）
     // ※2秒後に右から3体追加される（SpawnSecondWaveで処理）
     /*for (int i = 0; i < 3; i++) {
@@ -71,11 +71,11 @@ void EnemyManager::InitializeSpawnData() {
             Zako1Pattern::PATTERN_LEFT_TO_RIGHT
             });
     }*/
-    phaseSpawnData[2].push_back({ 0, Field::STAGE_LEFT + 150.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
-    phaseSpawnData[2].push_back({ 0, Field::STAGE_LEFT + 300.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
-    phaseSpawnData[2].push_back({ 0, Field::STAGE_LEFT + 450.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
-    phaseSpawnData[2].push_back({ 0, Field::STAGE_LEFT + 600.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
-    phaseSpawnData[2].push_back({ 0, Field::STAGE_LEFT + 750.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[2].push_back({ 0, Field::STAGE_LEFT + -100.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[2].push_back({ 0, Field::STAGE_LEFT + 50.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[2].push_back({ 0, Field::STAGE_LEFT + 200.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[2].push_back({ 0, Field::STAGE_LEFT + 350.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
+    phaseSpawnData[2].push_back({ 0, Field::STAGE_LEFT + 500.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
     // フェーズ4: ボス
     phaseSpawnData[3].push_back({1,  /* type 1 = Boss1*/centerX - 60.0f,Field::STAGE_TOP + 20.0f,Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
 }
@@ -185,14 +185,14 @@ void EnemyManager::SpawnPhaseEnemies() {
 }
 
 void EnemyManager::SpawnSecondWave() {
-    // 右から3体を出現させる
-    float rightStart = Field::STAGE_RIGHT - 150.0f;
+    // 右から5体を出現させる
+    float rightStart = Field::STAGE_RIGHT + 100.0f;
 
-    for (int i = 0; i < 3; i++) {
-        SpawnEnemy(0, rightStart - (i * ENEMY_SPACING), Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT);
+    for (int i = 0; i < 5; i++) {
+        SpawnEnemy(0, rightStart - (i * ENEMY_SPACING), Field::STAGE_TOP + 150.0f, Zako1Pattern::PATTERN_RIGHT_TO_LEFT);
 
         printfDx("第2波: 敵出現 X=%.1f, Y=%.1f\n",
-            rightStart - (i * ENEMY_SPACING), Field::STAGE_TOP + 70.0f);
+            rightStart - (i * ENEMY_SPACING), Field::STAGE_TOP + 50.0f);
     }
 }
 
