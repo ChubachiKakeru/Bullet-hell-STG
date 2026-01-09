@@ -1,77 +1,140 @@
 #pragma once
-#include"Field.h"
-#include "../Library/GameObject.h"
+#include "Field.h"
+#include "Enemy.h"
 
 class Player;
 class Bulett;
 
-enum class BossPattern2{
-    CIRCLE,       // 円軌道
-    FIGURE_EIGHT, // 八の字
+// ========================================
+// 列挙型
+// ========================================
+
+// 弾幕フェーズ
+enum class BulletPhase2 {
+    PHASE_1,    // フェーズ1：自機狙い
+    PHASE_2,    // フェーズ2：自機狙い　＋　通常弾
+    PHASE_3     // フェーズ3：6列右回り
+};
+
+enum class BossPattern2 {
+    CIRCLE,       // 円運動
+    FIGURE_EIGHT, // 8の字
     LEFT_RIGHT    // 左右移動
 };
 
-class Boss2 : public GameObject
-{
+class Boss2 : public Enemy {
 public:
+    // ========================================
+    // コンストラクタ・デストラクタ
+    // ========================================
     Boss2();
-    Boss2(int sx, int sy);
-    ~Boss2();
-    void Update()override;
+    Boss2(float sx, float sy);
+    virtual ~Boss2();
+
+    // ========================================
+    // 基本メソッド
+    // ========================================
+    void Update() override;
     void Draw() override;
 
-    bool IsActive() const { return isActive; }
-    int GetHP() const { return hp; }
+    // ========================================
+    // HP関連
+    // ========================================
     void TakeDamage(int damage);
+    bool IsAlive() const { return isActive && currentHp > 0; }
+    int GetCurrentHp() const { return currentHp; }
+    int GetMaxHp() const { return maxHp; }
+    float GetHpPercent() const;
+
+    // ========================================
+    // 当たり判定
+    // ========================================
     bool IsHit(float bx, float by, int rad);
 
+    // ========================================
+    // 位置取得（基底クラスのx, yを使用）
+    // ========================================
     float GetX() const { return x; }
     float GetY() const { return y; }
-
-    bool IsAlive() const { return isActive; }
-    float GetCenterX() const { return x; }
-    float GetCenterY() const { return y; }
     float GetSize() const { return size; }
 
+    // ========================================
+    // フェーズ関連
+    // ========================================
+    BulletPhase2 GetBulletPhase() const { return bulletPhase; }
+    int GetCurrentPhaseNumber() const;
+    bool IsCharging() const { return isCharging; }
+
+    // ========================================
+    // 弾発射
+    // ========================================
+    void ShotBullet(float rad, float num);
+    void ShootBullet();  // プレイヤー狙い弾
+
 private:
-    int hImage;
-    float x, y;
+    // ========================================
+    // 定数
+    // ========================================
+    static constexpr float DegToRad = 3.14159265f / 180.0f;
+    static constexpr float PI = 3.14159265f;
+
+    // ========================================
+    // グラフィック
+    // ========================================
+    int bossImage;  // Boss1専用の画像ハンドル（hImageではない）
+
+    // ========================================
+    // 位置（x, yは基底クラスから継承 - ここで定義しない）
+    // ========================================
     float centerX, centerY;
-    int hp;
-    bool isActive;
     float size;
 
-    // 判定サイズ
-    float rectWidth;
-    float rectHeight;
-    float circleRadius;
+    // ========================================
+    // HP管理
+    // ========================================
+    int maxHp;          // 最大HP
+    int currentHp;      // 現在のHP
+    int Phase2Hp;       // フェーズ2に移行するHP閾値
+    int Phase3Hp;       // フェーズ3に移行するHP閾値
 
-    // 移動パターン関連
-    BossPattern2 pattern;
-    float moveTimer;
-    float patternChangeTime;
-    float patternTimer;
+    // ========================================
+    // フェーズ管理
+    // ========================================
+    BulletPhase2 bulletPhase;      // 現在のフェーズ
+    BulletPhase2 previousPhase;    // 前回のフェーズ（変化検知用）
 
-    // 円軌道用
-    float radius;
-    float angle;
-    float angularSpeed;
+    // ========================================
+    // 弾発射管理
+    // ========================================
+    float shotTimer;        // 弾発射タイマー
+    float shotInterval;     // 弾発射間隔
 
-    // 八の字用
-    float figureEightScale;
+    // ========================================
+    // 移動管理（フェーズ2,3用）
+    // ========================================
+    float moveDirection;    // 移動速度兼方向
 
-    // 左右移動用
-    float speed;
-    int direction;
+    // ========================================
+    // チャージ管理（フェーズ3用）
+    // ========================================
+    bool isCharging;        // チャージ中フラグ
+    float chargeTimer;      // チャージタイマー
 
-    // 弾発射関連
-    float shotTimer;
-    float shotInterval;
+    // ========================================
+    // 状態フラグ
+    // ========================================
+    bool isActive;
 
-    void UpdateCircle();
-    void UpdateFigureEight();
-    void UpdateLeftRight();
-    void ChangePattern();
-    void ShootBullet();
+    // ========================================
+    // 非公開メソッド
+    // ========================================
+
+    // フェーズ管理
+    void CheckPhaseTransition();              // HPベースでフェーズをチェック
+    void OnPhaseChanged(int newPhase);        // フェーズ変更時の処理
+
+    // フェーズ別更新
+    void UpdatePhase1();                      // フェーズ1の更新
+    void UpdatePhase2();                      // フェーズ2の更新
+    void UpdatePhase3();                      // フェーズ3の更新
 };
-

@@ -2,70 +2,70 @@
 #include"Field.h"
 #include"enemyBullet.h"
 #include"Player.h"
-#include"SceneFactory.h"
 #include <cmath>
-
 
 Boss2::Boss2()
 {
-	hImage = LoadGraph("data/image/file/chara/boss2.png");
-	x = 300 / 2;
-	y = 200 / 2;
-	centerX = 300;
-	centerY = 200;
-	hp = 300;
+	bossImage = LoadGraph("data/image/file/chara/boss2.png");
+	x = 200.0f;
+	y = 200.0f;
+	centerX = 300.0f;
+	centerY = 200.0f;
+	size = 60.0f;
+
+	maxHp = 300;
+	currentHp = maxHp;
+	Phase2Hp = 200;
+	Phase3Hp = 100;
+
+	bulletPhase = BulletPhase2::PHASE_1;
+	previousPhase = BulletPhase2::PHASE_1;
+
+	shotTimer = 0.0f;
+	shotInterval = 120.0f;
+
+	moveDirection = 1.0f;
+
+	isCharging = false;
+	chargeTimer = 0.0f;
+
 	isActive = true;
 
-	// デフォルトの判定サイズ（ボスは大きめ）
-	rectWidth = 80.0f;      // 矩形: 80x80
-	rectHeight = 80.0f;
-	circleRadius = 30.0f;   // 円形: 半径30
-
-	pattern = BossPattern2::CIRCLE;
-	moveTimer = 0.0f;
-	patternTimer = 0.0f;
-	patternChangeTime = 300.0f;
-
-	radius = 150.0f;
-	angle = 0.0f;
-	angularSpeed = 0.02f;
-
-	figureEightScale = 100.0f;
-
-	speed = 3.0f;
-	direction = 1;
-
-
-	shotTimer = 0.0f;      // 追加
-	shotInterval = 0.3f;  // 1秒ごと (60フレーム)
+	// 基底クラスの変数も初期化
+	hp = maxHp;
+	isDead = false;
 }
 
-Boss2::Boss2(int sx, int sy)
+Boss2::Boss2(float sx, float sy)
 {
-	hImage = LoadGraph("data/image/file/chara/boss2.png");
+	bossImage = LoadGraph("data/image/file/chara/boss2.png");
 	x = sx;
 	y = sy;
 	centerX = sx;
 	centerY = sy;
-	hp = 300;
-	isActive = true;
+	size = 60.0f;
 
-	pattern = BossPattern2::CIRCLE;
-	moveTimer = 0.0f;
-	patternTimer = 0.0f;
-	patternChangeTime = 300.0f;
+	maxHp = 300;
+	currentHp = maxHp;
+	Phase2Hp = 200;
+	Phase3Hp = 100;
 
-	radius = 100.0f;
-	angle = 0.0f;
-	angularSpeed = 0.02f;
-
-	figureEightScale = 100.0f;
-
-	speed = 3.0f;
-	direction = 1;
+	bulletPhase = BulletPhase2::PHASE_1;
+	previousPhase = BulletPhase2::PHASE_1;
 
 	shotTimer = 0.0f;
-	shotInterval = 60.0f;
+	shotInterval = 120.0f;
+
+	moveDirection = 1.0f;
+
+	isCharging = false;
+	chargeTimer = 0.0f;
+
+	isActive = true;
+
+	// 基底クラスの変数も初期化
+	hp = maxHp;
+	isDead = false;
 }
 
 Boss2::~Boss2()
@@ -76,6 +76,41 @@ Boss2::~Boss2()
 }
 
 void Boss2::Update()
+{
+
+}
+
+void Boss2::CheckPhaseTransition()
+{
+
+}
+
+void Boss2::OnPhaseChanged(int newPhase)
+{
+
+}
+
+void Boss2::UpdatePhase1()
+{
+
+}
+
+void Boss2::UpdatePhase2()
+{
+
+}
+
+void Boss2::UpdatePhase3()
+{
+
+}
+
+void Boss2::ShotBullet(float angle, float num)
+{
+
+}
+
+void Boss2::ShootBullet()
 {
 
 }
@@ -92,24 +127,4 @@ void Boss2::TakeDamage(int damage)
 bool Boss2::IsHit(float bx, float by, int rad)
 {
 	return false;
-}
-
-void Boss2::UpdateCircle()
-{
-}
-
-void Boss2::UpdateFigureEight()
-{
-}
-
-void Boss2::UpdateLeftRight()
-{
-}
-
-void Boss2::ChangePattern()
-{
-}
-
-void Boss2::ShootBullet()
-{
 }
