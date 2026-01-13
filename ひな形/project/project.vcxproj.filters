@@ -107,6 +107,8 @@
       <Filter>PlayScene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Enemy.cpp" />
+    <ClCompile Include="Source\StageData.cpp" />
+    <ClCompile Include="Source\csvReader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imconfig.h" />
@@ -232,6 +234,8 @@
     <ClInclude Include="Source\playerBullet.h">
       <Filter>PlayScene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\StageData.h" />
+    <ClInclude Include="Source\csvReader.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">

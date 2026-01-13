@@ -31,7 +31,6 @@ Boss1::Boss1() : Enemy()
 
     isActive = true;
 
-    // 基底クラスの変数も初期化
     hp = maxHp;
     isDead = false;
 }
@@ -63,7 +62,6 @@ Boss1::Boss1(float sx, float sy) : Enemy()
 
     isActive = true;
 
-    // 基底クラスの変数も初期化
     hp = maxHp;
     isDead = false;
 }
@@ -83,13 +81,10 @@ void Boss1::Update()
         return;
     }
 
-    // HPベースのフェーズチェック
     CheckPhaseTransition();
 
-    // 弾発射タイマー更新
     shotTimer += 1.0f;
 
-    // 各フェーズの更新
     switch (bulletPhase) {
     case BulletPhase::PHASE_1:
         UpdatePhase1();
@@ -102,7 +97,6 @@ void Boss1::Update()
         break;
     }
 
-    // 弾発射判定
     if (shotTimer >= shotInterval) {
         switch (bulletPhase) {
         case BulletPhase::PHASE_1:
@@ -112,9 +106,8 @@ void Boss1::Update()
             ShotBullet(30.0f, 3.0f);
             break;
         case BulletPhase::PHASE_3:
-            if (!isCharging) {
-                ShotBullet(25.0f, 5.0f);
-            }
+            // チャージ中でも弾を発射
+            ShotBullet(0, 0);  // パラメータは内部で使用しない
             break;
         }
         shotTimer = 0.0f;
@@ -144,7 +137,6 @@ void Boss1::OnPhaseChanged(int newPhase)
 {
     printfDx("フェーズ %d に移行！HP: %d\n", newPhase, currentHp);
 
-    // フェーズごとの初期化
     switch (bulletPhase) {
     case BulletPhase::PHASE_1:
         x = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f - 60.0f;
@@ -171,17 +163,14 @@ void Boss1::OnPhaseChanged(int newPhase)
 
 void Boss1::UpdatePhase1()
 {
-    // フェーズ1: 固定位置（ステージ中央上部）
     x = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f - 60.0f;
     y = Field::STAGE_TOP + 20.0f;
 }
 
 void Boss1::UpdatePhase2()
 {
-    // フェーズ2: 左右移動（ステージ範囲内）
     x += moveDirection;
 
-    // ボスの画像サイズ（120px程度）を考慮して範囲制限
     if (x <= Field::STAGE_LEFT + 10.0f) {
         x = Field::STAGE_LEFT + 10.0f;
         moveDirection = 2.0f;
@@ -194,10 +183,9 @@ void Boss1::UpdatePhase2()
 
 void Boss1::UpdatePhase3()
 {
-    // フェーズ3: 左右移動（チャージ中も継続、ステージ範囲内）
+    // 左右移動
     x += moveDirection;
 
-    // ボスの画像サイズを考慮して範囲制限
     if (x <= Field::STAGE_LEFT + 10.0f) {
         x = Field::STAGE_LEFT + 10.0f;
         moveDirection = 2.0f;
@@ -210,35 +198,35 @@ void Boss1::UpdatePhase3()
     // チャージタイマー管理
     if (!isCharging) {
         chargeTimer += 1.0f;
-        if (chargeTimer >= 180.0f) {  // 3秒
+        if (chargeTimer >= 180.0f) {
             isCharging = true;
             chargeTimer = 0.0f;
         }
     }
     else {
         chargeTimer += 1.0f;
-        if (chargeTimer >= 60.0f) {  // 1秒
+        if (chargeTimer >= 60.0f) {
             isCharging = false;
             chargeTimer = 0.0f;
         }
     }
 }
+
 void Boss1::ShotBullet(float angle, float num)
 {
-    // フェーズ1の場合は全方位放射状 + 真下だけ自機狙い
+    Player* player = FindGameObject<Player>();
+
+    // フェーズ1: 全方位放射状 + 真下だけ自機狙い
     if (bulletPhase == BulletPhase::PHASE_1) {
         float angleStep = 360.0f / num;
-        Player* player = FindGameObject<Player>();
 
         for (int i = 0; i < num; i++) {
             float shotAngle = (angleStep * i) * DegToRad;
 
-            // 真下方向（90度付近）かチェック
             float angleDeg = angleStep * i;
             bool isDownward = (angleDeg >= 67.5f && angleDeg <= 112.5f);
 
             if (isDownward && player != nullptr) {
-                // 真下の弾は自機狙い（画像タイプ1を指定）
                 float dx = player->GetX() - x;
                 float dy = player->GetY() - y;
                 float length = sqrt(dx * dx + dy * dy);
@@ -248,21 +236,18 @@ void Boss1::ShotBullet(float angle, float num)
                     dy /= length;
                 }
 
-                // ★ここを修正：第6引数に1を追加（自機狙い用画像）
                 new enemyBullet(x + 32, y + 32, dx * 10.0f, dy * 10.0f, 8.0f, 1);
             }
             else {
-                // その他の方向は通常の放射状（画像タイプ0を明示）
                 float c1 = cos(shotAngle);
                 float s1 = sin(shotAngle);
 
-                // ★第6引数に0を追加（通常画像）
                 new enemyBullet(x + 32, y + 32, c1 * 5.0f, s1 * 5.0f, 8.0f, 0);
             }
         }
     }
-    // フェーズ2とフェーズ3は真下に広がる弾幕（通常画像）
-    else {
+    // フェーズ2: 真下に広がる弾幕
+    else if (bulletPhase == BulletPhase::PHASE_2) {
         float baseAngle = 90.0f * DegToRad;
         float spreadAngle = angle * DegToRad;
 
@@ -273,11 +258,64 @@ void Boss1::ShotBullet(float angle, float num)
             float c1 = cos(shotAngle);
             float s1 = sin(shotAngle);
 
-            // ★通常画像（画像タイプ0）
             new enemyBullet(x + 32, y + 32, c1 * 5.0f, s1 * 5.0f, 8.0f, 0);
         }
     }
+    // フェーズ3: 広範囲弾幕 + 自機狙い弾
+    else if (bulletPhase == BulletPhase::PHASE_3) {
+        // 1. 広範囲の放射状弾幕（通常弾3発）
+        float baseAngle = 90.0f * DegToRad;  // 真下
+        float spreadRange = 50.0f * DegToRad;  // 左右50度（合計100度）
+        int spreadCount = 3;  // 弾数
+
+        for (int i = 0; i < spreadCount; i++) {
+            float offset = (i - (spreadCount - 1) / 2.0f) * (spreadRange / (spreadCount - 1));
+            float shotAngle = baseAngle + offset;
+
+            float c1 = cos(shotAngle);
+            float s1 = sin(shotAngle);
+
+            // 通常弾（画像タイプ0）
+            new enemyBullet(x + 32, y + 32, c1 * 4.0f, s1 * 4.0f, 8.0f, 0);
+        }
+
+        // 2. 自機狙い弾を2発追加（ボスの左右から発射）
+        if (player != nullptr) {
+            // 左側から発射
+            float leftX = x + 10;  // ボスの左端
+            float leftY = y + 60;  // ボスの中央高さ
+
+            float dx1 = player->GetX() - leftX;
+            float dy1 = player->GetY() - leftY;
+            float length1 = sqrt(dx1 * dx1 + dy1 * dy1);
+
+            if (length1 > 0) {
+                dx1 /= length1;
+                dy1 /= length1;
+            }
+
+            // 左からの自機狙い弾（画像タイプ1）
+            new enemyBullet(leftX, leftY, dx1 * 6.0f, dy1 * 6.0f, 8.0f, 1);
+
+            // 右側から発射
+            float rightX = x + 110;  // ボスの右端
+            float rightY = y + 60;   // ボスの中央高さ
+
+            float dx2 = player->GetX() - rightX;
+            float dy2 = player->GetY() - rightY;
+            float length2 = sqrt(dx2 * dx2 + dy2 * dy2);
+
+            if (length2 > 0) {
+                dx2 /= length2;
+                dy2 /= length2;
+            }
+
+            // 右からの自機狙い弾（画像タイプ1）
+            new enemyBullet(rightX, rightY, dx2 * 6.0f, dy2 * 6.0f, 8.0f, 1);
+        }
+    }
 }
+
 void Boss1::ShootBullet()
 {
     Player* player = FindGameObject<Player>();
@@ -294,7 +332,6 @@ void Boss1::ShootBullet()
 
     float bulletSpeed = 5.0f;
 
-    // 5-way弾
     float angles[] = { 0.0f, 0.3f, -0.3f, 0.5f, -0.5f };
 
     for (int i = 0; i < 5; i++) {
@@ -320,7 +357,7 @@ void Boss1::TakeDamage(int damage)
 {
     if (!isActive) return;
     currentHp -= damage;
-    hp = currentHp;  // 基底クラスのhpも同期
+    hp = currentHp;
 
     if (currentHp <= 0) {
         currentHp = 0;
@@ -339,7 +376,7 @@ bool Boss1::IsHit(float bx, float by, int rad)
     float d = sqrt(dx * dx + dy * dy);
 
     if (d < 60 + rad) {
-        TakeDamage(100);  
+        TakeDamage(100);
         return true;
     }
     return false;

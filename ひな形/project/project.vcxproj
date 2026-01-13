@@ -159,6 +159,7 @@
     <ClInclude Include="Source\Bullet.h" />
     <ClInclude Include="Source\Collision.h" />
     <ClInclude Include="Source\Common.h" />
+    <ClInclude Include="Source\csvReader.h" />
     <ClInclude Include="Source\Enemy.h" />
     <ClInclude Include="Source\enemyBullet.h" />
     <ClInclude Include="Source\EnemyManager.h" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Source\Screen.h" />
     <ClInclude Include="Source\PlayScene.h" />
     <ClInclude Include="Source\SceneFactory.h" />
+    <ClInclude Include="Source\StageData.h" />
     <ClInclude Include="Source\TitleScene.h" />
     <ClInclude Include="Source\zako1.h" />
   </ItemGroup>
@@ -192,6 +194,7 @@
     <ClCompile Include="Source\Bullet.cpp" />
     <ClCompile Include="Source\Collision.cpp" />
     <ClCompile Include="Source\Common.cpp" />
+    <ClCompile Include="Source\csvReader.cpp" />
     <ClCompile Include="Source\Enemy.cpp" />
     <ClCompile Include="Source\enemyBullet.cpp" />
     <ClCompile Include="Source\EnemyManager.cpp" />
@@ -200,6 +203,7 @@
     <ClCompile Include="Source\playerBullet.cpp" />
     <ClCompile Include="Source\PlayScene.cpp" />
     <ClCompile Include="Source\SceneFactory.cpp" />
+    <ClCompile Include="Source\StageData.cpp" />
     <ClCompile Include="Source\TitleScene.cpp" />
     <ClCompile Include="Source\zako1.cpp" />
   </ItemGroup>
