@@ -107,6 +107,7 @@
       <Filter>PlayScene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Enemy.cpp" />
+    <ClCompile Include="Source\zako2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imconfig.h" />
@@ -232,6 +233,7 @@
     <ClInclude Include="Source\playerBullet.h">
       <Filter>PlayScene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\zako2.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">
