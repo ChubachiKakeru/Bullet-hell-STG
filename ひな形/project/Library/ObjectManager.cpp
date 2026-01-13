@@ -27,9 +27,9 @@ void ObjectManager::Update()
 			continue;
 		if (not obj->DestroyRequested())
 		{
-			running = obj;
-			obj->Update();
-			running = nullptr;
+			if (obj != nullptr) {
+				obj->Update();
+			}
 		}
 		if (obj->DestroyRequested())
 		{

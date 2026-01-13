@@ -109,6 +109,11 @@
     <ClCompile Include="Source\Enemy.cpp" />
     <ClCompile Include="Source\StageData.cpp" />
     <ClCompile Include="Source\csvReader.cpp" />
+    <ClCompile Include="Source\GameOverScene.cpp" />
+    <ClCompile Include="Source\StageSelectScene.cpp" />
+    <ClCompile Include="Source\ShopScene.cpp" />
+    <ClCompile Include="Source\ClearScene.cpp" />
+    <ClCompile Include="Source\DebugSceneSelector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imconfig.h" />
@@ -236,6 +241,11 @@
     </ClInclude>
     <ClInclude Include="Source\StageData.h" />
     <ClInclude Include="Source\csvReader.h" />
+    <ClInclude Include="Source\GameOverScene.h" />
+    <ClInclude Include="Source\StageSelectScene.h" />
+    <ClInclude Include="Source\ShopScene.h" />
+    <ClInclude Include="Source\ClearScene.h" />
+    <ClInclude Include="Source\DebugSceneSelector.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">

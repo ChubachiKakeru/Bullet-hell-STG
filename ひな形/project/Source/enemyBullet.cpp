@@ -91,7 +91,7 @@ void enemyBullet::Update() {
 
                 // 速度の大きさを一定に保つ（速度を遅めに設定）
                 float currentSpeed = sqrt(velocityX * velocityX + velocityY * velocityY);
-                float targetSpeed = 6.0f;  // 8.0f から 6.0f に変更（遅くする）
+                float targetSpeed = 5.5f;  // 8.0f から 6.0f に変更（遅くする）
 
                 if (currentSpeed > 0.1f) {
                     velocityX = (velocityX / currentSpeed) * targetSpeed;
