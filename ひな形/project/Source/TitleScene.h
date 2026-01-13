@@ -13,4 +13,9 @@ public:
 	~TitleScene();
 	void Update() override;
 	void Draw() override;
+private:
+	int hImage;
+	int orgW, orgH;
+	int newW, newH;
+	int font;
 };
