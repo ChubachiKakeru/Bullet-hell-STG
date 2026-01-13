@@ -212,6 +212,8 @@ void Boss1::UpdatePhase3()
     }
 }
 
+// Boss1.cppのShotBullet関数のPhase1部分のみ修正
+
 void Boss1::ShotBullet(float angle, float num)
 {
     Player* player = FindGameObject<Player>();
@@ -227,8 +229,8 @@ void Boss1::ShotBullet(float angle, float num)
             bool isDownward = (angleDeg >= 67.5f && angleDeg <= 112.5f);
 
             if (isDownward && player != nullptr) {
-                float dx = player->GetX() - x;
-                float dy = player->GetY() - y;
+                float dx = player->GetX() - (x + 60);  // ボスの中心から計算
+                float dy = player->GetY() - (y + 60);
                 float length = sqrt(dx * dx + dy * dy);
 
                 if (length > 0) {
@@ -236,13 +238,14 @@ void Boss1::ShotBullet(float angle, float num)
                     dy /= length;
                 }
 
-                new enemyBullet(x + 32, y + 32, dx * 10.0f, dy * 10.0f, 8.0f, 1);
+                // 初期速度を8.0fに変更（10.0fから）
+                new enemyBullet(x + 60, y + 60, dx * 8.0f, dy * 8.0f, 8.0f, 1);
             }
             else {
                 float c1 = cos(shotAngle);
                 float s1 = sin(shotAngle);
 
-                new enemyBullet(x + 32, y + 32, c1 * 5.0f, s1 * 5.0f, 8.0f, 0);
+                new enemyBullet(x + 60, y + 60, c1 * 5.0f, s1 * 5.0f, 8.0f, 0);
             }
         }
     }

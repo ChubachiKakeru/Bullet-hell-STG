@@ -102,9 +102,9 @@ void enemyBullet::Update() {
                 velocityX += dx * homingPower;
                 velocityY += dy * homingPower;
 
-                // 速度の大きさを一定に保つ
+                // 速度の大きさを一定に保つ（速度を上げる）
                 float currentSpeed = sqrt(velocityX * velocityX + velocityY * velocityY);
-                float targetSpeed = 5.5f;
+                float targetSpeed = 8.0f;  // 5.5fから8.0fに変更
 
                 if (currentSpeed > 0.1f) {
                     velocityX = (velocityX / currentSpeed) * targetSpeed;
@@ -163,13 +163,11 @@ void enemyBullet::Update() {
 
     // ステージ範囲外判定
     if (currentImageType == 1) {
-        // 追尾弾：追尾期間中は範囲外判定をしない
-        if (frameCount >= homingDuration) {
-            if (x < Field::STAGE_LEFT - 300 || x > Field::STAGE_RIGHT + 300 ||
-                y < -300 || y > Field::STAGE_BOTTOM + 500) {
-                DestroyMe();
-                return;
-            }
+        // 追尾弾：かなり広い範囲まで許容（画面外でも追尾し続ける）
+        if (x < Field::STAGE_LEFT - 500 || x > Field::STAGE_RIGHT + 500 ||
+            y < -500 || y > Field::STAGE_BOTTOM + 1000) {
+            DestroyMe();
+            return;
         }
     }
     else {
