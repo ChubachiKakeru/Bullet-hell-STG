@@ -213,6 +213,7 @@
     <ClCompile Include="Source\SceneFactory.cpp" />
     <ClCompile Include="Source\ShopScene.cpp" />
     <ClCompile Include="Source\StageData.cpp" />
+    <ClCompile Include="Source\StageSelect.cpp" />
     <ClCompile Include="Source\StageSelectScene.cpp" />
     <ClCompile Include="Source\TitleScene.cpp" />
     <ClCompile Include="Source\zako1.cpp" />

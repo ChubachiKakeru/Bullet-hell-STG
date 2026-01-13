@@ -114,6 +114,7 @@
     <ClCompile Include="Source\ShopScene.cpp" />
     <ClCompile Include="Source\ClearScene.cpp" />
     <ClCompile Include="Source\DebugSceneSelector.cpp" />
+    <ClCompile Include="Source\StageSelect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imconfig.h" />
