@@ -49,5 +49,5 @@ void TitleScene::Draw()
 	DrawString(0, 20, Version(), GetColor(255,255,255));
 	DrawString(0, 0, "TITLE SCENE", GetColor(255,255,255));
 	//DrawFormatString(100, 100, GetColor(255,255,255), "%4.1f", 1.0f / Time::DeltaTime());
-	DrawString(550, 1000, "Pキーを押してプレイ", GetColor(255, 255, 255));
+	DrawString(520, 1000, "Pキーを押してプレイ", GetColor(255, 255, 255));
 }
