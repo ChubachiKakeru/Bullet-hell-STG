@@ -68,7 +68,7 @@ void enemyBullet::Update() {
     Bullet::Update();
     if (!isActive) return;
 
-    // ホーミング処理（追加）
+    // ホーミング処理
     if (currentImageType == 1 && frameCount < homingDuration) {
         Player* player = FindGameObject<Player>();
         if (player != nullptr) {
@@ -89,9 +89,9 @@ void enemyBullet::Update() {
                 velocityX += dx * homingPower;
                 velocityY += dy * homingPower;
 
-                // 速度の大きさを一定に保つ（速度を遅めに設定）
+                // 速度の大きさを一定に保つ
                 float currentSpeed = sqrt(velocityX * velocityX + velocityY * velocityY);
-                float targetSpeed = 5.5f;  // 8.0f から 6.0f に変更（遅くする）
+                float targetSpeed = 5.5f;
 
                 if (currentSpeed > 0.1f) {
                     velocityX = (velocityX / currentSpeed) * targetSpeed;
@@ -115,14 +115,28 @@ void enemyBullet::Update() {
         return;
     }
 
-    // ステージ範囲外判定
-    if (x < Field::STAGE_LEFT - 50 || x > Field::STAGE_RIGHT + 50 ||
-        y < -1 || y > Field::STAGE_BOTTOM + 100) {
-        DestroyMe();
-        return;
+    // ステージ範囲外判定（追尾弾は範囲を広げる、または追尾中は判定しない）
+    if (currentImageType == 1) {
+        // 追尾弾：追尾期間中は範囲外判定をしない、追尾終了後は通常判定
+        if (frameCount >= homingDuration) {
+            // 追尾終了後は大きめの範囲で判定
+            if (x < Field::STAGE_LEFT - 200 || x > Field::STAGE_RIGHT + 200 ||
+                y < -200 || y > Field::STAGE_BOTTOM + 200) {
+                DestroyMe();
+                return;
+            }
+        }
+        // 追尾中は範囲外判定をスキップ（画面外に出ても追尾し続ける）
+    }
+    else {
+        // 通常弾：従来通りの判定
+        if (x < Field::STAGE_LEFT - 50 || x > Field::STAGE_RIGHT + 50 ||
+            y < -1 || y > Field::STAGE_BOTTOM + 100) {
+            DestroyMe();
+            return;
+        }
     }
 }
-
 void enemyBullet::Draw() {
     // 画像タイプに応じて描画する画像を選択
     int imageToUse = (currentImageType == 1) ? hImageHoming : hImage;

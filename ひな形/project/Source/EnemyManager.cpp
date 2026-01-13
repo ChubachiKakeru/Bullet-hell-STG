@@ -58,8 +58,8 @@ bool EnemyManager::LoadStageFromCSV(int stageNumber) {
     // CSVからデータを読み込み
     currentStageData = new StageData();
     if (!currentStageData->LoadFromCSV(filename)) {
-        printfDx("ステージ%dのCSVファイルが見つかりません: %s\n", stageNumber, filename);
-        printfDx("デフォルトデータを使用します\n");
+        /*printfDx("ステージ%dのCSVファイルが見つかりません: %s\n", stageNumber, filename);
+        printfDx("デフォルトデータを使用します\n");*/
 
         // CSVが無い場合はコード定義のデフォルトデータを使用
         delete currentStageData;
@@ -90,8 +90,8 @@ bool EnemyManager::LoadStageFromCSV(int stageNumber) {
     phaseCleared = false;
     phaseTransitionTimer = 0.0f;
 
-    printfDx("ステージ%d をロードしました (フェーズ数: %d)\n",
-        stageNumber, currentStageData->phases.size());
+    //printfDx("ステージ%d をロードしました (フェーズ数: %d)\n",
+        stageNumber, currentStageData->phases.size();
     return true;
 }
 
@@ -108,7 +108,7 @@ void EnemyManager::Update() {
     }
 
     RemoveDeadEnemies();
-    DrawDebugInfo();
+    //DrawDebugInfo();
 }
 
 void EnemyManager::UpdatePhaseLogic() {
@@ -159,8 +159,8 @@ void EnemyManager::UpdateWaveSpawning() {
                 }
                 waveSpawned = true;
 
-                printfDx("Wave %d spawned (Phase %d, Stage %d)\n",
-                    currentWaveIndex + 1, currentPhaseIndex + 1, currentStageNumber);
+                //printfDx("Wave %d spawned (Phase %d, Stage %d)\n",
+                    currentWaveIndex + 1, currentPhaseIndex + 1, currentStageNumber;
             }
         }
 
@@ -210,8 +210,8 @@ void EnemyManager::SpawnEnemy(const EnemySpawnData& data) {
 
     if (newEnemy) {
         enemies.push_back(newEnemy);
-        printfDx("Enemy spawned: Type=%d, X=%.1f, Y=%.1f\n",
-            data.enemyType, data.spawnX, data.spawnY);
+        //printfDx("Enemy spawned: Type=%d, X=%.1f, Y=%.1f\n",
+            data.enemyType, data.spawnX, data.spawnY;
     }
 }
 
@@ -258,7 +258,7 @@ void EnemyManager::AdvanceToNextPhase() {
     phaseCleared = false;
     phaseTransitionTimer = 0.0f;
 
-    printfDx("Advance to Phase %d (Stage %d)\n", currentPhaseIndex + 1, currentStageNumber);
+    //printfDx("Advance to Phase %d (Stage %d)\n", currentPhaseIndex + 1, currentStageNumber);
 }
 
 void EnemyManager::RemoveDeadEnemies() {

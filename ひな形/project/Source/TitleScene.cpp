@@ -1,12 +1,12 @@
 #include "TitleScene.h"
 #include "../Library/SceneManager.h"
-#include"DebugSceneSelector.h"
+#include "DebugSceneSelector.h"
 
 TitleScene::TitleScene()
     : m_titleImage(-1)
 {
     // タイトル画像を読み込む
-    m_titleImage = LoadGraph("Graphics/Title.png");
+    m_titleImage = LoadGraph("data/image/title.png");
 }
 
 TitleScene::~TitleScene()
@@ -53,10 +53,35 @@ void TitleScene::Update()
 
 void TitleScene::Draw()
 {
-    // タイトル画像を表示
+    // 背景を黒で塗りつぶし
+    DrawBox(0, 0, 1280, 720, GetColor(0, 0, 0), TRUE);
+
+    // タイトル画像をアスペクト比を保って中央に表示
     if (m_titleImage != -1)
     {
-        DrawGraph(0, 0, m_titleImage, FALSE);
+        // 画像のサイズを取得
+        int imageWidth, imageHeight;
+        GetGraphSize(m_titleImage, &imageWidth, &imageHeight);
+
+        // 画面サイズ
+        const int screenWidth = 1280;
+        const int screenHeight = 720;
+
+        // アスペクト比を保って拡大率を計算
+        float scaleX = (float)screenWidth / imageWidth;
+        float scaleY = (float)screenHeight / imageHeight;
+        float scale = (scaleX < scaleY) ? scaleX : scaleY; // 小さい方を採用
+
+        // 拡大後のサイズ
+        int drawWidth = (int)(imageWidth * scale);
+        int drawHeight = (int)(imageHeight * scale);
+
+        // 中央配置の座標
+        int drawX = (screenWidth - drawWidth) / 2;
+        int drawY = (screenHeight - drawHeight) / 2;
+
+        // 描画
+        DrawExtendGraph(drawX, drawY, drawX + drawWidth, drawY + drawHeight, m_titleImage, FALSE);
     }
     else
     {
