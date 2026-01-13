@@ -282,20 +282,20 @@ void Boss1::ShotBullet(float angle, float num)
         // 2. 自機狙い弾を2発追加（ボスの左右から発射）
         if (player != nullptr) {
             // 左側から発射
-            float leftX = x + 10;  // ボスの左端
-            float leftY = y + 60;  // ボスの中央高さ
+            //float leftX = x + 10;  // ボスの左端
+            //float leftY = y + 60;  // ボスの中央高さ
 
-            float dx1 = player->GetX() - leftX;
-            float dy1 = player->GetY() - leftY;
-            float length1 = sqrt(dx1 * dx1 + dy1 * dy1);
+            //float dx1 = player->GetX() - leftX;
+            //float dy1 = player->GetY() - leftY;
+            //float length1 = sqrt(dx1 * dx1 + dy1 * dy1);
 
-            if (length1 > 0) {
-                dx1 /= length1;
-                dy1 /= length1;
-            }
+            //if (length1 > 0) {
+              //  dx1 /= length1;
+              // dy1 /= length1;
+            //}
 
             // 左からの自機狙い弾（画像タイプ1）
-            new enemyBullet(leftX, leftY, dx1 * 6.0f, dy1 * 6.0f, 8.0f, 1);
+            //new enemyBullet(leftX, leftY, dx1 * 6.0f, dy1 * 6.0f, 8.0f, 1);
 
             // 右側から発射
             float rightX = x + 110;  // ボスの右端
