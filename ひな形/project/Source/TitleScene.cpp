@@ -2,6 +2,7 @@
 #include "../Library/SceneManager.h"
 #include "DebugSceneSelector.h"
 
+
 TitleScene::TitleScene()
     : m_titleImage(-1)
 {

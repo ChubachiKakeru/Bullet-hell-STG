@@ -154,7 +154,7 @@ void Boss1::OnPhaseChanged(int newPhase)
     case BulletPhase::PHASE_3:
         x = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f - 60.0f;
         y = Field::STAGE_TOP + 20.0f;
-        shotInterval = 60.0f;
+        shotInterval = 60.0f*1.7f;
         isCharging = false;
         chargeTimer = 0.0f;
         break;
