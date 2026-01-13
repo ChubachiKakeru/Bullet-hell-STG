@@ -8,6 +8,7 @@ TitleScene::TitleScene()
 {
     // ƒ^ƒCƒgƒ‹‰æ‘œ‚ğ“Ç‚İ‚Ş
     m_titleImage = LoadGraph("data/image/title.png");
+	
 }
 
 TitleScene::~TitleScene()

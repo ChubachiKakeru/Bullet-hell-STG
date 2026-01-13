@@ -12,4 +12,8 @@ public:
 
 private:
     int m_titleImage;  // ƒ^ƒCƒgƒ‹‰æ‘œ
+	int hImage;
+	int orgW, orgH;
+	int newW, newH;
+	int font;
 };
