@@ -1,6 +1,5 @@
 #include "ShopScene.h"
 #include "../Library/SceneManager.h"
-#include <DxLib.h>
 
 ShopScene::ShopScene()
     : m_backgroundImage(-1)

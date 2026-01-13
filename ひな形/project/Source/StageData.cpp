@@ -1,7 +1,7 @@
 #include "StageData.h"
 #include "csvReader.h"
 #include "Field.h"
-#include <DxLib.h>
+
 
 // ========================================
 // CSV“Ç‚İ‚İˆ—
