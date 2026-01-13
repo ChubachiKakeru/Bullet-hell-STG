@@ -7,7 +7,7 @@
 // 通常のコンストラクタ
 enemyBullet::enemyBullet(float sx, float sy, float vx, float vy, float bulletsize)
     : Bullet(sx, sy, vx, vy, bulletsize),
-    currentImageType(0),  // デフォルトは通常弾
+    currentImageType(0),
     isActive(true),
     isAlive(true),
     homingPower(0.0f),
@@ -15,7 +15,7 @@ enemyBullet::enemyBullet(float sx, float sy, float vx, float vy, float bulletsiz
     frameCount(0)
 {
     hImage = LoadGraph("data/image/yaiba.png");
-    hImageHoming = LoadGraph("data/image/yaiba3.png");  // 自機狙い用
+    hImageHoming = LoadGraph("data/image/yaiba3.png");
     x = sx;
     y = sy;
     velocityX = vx;
@@ -23,26 +23,26 @@ enemyBullet::enemyBullet(float sx, float sy, float vx, float vy, float bulletsiz
     size = bulletsize;
 }
 
-// 画像タイプ指定可能なコンストラクタ（追加）
+// 画像タイプ指定可能なコンストラクタ
 enemyBullet::enemyBullet(float sx, float sy, float vx, float vy, float bulletsize, int imageType)
     : Bullet(sx, sy, vx, vy, bulletsize),
-    currentImageType(imageType),  // 画像タイプを指定
+    currentImageType(imageType),
     isActive(true),
     isAlive(true),
     frameCount(0)
 {
     hImage = LoadGraph("data/image/yaiba.png");
-    hImageHoming = LoadGraph("data/image/yaiba3.png");  // 自機狙い用
+    hImageHoming = LoadGraph("data/image/yaiba3.png");
     x = sx;
     y = sy;
     velocityX = vx;
     velocityY = vy;
     size = bulletsize;
 
-    // ホーミング弾の設定（弱めに変更）
+    // ホーミング弾の設定
     if (currentImageType == 1) {
-        homingPower = 0.08f;      // 0.2f から 0.08f に変更（約半分以下）
-        homingDuration = 150;     // 240 から 150 に変更（2.5秒間追尾）
+        homingPower = 0.08f;
+        homingDuration = 150;
     }
     else {
         homingPower = 0.0f;
@@ -64,20 +64,33 @@ enemyBullet::~enemyBullet()
 }
 
 void enemyBullet::Update() {
-    // 基底クラスの更新を呼ぶ
     Bullet::Update();
     if (!isActive) return;
+
+    // 弾の中心位置を計算（画像タイプによって異なる）
+    float bulletCenterX, bulletCenterY;
+    if (currentImageType == 1) {
+        // 自機狙い弾：150x150
+        bulletCenterX = x + 75.0f;
+        bulletCenterY = y + 75.0f;
+    }
+    else {
+        // 通常弾：76x83
+        bulletCenterX = x + 38.0f;
+        bulletCenterY = y + 41.5f;
+    }
 
     // ホーミング処理
     if (currentImageType == 1 && frameCount < homingDuration) {
         Player* player = FindGameObject<Player>();
         if (player != nullptr) {
-            // プレイヤーへの方向ベクトルを計算
-            float targetX = player->GetX();
-            float targetY = player->GetY();
+            // プレイヤーの中心位置を取得（150x150画像の中心）
+            float targetX = player->GetX() + 75.0f;
+            float targetY = player->GetY() + 75.0f;
 
-            float dx = targetX - (x + 40);
-            float dy = targetY - (y + 40);
+            // プレイヤーへの方向ベクトルを計算
+            float dx = targetX - bulletCenterX;
+            float dy = targetY - bulletCenterY;
             float length = sqrt(dx * dx + dy * dy);
 
             if (length > 0) {
@@ -109,34 +122,66 @@ void enemyBullet::Update() {
 
     // プレイヤーとの当たり判定
     Player* p = FindGameObject<Player>();
-    if (p != nullptr && p->IsHit(x + 40, y + 40, 5))
-    {
-        DestroyMe();
-        return;
+    if (p != nullptr) {
+        // 弾の中心位置（画像タイプによって異なる）
+        float bulletCenterX, bulletCenterY;
+        if (currentImageType == 1) {
+            // 自機狙い弾：150x150
+            bulletCenterX = x + 75.0f;
+            bulletCenterY = y + 75.0f;
+        }
+        else {
+            // 通常弾：76x83
+            bulletCenterX = x + 38.0f;
+            bulletCenterY = y + 41.5f;
+        }
+
+        // プレイヤーの中心位置（150x150画像の中心）
+        float playerCenterX = p->GetX() + 75.0f;
+        float playerCenterY = p->GetY() + 75.0f;
+
+        // 距離による判定
+        float dx = bulletCenterX - playerCenterX;
+        float dy = bulletCenterY - playerCenterY;
+        float distance = sqrt(dx * dx + dy * dy);
+
+        // 当たり判定の半径（弾のタイプに応じて調整）
+        float hitRadius;
+        if (currentImageType == 1) {
+            hitRadius = 50.0f;  // 自機狙い弾
+        }
+        else {
+            hitRadius = 40.0f;  // 通常弾
+        }
+
+        if (distance < hitRadius) {
+            p->TakeDamage(10);
+            DestroyMe();
+            return;
+        }
     }
 
-    // ステージ範囲外判定（追尾弾は範囲を広げる、または追尾中は判定しない）
+    // ステージ範囲外判定
     if (currentImageType == 1) {
-        // 追尾弾：追尾期間中は範囲外判定をしない、追尾終了後は通常判定
+        // 追尾弾：追尾期間中は範囲外判定をしない
         if (frameCount >= homingDuration) {
-            // 追尾終了後は大きめの範囲で判定
-            if (x < Field::STAGE_LEFT - 200 || x > Field::STAGE_RIGHT + 200 ||
-                y < -200 || y > Field::STAGE_BOTTOM + 200) {
+            if (x < Field::STAGE_LEFT - 300 || x > Field::STAGE_RIGHT + 300 ||
+                y < -300 || y > Field::STAGE_BOTTOM + 500) {
                 DestroyMe();
                 return;
             }
         }
-        // 追尾中は範囲外判定をスキップ（画面外に出ても追尾し続ける）
     }
     else {
-        // 通常弾：従来通りの判定
-        if (x < Field::STAGE_LEFT - 50 || x > Field::STAGE_RIGHT + 50 ||
-            y < -1 || y > Field::STAGE_BOTTOM + 100) {
+        // 通常弾：76x83サイズに合わせた判定
+        if (x < Field::STAGE_LEFT - 100 || x > Field::STAGE_RIGHT + 100 ||
+            y < -100 || y > Field::STAGE_BOTTOM + 300) {
             DestroyMe();
             return;
         }
     }
 }
+
 void enemyBullet::Draw() {
     // 画像タイプに応じて描画する画像を選択
     int imageToUse = (currentImageType == 1) ? hImageHoming : hImage;
@@ -148,15 +193,24 @@ void enemyBullet::Draw() {
     else if (isActive) {
         // 画像がロードできなかった場合の代替描画
         int color = (currentImageType == 1) ? GetColor(255, 0, 0) : GetColor(255, 255, 0);
-        DrawCircle((int)(x + 40), (int)(y + 40), (int)size, color, TRUE);
+        if (currentImageType == 1) {
+            DrawCircle((int)(x + 75.0f), (int)(y + 75.0f), 75, color, TRUE);
+        }
+        else {
+            DrawCircle((int)(x + 38.0f), (int)(y + 41.5f), 38, color, TRUE);
+        }
     }
 
     // デバッグ用の当たり判定表示
-    DrawCircle((int)(x + 41), (int)(y + 40), 40, GetColor(255, 0, 255), FALSE);
+    if (currentImageType == 1) {
+        DrawCircle((int)(x + 75.0f), (int)(y + 75.0f), 50, GetColor(255, 0, 255), FALSE);
+    }
+    else {
+        DrawCircle((int)(x + 38.0f), (int)(y + 41.5f), 40, GetColor(255, 0, 255), FALSE);
+    }
 
-    // ホーミング弾には追加の視覚効果（オプション）
+    // ホーミング弾には追加の視覚効果
     if (isActive && currentImageType == 1 && frameCount < homingDuration) {
-        // ホーミング中は赤い外枠を表示
-        DrawCircle((int)(x + 41), (int)(y + 40), 45, GetColor(255, 0, 0), FALSE);
+        DrawCircle((int)(x + 75.0f), (int)(y + 75.0f), 60, GetColor(255, 0, 0), FALSE);
     }
 }

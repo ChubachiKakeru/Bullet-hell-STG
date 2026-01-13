@@ -51,12 +51,5 @@ private:
     // HP
     int hp;
     bool isActive;
-
-    // サウンドパス
-    const char* GAME_DEATH_SOUND_PATH = "data/Sound/deathSE.mp3";      //プレイヤー死亡ジングル
-    const char* GAME_PSHOT_SOUND_PATH = "data/Sound/playershotSE.mp3";      //自機弾発射ジングル
-    //  サウンドハンドル
-    int playerHitSoundHandle;		//	プレイヤーHitサウンドハンドル
-    int nanikaSoundHandle;         //  なにかサウンドハンドル
 };
 

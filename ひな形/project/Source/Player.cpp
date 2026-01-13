@@ -61,7 +61,6 @@ void Player::TakeDamage(int damage)
         hp = 0;
         SceneManager::ChangeScene("TITLE");
     }
-    PlaySoundFile(GAME_DEATH_SOUND_PATH, DX_PLAYTYPE_BACK);
 }
 
 // ========================================
@@ -95,8 +94,8 @@ void Player::Update()
     // 右移動 (Dキー)
     if (CheckHitKey(KEY_INPUT_D)) {
         x += MOVE_SPEED;
-        int push1 = field->HitCheckRight(x + 50/2, y + 5);
-        int push2 = field->HitCheckRight(x + 50/2, y + 63);
+        int push1 = field->HitCheckRight(x + 50 / 2, y + 5);
+        int push2 = field->HitCheckRight(x + 50 / 2, y + 63);
         x -= max(push1, push2);
     }
 
@@ -112,7 +111,7 @@ void Player::Update()
     if (CheckHitKey(KEY_INPUT_W)) {
         y -= MOVE_SPEED;
         int push1 = field->HitCheckUp(x + 14, y + 5);
-        int push2 = field->HitCheckUp(x + 50/2, y + 5);
+        int push2 = field->HitCheckUp(x + 50 / 2, y + 5);
         int push = max(push1, push2);
         if (push > 0) {
             y += push;
@@ -135,7 +134,7 @@ void Player::Update()
 
     // ステージ境界内に制限（画面の青い部分のみ）
     if (x < Field::STAGE_LEFT) x = Field::STAGE_LEFT;
-    if (x > Field::STAGE_RIGHT - 50/2) x = Field::STAGE_RIGHT - 50/2;  // プレイヤー幅を考慮
+    if (x > Field::STAGE_RIGHT - 50 / 2) x = Field::STAGE_RIGHT - 50 / 2;  // プレイヤー幅を考慮
     if (y < Field::STAGE_TOP) y = Field::STAGE_TOP;
     if (y > Screen::HEIGHT - 100) y = Screen::HEIGHT - 100;  // 画面下端まで移動可能
 
@@ -159,7 +158,6 @@ void Player::ShootBullet()
     int bulletX = (int)x + 50 / 2;
     int bulletY = (int)y + 50 / 2;
     new playerBullet(bulletX, bulletY, 0, BULLET_SPEED, BULLET_RADIUS);
-    PlaySoundFile(GAME_PSHOT_SOUND_PATH, DX_PLAYTYPE_BACK);
 }
 
 // ========================================
@@ -171,5 +169,4 @@ void Player::Draw()
     DrawGraph(x, y, hImage, TRUE);
     Field* field = FindGameObject<Field>();
 }
-
 
