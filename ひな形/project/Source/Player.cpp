@@ -30,6 +30,9 @@ Player::Player() : GameObject()
     shotTimer = 0.0f;
     hp = INITIAL_HP;
     isActive = true;
+
+    maxHp = 100;
+    currentPlayerHp = maxHp;
 }
 
 Player::Player(int sx, int sy) : GameObject()
@@ -42,6 +45,7 @@ Player::Player(int sx, int sy) : GameObject()
     shotTimer = 0.0f;
     hp = INITIAL_HP;
     isActive = true;
+
 }
 
 Player::~Player()
@@ -165,9 +169,16 @@ void Player::ShootBullet()
 // ========================================
 void Player::Draw()
 {
-
+    SetFontSize(40);
     DrawGraph(x, y, hImage, TRUE);
     Field* field = FindGameObject<Field>();
+
+    if (isActive && hp != -1) {
+        DrawGraph((int)x, (int)y, hp, TRUE);
+        DrawFormatString(950, 200, GetColor(255, 255, 255), " HP : %d", currentPlayerHp );
+        
+    }
+
 }
 
 

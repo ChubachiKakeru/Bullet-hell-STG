@@ -312,7 +312,7 @@ void Boss1::Draw()
 {
     if (isActive && bossImage != -1) {
         DrawGraph((int)x, (int)y, bossImage, TRUE);
-        DrawFormatString(10, 40, GetColor(255, 0, 0), "Boss HP: %d", currentHp);
+        DrawFormatString(320, 70, GetColor(255, 0, 0), "Boss HP: %d", currentHp);
     }
 }
 

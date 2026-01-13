@@ -51,5 +51,8 @@ private:
     // HP
     int hp;
     bool isActive;
+
+    int maxHp;          // ç≈ëÂHP
+    int currentPlayerHp;     // åªç›ÇÃHP
 };
 

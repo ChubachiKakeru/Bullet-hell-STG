@@ -46,8 +46,8 @@ void PlayScene::Update()
 void PlayScene::Draw()
 {
     // 基本情報
-    DrawString(0, 0, "PLAY SCENE", GetColor(255, 255, 255));
-    DrawString(100, 550, "Push [T]Key To Title", GetColor(255, 255, 255));
+    /*DrawString(0, 0, "PLAY SCENE", GetColor(255, 255, 255));
+    DrawString(100, 550, "Push [T]Key To Title", GetColor(255, 255, 255));*/
 
     // フェーズ情報とゲーム状態の表示
     EnemyManager* em = FindGameObject<EnemyManager>();
@@ -86,8 +86,9 @@ void PlayScene::Draw()
             break;
         case GamePhase::PHASE_BOSS:
             DrawFormatString(10, 30, GetColor(255, 100, 100),
-                "DEFEAT THE BOSS!");
+                " ");
             break;
+
         case GamePhase::PHASE_CLEAR:
             // ゲームクリア画面
             DrawFormatString(220, 250, GetColor(255, 255, 0),
@@ -99,6 +100,6 @@ void PlayScene::Draw()
             break;
         }
     }
-
+   // if()
     // 注意: GameObjectシステムで各オブジェクトのDraw()が自動的に呼ばれる想定
 }
