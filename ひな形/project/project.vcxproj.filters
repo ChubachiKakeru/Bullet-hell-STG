@@ -1,7 +1,35 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="ImGui\imgui.cpp" />
+    <ClCompile Include="ImGui\imgui_draw.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_dx9.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
+    <ClCompile Include="ImGui\imgui_ja_gryph_ranges.cpp" />
+    <ClCompile Include="ImGui\imgui_tables.cpp" />
+    <ClCompile Include="ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="Library\App.cpp" />
+    <ClCompile Include="Library\main.cpp" />
+    <ClCompile Include="Library\ObjectManager.cpp" />
+    <ClCompile Include="Library\SceneManager.cpp" />
+    <ClCompile Include="Library\Time.cpp" />
+    <ClCompile Include="Source\BackGround.cpp" />
+    <ClCompile Include="Source\BootScene.cpp" />
+    <ClCompile Include="Source\Boss1.cpp" />
+    <ClCompile Include="Source\Boss2.cpp" />
+    <ClCompile Include="Source\Bullet.cpp" />
+    <ClCompile Include="Source\Collision.cpp" />
+    <ClCompile Include="Source\Common.cpp" />
+    <ClCompile Include="Source\enemyBullet.cpp" />
+    <ClCompile Include="Source\Field.cpp" />
+    <ClCompile Include="Source\Player.cpp" />
+    <ClCompile Include="Source\playerBullet.cpp" />
+    <ClCompile Include="Source\PlayScene.cpp" />
     <ClCompile Include="Source\SceneFactory.cpp" />
+    <ClCompile Include="Source\TitleScene.cpp" />
+    <ClCompile Include="Source\zako1.cpp" />
+    <ClCompile Include="Source\EnemyManager.cpp" />
     <ClCompile Include="Library\App.cpp">
       <Filter>Library</Filter>
     </ClCompile>
@@ -78,10 +106,56 @@
     <ClCompile Include="Source\playerBullet.cpp">
       <Filter>PlayScene</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Enemy.cpp" />
+<<<<<<< HEAD
+    <ClCompile Include="Source\StageData.cpp" />
+    <ClCompile Include="Source\csvReader.cpp" />
+    <ClCompile Include="Source\GameOverScene.cpp" />
+    <ClCompile Include="Source\StageSelectScene.cpp" />
+    <ClCompile Include="Source\ShopScene.cpp" />
+    <ClCompile Include="Source\ClearScene.cpp" />
+    <ClCompile Include="Source\DebugSceneSelector.cpp" />
+    <ClCompile Include="Source\StageSelect.cpp" />
+=======
+    <ClCompile Include="Source\zako2.cpp" />
+>>>>>>> origin/20251225
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ImGui\imconfig.h" />
+    <ClInclude Include="ImGui\imgui.h" />
+    <ClInclude Include="ImGui\imgui_impl_dx11.h" />
+    <ClInclude Include="ImGui\imgui_impl_dx9.h" />
+    <ClInclude Include="ImGui\imgui_impl_dxlib.hpp" />
+    <ClInclude Include="ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="ImGui\imgui_internal.h" />
+    <ClInclude Include="ImGui\imstb_rectpack.h" />
+    <ClInclude Include="ImGui\imstb_textedit.h" />
+    <ClInclude Include="ImGui\imstb_truetype.h" />
+    <ClInclude Include="Library\App.h" />
+    <ClInclude Include="Library\GameObject.h" />
+    <ClInclude Include="Library\myDxLib.h" />
+    <ClInclude Include="Library\ObjectManager.h" />
+    <ClInclude Include="Library\SceneBase.h" />
+    <ClInclude Include="Library\SceneManager.h" />
+    <ClInclude Include="Library\Time.h" />
+    <ClInclude Include="Source\BackGround.h" />
+    <ClInclude Include="Source\BootScene.h" />
+    <ClInclude Include="Source\Boss1.h" />
+    <ClInclude Include="Source\Boss2.h" />
+    <ClInclude Include="Source\Bullet.h" />
+    <ClInclude Include="Source\Collision.h" />
+    <ClInclude Include="Source\Common.h" />
+    <ClInclude Include="Source\enemyBullet.h" />
+    <ClInclude Include="Source\Field.h" />
+    <ClInclude Include="Source\Player.h" />
+    <ClInclude Include="Source\playerBullet.h" />
     <ClInclude Include="Source\Screen.h" />
+    <ClInclude Include="Source\PlayScene.h" />
     <ClInclude Include="Source\SceneFactory.h" />
+    <ClInclude Include="Source\TitleScene.h" />
+    <ClInclude Include="Source\zako1.h" />
+    <ClInclude Include="Source\EnemyManager.h" />
+    <ClInclude Include="Source\Enemy.h" />
     <ClInclude Include="Library\App.h">
       <Filter>Library</Filter>
     </ClInclude>
@@ -170,6 +244,17 @@
     <ClInclude Include="Source\playerBullet.h">
       <Filter>PlayScene</Filter>
     </ClInclude>
+<<<<<<< HEAD
+    <ClInclude Include="Source\StageData.h" />
+    <ClInclude Include="Source\csvReader.h" />
+    <ClInclude Include="Source\GameOverScene.h" />
+    <ClInclude Include="Source\StageSelectScene.h" />
+    <ClInclude Include="Source\ShopScene.h" />
+    <ClInclude Include="Source\ClearScene.h" />
+    <ClInclude Include="Source\DebugSceneSelector.h" />
+=======
+    <ClInclude Include="Source\zako2.h" />
+>>>>>>> origin/20251225
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">

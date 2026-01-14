@@ -1,162 +1,172 @@
 #include "Player.h"
-#include"Field.h"
-#include"playerBullet.h"
-#include"Common.h"
+#include "Field.h"
+#include "playerBullet.h"
+#include "Common.h"
+#include"Screen.h"
 
-
-Player::Player() : GameObject()
-{
-	hImage = LoadGraph("data/image/file/chara/player.png");
-	x = 200;
-	y = 500;
-	velocity = 0;
-	onGround = false;
-	shotTimer = 0.0f;
-
-	// デフォルトの判定サイズ
-	//rectWidth = 32.0f;     // 矩形: 32x32
-	//rectHeight = 32.0f;
-	//circleRadius = 8.0f;   // 円形: 半径8
-
-	hp = 100;
-	isActive = true;
+// ========================================
+// 定数定義
+// ========================================
+namespace {
+    constexpr float MOVE_SPEED = 7.0f;
+    constexpr float SHOT_COOLDOWN = 50.0f;
+    constexpr int INITIAL_HP = 100;
+    constexpr float PLAYER_COLLISION_RADIUS = 30.0f;
+    constexpr float PLAYER_CENTER_OFFSET = 60.0f;
+    constexpr float BULLET_SPEED = -10.0f;
+    constexpr float BULLET_RADIUS = 8.0f;
 }
 
-
-
-Player::Player(int sx, int sy)
+// ========================================
+// コンストラクタ / デストラクタ
+// ========================================
+Player::Player() : GameObject()
 {
-	hImage = LoadGraph("data/image/file/chara/player.png");
-	x = sx;
-	y = sy;
-	velocity = 0;
-	onGround = false;
-	shotTimer = 0.0f;
+    hImage = LoadGraph("data/image/file/chara/player.png");
+    x = 300;
+    y = 900;
+    velocity = 0;
+    onGround = false;
+    shotTimer = 0.0f;
+    hp = INITIAL_HP;
+    isActive = true;
+}
 
-	/*rectWidth = 32.0f;
-	rectHeight = 32.0f;
-	circleRadius = 8.0f;*/
-
-	hp = 100;
-	isActive = true;
+Player::Player(int sx, int sy) : GameObject()
+{
+    hImage = LoadGraph("data/image/file/chara/player.png");
+    x = sx;
+    y = sy;
+    velocity = 0;
+    onGround = false;
+    shotTimer = 0.0f;
+    hp = INITIAL_HP;
+    isActive = true;
 }
 
 Player::~Player()
 {
-	if (hImage != -1) {
-		DeleteGraph(hImage);
-	}
-}
-
-void Player::TakeDamage(int damage) {
-    hp -= damage;
-    if (hp <= 0) {
-        hp = 0;
-		if (hp <= 0) {
-			SceneManager::ChangeScene("TITLE");
-		}
+    if (hImage != -1) {
+        DeleteGraph(hImage);
     }
 }
 
+// ========================================
+// ダメージ処理
+// ========================================
+void Player::TakeDamage(int damage)
+{
+    hp -= damage;
+    if (hp <= 0) {
+        hp = 0;
+        SceneManager::ChangeScene("TITLE");
+    }
+}
+
+// ========================================
+// 当たり判定
+// ========================================
 bool Player::IsHit(float bx, float by, int rad)
 {
-	
-	float dx = bx - (x + 60);
-	float dy = by - (y + 60);
-	float d = sqrt(dx * dx + dy * dy);
-	
-		if (d < 30 + rad)
-		{
+    float dx = bx - (x + PLAYER_CENTER_OFFSET);
+    float dy = by - (y + PLAYER_CENTER_OFFSET);
+    float distance = sqrt(dx * dx + dy * dy);
 
-			TakeDamage(0);
-			return true;
-
-		}
-		return false;
-	
+    if (distance < PLAYER_COLLISION_RADIUS + rad) {
+        TakeDamage(0);
+        return true;
+    }
+    return false;
 }
 
-//void Player::Initialize(float startX, float startY, Field* fieldPtr)
-//{
-//	hImage = LoadGraph("data/image/file/chara/player.png");
-//	x = startX;
-//	y = startY;
-//	velocity = 0;
-//	onGround = false;
-//	field = fieldPtr;
-//}
-
+// ========================================
+// 更新処理
+// ========================================
 void Player::Update()
 {
-	float nextX = x;
-	float nextY = y;
+    Field* field = FindGameObject<Field>();
+    if (!field) return;
 
-	if (CheckHitKey(KEY_INPUT_D))
-	{
-		x += 5;
-		Field* field = FindGameObject<Field>();
-		int push1 = field->HitCheckRight(x + 50, y + 5);
-		int push2 = field->HitCheckRight(x + 50, y + 63);
-		x -= max(push1, push2);
-	}
-	if (CheckHitKey(KEY_INPUT_A))
-	{
-		x -= 5;
-		Field* field = FindGameObject<Field>();
-		int push1 = field->HitCheckLeft(x + 14, y + 5);
-		int push2 = field->HitCheckLeft(x + 14, y + 63);
-		x -= max(push1, push2);
-	}
+    // 移動前の座標を保存
+    float prevX = x;
+    float prevY = y;
 
+    // 右移動 (Dキー)
+    if (CheckHitKey(KEY_INPUT_D)) {
+        x += MOVE_SPEED;
+        int push1 = field->HitCheckRight(x + 50 / 2, y + 5);
+        int push2 = field->HitCheckRight(x + 50 / 2, y + 63);
+        x -= max(push1, push2);
+    }
 
-	// 上移動 (Wキー) - 新規追加
-	if (CheckHitKey(KEY_INPUT_W)) {
-		y -= 5;
-		Field* field = FindGameObject<Field>();
-		int push1 = field->HitCheckUp(x + 14, y + 5);
-		int push2 = field->HitCheckUp(x + 50, y + 5);
-		int push = max(push1, push2);
-		if (push > 0) {
-			y += push;
-			velocity = 0;
-		}
-	}
+    // 左移動 (Aキー)
+    if (CheckHitKey(KEY_INPUT_A)) {
+        x -= MOVE_SPEED;
+        int push1 = field->HitCheckLeft(x + 14, y + 5);
+        int push2 = field->HitCheckLeft(x + 14, y + 63);
+        x -= max(push1, push2);
+    }
 
-	// 下移動 (Sキー) - 新規追加
-	if (CheckHitKey(KEY_INPUT_S)) {
-		y += 5;
-		Field* field = FindGameObject<Field>();
-		int push1 = field->HitCheckDown(x + 14, y + 64);
-		int push2 = field->HitCheckDown(x + 50, y + 64);
-		int push = max(push1, push2);
-		if (push > 0) {
-			y -= push - 1;
-			velocity = 0;
-			onGround = false;
-		}
-	}	
+    // 上移動 (Wキー)
+    if (CheckHitKey(KEY_INPUT_W)) {
+        y -= MOVE_SPEED;
+        int push1 = field->HitCheckUp(x + 14, y + 5);
+        int push2 = field->HitCheckUp(x + 50 / 2, y + 5);
+        int push = max(push1, push2);
+        if (push > 0) {
+            y += push;
+            velocity = 0;
+        }
+    }
 
-	// 弾発射タイマー更新
-	shotTimer += 1.0f;
+    // 下移動 (Sキー)
+    if (CheckHitKey(KEY_INPUT_S)) {
+        y += MOVE_SPEED;
+        int push1 = field->HitCheckDown(x + 14, y + 64);
+        int push2 = field->HitCheckDown(x + 50, y + 64);
+        int push = max(push1, push2);
+        if (push > 0) {
+            y -= push - 1;
+            velocity = 0;
+            onGround = false;
+        }
+    }
 
-	// Hキーで弾発射
-	if (CheckHitKey(KEY_INPUT_H) && shotTimer >= 100.0f) {
-		ShootBullet();
-		shotTimer = 0.0f;  // タイマーリセット
-	}
-	
+    // ステージ境界内に制限（画面の青い部分のみ）
+    if (x < Field::STAGE_LEFT) x = Field::STAGE_LEFT;
+    if (x > Field::STAGE_RIGHT - 50 / 2) x = Field::STAGE_RIGHT - 50 / 2;  // プレイヤー幅を考慮
+    if (y < Field::STAGE_TOP) y = Field::STAGE_TOP;
+    if (y > Screen::HEIGHT - 100) y = Screen::HEIGHT - 100;  // 画面下端まで移動可能
+
+    // 弾発射タイマー更新
+    shotTimer += 1.0f;
+
+    // Hキーで弾発射
+    if (CheckHitKey(KEY_INPUT_H) && shotTimer >= SHOT_COOLDOWN) {
+        ShootBullet();
+        shotTimer = 0.0f;
+    }
 }
 
+
+// ========================================
+// 弾発射処理
+// ========================================
 void Player::ShootBullet()
 {
-	// プレイヤーの中心から弾を発射
-	new playerBullet((int)x + 50/2, (int)y + 50/2, 0, -10.0f,8.0f);
+    // プレイヤーの中心から弾を発射
+    int bulletX = (int)x + 50 / 2;
+    int bulletY = (int)y + 50 / 2;
+    new playerBullet(bulletX, bulletY, 0, BULLET_SPEED, BULLET_RADIUS);
 }
 
+// ========================================
+// 描画処理
+// ========================================
 void Player::Draw()
 {
-	Field* field = FindGameObject<Field>();
-	DrawGraph(x , y, hImage, 1);
-}
 
+    DrawGraph(x, y, hImage, TRUE);
+    Field* field = FindGameObject<Field>();
+}
 
