@@ -33,6 +33,10 @@ Boss1::Boss1() : Enemy()
 
     hp = maxHp;
     isDead = false;
+
+    /// ★追加: 出現直後の無敵設定
+    spawnInvincible = true;
+    spawnInvincibleTimer = 60.0f; // 60FPS → 1秒
 }
 
 Boss1::Boss1(float sx, float sy) : Enemy()
@@ -64,6 +68,10 @@ Boss1::Boss1(float sx, float sy) : Enemy()
 
     hp = maxHp;
     isDead = false;
+
+    /// ★追加: 出現直後の無敵設定
+    spawnInvincible = true;
+    spawnInvincibleTimer = 60.0f;
 }
 
 Boss1::~Boss1()
@@ -81,34 +89,28 @@ void Boss1::Update()
         return;
     }
 
-    CheckPhaseTransition();
+    /// ★追加: 出現無敵タイマー処理
+    if (spawnInvincible) {
+        spawnInvincibleTimer--;
+        if (spawnInvincibleTimer <= 0) {
+            spawnInvincible = false;
+        }
+    }
 
+    CheckPhaseTransition();
     shotTimer += 1.0f;
 
     switch (bulletPhase) {
-    case BulletPhase::PHASE_1:
-        UpdatePhase1();
-        break;
-    case BulletPhase::PHASE_2:
-        UpdatePhase2();
-        break;
-    case BulletPhase::PHASE_3:
-        UpdatePhase3();
-        break;
+    case BulletPhase::PHASE_1: UpdatePhase1(); break;
+    case BulletPhase::PHASE_2: UpdatePhase2(); break;
+    case BulletPhase::PHASE_3: UpdatePhase3(); break;
     }
 
     if (shotTimer >= shotInterval) {
         switch (bulletPhase) {
-        case BulletPhase::PHASE_1:
-            ShotBullet(45.0f, 8.0f);
-            break;
-        case BulletPhase::PHASE_2:
-            ShotBullet(30.0f, 3.0f);
-            break;
-        case BulletPhase::PHASE_3:
-            // チャージ中でも弾を発射
-            ShotBullet(0, 0);  // パラメータは内部で使用しない
-            break;
+        case BulletPhase::PHASE_1: ShotBullet(45.0f, 8.0f); break;
+        case BulletPhase::PHASE_2: ShotBullet(30.0f, 3.0f); break;
+        case BulletPhase::PHASE_3: ShotBullet(0, 0); break;
         }
         shotTimer = 0.0f;
     }
@@ -154,7 +156,7 @@ void Boss1::OnPhaseChanged(int newPhase)
     case BulletPhase::PHASE_3:
         x = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f - 60.0f;
         y = Field::STAGE_TOP + 20.0f;
-        shotInterval = 60.0f*1.7f;
+        shotInterval = 60.0f * 1.7f;
         isCharging = false;
         chargeTimer = 0.0f;
         break;
@@ -183,7 +185,6 @@ void Boss1::UpdatePhase2()
 
 void Boss1::UpdatePhase3()
 {
-    // 左右移動
     x += moveDirection;
 
     if (x <= Field::STAGE_LEFT + 10.0f) {
@@ -195,7 +196,6 @@ void Boss1::UpdatePhase3()
         moveDirection = -2.0f;
     }
 
-    // チャージタイマー管理
     if (!isCharging) {
         chargeTimer += 1.0f;
         if (chargeTimer >= 180.0f) {
@@ -212,13 +212,10 @@ void Boss1::UpdatePhase3()
     }
 }
 
-// Boss1.cppのShotBullet関数のPhase1部分のみ修正
-
 void Boss1::ShotBullet(float angle, float num)
 {
     Player* player = FindGameObject<Player>();
 
-    // フェーズ1: 全方位放射状 + 真下だけ自機狙い
     if (bulletPhase == BulletPhase::PHASE_1) {
         float angleStep = 360.0f / num;
 
@@ -229,7 +226,7 @@ void Boss1::ShotBullet(float angle, float num)
             bool isDownward = (angleDeg >= 67.5f && angleDeg <= 112.5f);
 
             if (isDownward && player != nullptr) {
-                float dx = player->GetX() - (x + 60);  // ボスの中心から計算
+                float dx = player->GetX() - (x + 60);
                 float dy = player->GetY() - (y + 60);
                 float length = sqrt(dx * dx + dy * dy);
 
@@ -238,7 +235,6 @@ void Boss1::ShotBullet(float angle, float num)
                     dy /= length;
                 }
 
-                // 初期速度を8.0fに変更（10.0fから）
                 new enemyBullet(x + 60, y + 60, dx * 8.0f, dy * 8.0f, 8.0f, 1);
             }
             else {
@@ -249,7 +245,6 @@ void Boss1::ShotBullet(float angle, float num)
             }
         }
     }
-    // フェーズ2: 真下に広がる弾幕
     else if (bulletPhase == BulletPhase::PHASE_2) {
         float baseAngle = 90.0f * DegToRad;
         float spreadAngle = angle * DegToRad;
@@ -264,12 +259,10 @@ void Boss1::ShotBullet(float angle, float num)
             new enemyBullet(x + 32, y + 32, c1 * 5.0f, s1 * 5.0f, 8.0f, 0);
         }
     }
-    // フェーズ3: 広範囲弾幕 + 自機狙い弾
     else if (bulletPhase == BulletPhase::PHASE_3) {
-        // 1. 広範囲の放射状弾幕（通常弾3発）
-        float baseAngle = 90.0f * DegToRad;  // 真下
-        float spreadRange = 50.0f * DegToRad;  // 左右50度（合計100度）
-        int spreadCount = 3;  // 弾数
+        float baseAngle = 90.0f * DegToRad;
+        float spreadRange = 50.0f * DegToRad;
+        int spreadCount = 3;
 
         for (int i = 0; i < spreadCount; i++) {
             float offset = (i - (spreadCount - 1) / 2.0f) * (spreadRange / (spreadCount - 1));
@@ -278,31 +271,13 @@ void Boss1::ShotBullet(float angle, float num)
             float c1 = cos(shotAngle);
             float s1 = sin(shotAngle);
 
-            // 通常弾（画像タイプ0）
             new enemyBullet(x + 32, y + 32, c1 * 4.0f, s1 * 4.0f, 8.0f, 0);
         }
 
-        // 2. 自機狙い弾を2発追加（ボスの左右から発射）
+        Player* player = FindGameObject<Player>();
         if (player != nullptr) {
-            // 左側から発射
-            //float leftX = x + 10;  // ボスの左端
-            //float leftY = y + 60;  // ボスの中央高さ
-
-            //float dx1 = player->GetX() - leftX;
-            //float dy1 = player->GetY() - leftY;
-            //float length1 = sqrt(dx1 * dx1 + dy1 * dy1);
-
-            //if (length1 > 0) {
-              //  dx1 /= length1;
-              // dy1 /= length1;
-            //}
-
-            // 左からの自機狙い弾（画像タイプ1）
-            //new enemyBullet(leftX, leftY, dx1 * 6.0f, dy1 * 6.0f, 8.0f, 1);
-
-            // 右側から発射
-            float rightX = x + 110;  // ボスの右端
-            float rightY = y + 60;   // ボスの中央高さ
+            float rightX = x + 110;
+            float rightY = y + 60;
 
             float dx2 = player->GetX() - rightX;
             float dy2 = player->GetY() - rightY;
@@ -313,7 +288,6 @@ void Boss1::ShotBullet(float angle, float num)
                 dy2 /= length2;
             }
 
-            // 右からの自機狙い弾（画像タイプ1）
             new enemyBullet(rightX, rightY, dx2 * 6.0f, dy2 * 6.0f, 8.0f, 1);
         }
     }
@@ -351,21 +325,30 @@ void Boss1::ShootBullet()
 void Boss1::Draw()
 {
     if (isActive && bossImage != -1) {
-        DrawGraph((int)x, (int)y, bossImage, TRUE);
+
+        /// ★無敵中は点滅描画でフィードバック
+        if (spawnInvincible) {
+            if (((int)(spawnInvincibleTimer / 5)) % 2 == 0)
+            {
+                DrawGraph((int)x, (int)y, bossImage, TRUE);
+            }
+        }
+        else {
+            DrawGraph((int)x, (int)y, bossImage, TRUE);
+        }
+
         DrawFormatString(10, 40, GetColor(255, 0, 0), "Boss HP: %d", currentHp);
     }
 }
 
-void Boss1::TakeDamage(int damage)
+void Boss1::TakeDamage(int dmg)
 {
-    if (!isActive) return;
-    currentHp -= damage;
-    hp = currentHp;
+    /// ★追加: 登場1秒無敵中は無効
+    if (spawnInvincible) return;
 
+    currentHp -= dmg;
     if (currentHp <= 0) {
         currentHp = 0;
-        hp = 0;
-        isActive = false;
         isDead = true;
     }
 }

@@ -11,130 +11,100 @@ class Bulett;
 
 // 弾幕フェーズ
 enum class BulletPhase {
-    PHASE_1,    // フェーズ1：8方向弾
-    PHASE_2,    // フェーズ2：左右移動 + 弾幕
-    PHASE_3     // フェーズ3：左右移動 + チャージ + プレイヤー狙い
+    PHASE_1,
+    PHASE_2,
+    PHASE_3
 };
 
 enum class BossPattern {
-    CIRCLE,       // 円運動
-    FIGURE_EIGHT, // 8の字
-    LEFT_RIGHT    // 左右移動
+    CIRCLE,
+    FIGURE_EIGHT,
+    LEFT_RIGHT
 };
 
 class Boss1 : public Enemy {
 public:
-    // ========================================
-    // コンストラクタ・デストラクタ
-    // ========================================
     Boss1();
     Boss1(float sx, float sy);
     virtual ~Boss1();
 
-    // ========================================
-    // 基本メソッド
-    // ========================================
     void Update() override;
     void Draw() override;
 
-    // ========================================
     // HP関連
-    // ========================================
     void TakeDamage(int damage);
     bool IsAlive() const { return isActive && currentHp > 0; }
     int GetCurrentHp() const { return currentHp; }
     int GetMaxHp() const { return maxHp; }
     float GetHpPercent() const;
 
-    // ========================================
     // 当たり判定
-    // ========================================
     bool IsHit(float bx, float by, int rad);
 
-    // ========================================
-    // 位置取得（基底クラスのx, yを使用）
-    // ========================================
+    // 位置取得
     float GetX() const { return x; }
     float GetY() const { return y; }
     float GetSize() const { return size; }
 
-    // ========================================
     // フェーズ関連
-    // ========================================
     BulletPhase GetBulletPhase() const { return bulletPhase; }
     int GetCurrentPhaseNumber() const;
     bool IsCharging() const { return isCharging; }
 
-    // ========================================
     // 弾発射
-    // ========================================
     void ShotBullet(float rad, float num);
-    void ShootBullet();  // プレイヤー狙い弾
+    void ShootBullet();
+
+    // ================================
+    // 無敵関連 (追加)
+    // ================================
+    bool IsInvincible() const { return spawnInvincible; }
 
 private:
-    // ========================================
-    // 定数
-    // ========================================
     static constexpr float DegToRad = 3.14159265f / 180.0f;
     static constexpr float PI = 3.14159265f;
 
-    // ========================================
-    // グラフィック
-    // ========================================
-    int bossImage;  // Boss1専用の画像ハンドル（hImageではない）
+    // 無敵時間 (1秒)
+    static constexpr float INVINCIBLE_DURATION = 1.0f;
 
-    // ========================================
-    // 位置（x, yは基底クラスから継承 - ここで定義しない）
-    // ========================================
+    int bossImage;
     float centerX, centerY;
     float size;
 
-    // ========================================
     // HP管理
-    // ========================================
-    int maxHp;          // 最大HP
-    int currentHp;      // 現在のHP
-    int Phase2Hp;       // フェーズ2に移行するHP閾値
-    int Phase3Hp;       // フェーズ3に移行するHP閾値
+    int maxHp;
+    int currentHp;
+    int Phase2Hp;
+    int Phase3Hp;
 
-    // ========================================
     // フェーズ管理
-    // ========================================
-    BulletPhase bulletPhase;      // 現在のフェーズ
-    BulletPhase previousPhase;    // 前回のフェーズ（変化検知用）
+    BulletPhase bulletPhase;
+    BulletPhase previousPhase;
 
-    // ========================================
     // 弾発射管理
-    // ========================================
-    float shotTimer;        // 弾発射タイマー
-    float shotInterval;     // 弾発射間隔
+    float shotTimer;
+    float shotInterval;
 
-    // ========================================
-    // 移動管理（フェーズ2,3用）
-    // ========================================
-    float moveDirection;    // 移動速度兼方向
+    // 移動管理
+    float moveDirection;
 
-    // ========================================
-    // チャージ管理（フェーズ3用）
-    // ========================================
-    bool isCharging;        // チャージ中フラグ
-    float chargeTimer;      // チャージタイマー
+    // チャージ管理
+    bool isCharging;
+    float chargeTimer;
 
-    // ========================================
-    // 状態フラグ
-    // ========================================
     bool isActive;
 
-    // ========================================
+    // ================================
+    // 無敵状態管理 (追加)
+    // ================================
+    bool spawnInvincible;
+    float spawnInvincibleTimer;
+
     // 非公開メソッド
-    // ========================================
+    void CheckPhaseTransition();
+    void OnPhaseChanged(int newPhase);
 
-    // フェーズ管理
-    void CheckPhaseTransition();              // HPベースでフェーズをチェック
-    void OnPhaseChanged(int newPhase);        // フェーズ変更時の処理
-
-    // フェーズ別更新
-    void UpdatePhase1();                      // フェーズ1の更新
-    void UpdatePhase2();                      // フェーズ2の更新
-    void UpdatePhase3();                      // フェーズ3の更新
+    void UpdatePhase1();
+    void UpdatePhase2();
+    void UpdatePhase3();
 };
