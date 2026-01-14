@@ -24,6 +24,7 @@ EnemyManager::EnemyManager(BackGround* bg, int stageNumber)
     LoadStageFromCSV(stageNumber);
 }
 
+
 EnemyManager::~EnemyManager() {
     for (auto* enemy : enemies) delete enemy;
     enemies.clear();
