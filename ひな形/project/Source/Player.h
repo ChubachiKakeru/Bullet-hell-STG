@@ -1,8 +1,10 @@
 #pragma once
-#include"../Library/GameObject.h"
+#include "../Library/GameObject.h"
+#include <vector>
 
 class Field;
-class Bulett;
+class enemyBullet;
+class EnemyBullet2;
 
 class Player : public GameObject
 {
@@ -23,33 +25,32 @@ public:
     float GetCenterY() const { return y; }
     float GetSize() const { return size; }
 
-    VECTOR3 GetPosition() {
-        return VECTOR3(x, y, 0);
-    }
-    // ダメージ処理
     void TakeDamage(int damage);
     int GetHP() const { return hp; }
     bool IsHit(float bx, float by, int rad);
     bool IsActive() const { return isActive; }
 
     void ShootBullet();
+    void ShootBomb();        // ★ボム発射用
+    void AddBomb(int num) { bombCount += num; }
+    int GetBombCount() const { return bombCount; }
 
 private:
     int hImage;
+    int hBombImage;
+
     float x, y;
     float velocity;
     bool onGround;
     Field* field;
-    float shotTimer;     // 連射制限用
+    float shotTimer;
     float size;
 
-    //// 判定サイズ
-    //float rectWidth;      // 矩形判定の幅
-    //float rectHeight;     // 矩形判定の高さ
-    //float circleRadius;   // 円形判定の半径
-
-    // HP
     int hp;
     bool isActive;
-};
 
+    // ボム関連
+    int bombCount;
+    float bombSize;      // 150固定
+    float bombSpeed;     // 弾としての移動速度
+};
