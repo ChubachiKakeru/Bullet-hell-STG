@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "BackGround.h"
 #include <cmath>
+#include"../Library/myDxLib.h"
 
 namespace {
     constexpr float SHOT_INTERVAL = 120.0f;  // 2ïbÅi60FPSëzíËÅj
@@ -74,7 +75,7 @@ void zako1::Update()
     if (x < Field::STAGE_LEFT - 100.0f || x > Field::STAGE_RIGHT + 100.0f) {
         isActive = false;
         isDead = true;
-        DestroyMe();
+        //DestroyMe();
     }
 }
 

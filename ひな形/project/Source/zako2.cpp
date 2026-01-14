@@ -66,10 +66,10 @@ void zako2::Update()
     }
 
     // 画面外判定（画面外に出たら削除）
-    if (x < Field::STAGE_LEFT - 100.0f || x > Field::STAGE_RIGHT + 100.0f) {
+    if (x < Field::STAGE_LEFT - 70.0f || x > Field::STAGE_RIGHT + 70.0f) {
         isActive = false;
         isDead = true;
-        DestroyMe();
+        //DestroyMe();
     }
 }
 

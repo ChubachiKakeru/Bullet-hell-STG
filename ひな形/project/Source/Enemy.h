@@ -1,26 +1,21 @@
 #pragma once
-#include "../Library/GameObject.h"
 
-class Enemy : public GameObject {
-protected:  // 修正: private → protected (派生クラスからアクセス可能にする)
+class Enemy {  // GameObject継承を削除
+protected:
     float x, y;
     float vx, vy;
     int hp;
-    bool isDead;  // 修正: int → bool
+    bool isDead;
     int hImage;
-
 public:
     Enemy();
-    Enemy(float sx, float sy, float svx, float svy, int health);  // 引数名を明確化
-    virtual ~Enemy();  // virtualを追加
-
-    virtual void Update() override;
-    virtual void Draw() override;
+    Enemy(float sx, float sy, float svx, float svy, int health);
+    virtual ~Enemy();
+    virtual void Update();      // overrideを削除
+    virtual void Draw();        // overrideを削除
     virtual void TakeDamage(int dmg);
-
     bool IsDead() const { return isDead || hp <= 0; }
     bool IsOutOfScreen() const;
-
     float GetX() const { return x; }
     float GetY() const { return y; }
     int GetHP() const { return hp; }

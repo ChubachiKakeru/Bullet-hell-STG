@@ -1,7 +1,8 @@
 #include "Enemy.h"
 #include "Screen.h"
+#include"../Library/myDxLib.h"
 
-Enemy::Enemy() : GameObject()  // 追加: GameObject()を呼び出す
+Enemy::Enemy()  // GameObject()の呼び出しを削除
 {
     x = 0.0f;
     y = 0.0f;
@@ -12,12 +13,12 @@ Enemy::Enemy() : GameObject()  // 追加: GameObject()を呼び出す
     hImage = -1;
 }
 
-Enemy::Enemy(float sx, float sy, float svx, float svy, int health) : GameObject()  // 追加: GameObject()を呼び出す、引数名修正
+Enemy::Enemy(float sx, float sy, float svx, float svy, int health)  // GameObject()の呼び出しを削除
 {
     x = sx;
     y = sy;
-    vx = svx;  // 修正: 引数の値を正しく設定
-    vy = svy;  // 修正: 引数の値を正しく設定
+    vx = svx;
+    vy = svy;
     hp = health;
     isDead = false;
     hImage = -1;

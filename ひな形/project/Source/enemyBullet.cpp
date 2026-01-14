@@ -172,7 +172,7 @@ void enemyBullet::Update() {
     }
     else {
         // 通常弾：76x83サイズに合わせた判定
-        if (x < Field::STAGE_LEFT - 100 || x > Field::STAGE_RIGHT + 100 ||
+        if (x < Field::STAGE_LEFT - 100 || x > Field::STAGE_RIGHT + 70 ||
             y < -100 || y > Field::STAGE_BOTTOM + 300) {
             DestroyMe();
             return;

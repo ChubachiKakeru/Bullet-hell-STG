@@ -9,19 +9,14 @@
 #include "EnemyManager.h"
 #include "Common.h"
 #include "StageSelectScene.h"
+#include "DxLib.h"
+#include <string.h>  // strlen用
 
 // ========================================
 // コンストラクタ / デストラクタ
 // ========================================
-PlayScene::PlayScene()
-    : m_stageData(nullptr)
-    , m_currentPhase(0)
-    , m_currentWave(0)
-    , m_phaseTimer(0.0f)
-    , m_gameState(GameState::COUNTDOWN)
-    , m_countdownTimer(180)  // 60fps × 3秒 = 180フレーム
-    , m_countdownNumber(3)
-{
+
+PlayScene::PlayScene(){
     // ★背景と地形を先に生成（カウントダウン中も表示）★
     BackGround* bg = new BackGround();
     new Field();
@@ -32,9 +27,24 @@ PlayScene::PlayScene()
     // ★ステージ選択画面で選んだステージ番号を取得★
     int selectedStage = StageSelectScene::GetSelectedStage();
 
+    // ★ステージごとにカウントダウン時間を設定★
+    switch (selectedStage)
+    {
+    case 1:
+        m_countdownTimer = 60 * 5;  // 5秒
+        m_countdownNumber = 5;
+        break;
+    case 2:
+        m_countdownTimer = 60 * 3;  // 3秒
+        m_countdownNumber = 3;
+        break;
+    default:
+        m_countdownTimer = 60 * 3;  // デフォルト3秒
+        m_countdownNumber = 3;
+        break;
+    }
+
     // ★EnemyManagerを生成するが、カウントダウン中は敵を出現させない★
-    // EnemyManagerにカウントダウン状態を通知する方法が必要
-    // 一旦、nullptrで生成を遅延させるか、EnemyManager側で制御
     new EnemyManager(bg, selectedStage);
 
     // ステージデータを取得（表示用）
@@ -286,12 +296,9 @@ void PlayScene::DrawCountdown()
 
         unsigned int color = GetColor(255, 255, alpha);
 
-        char numStr[8];
-        sprintf_s(numStr, "%d", m_countdownNumber);
-        int textWidth = GetDrawStringWidth(numStr, (int)strlen(numStr));
-
+        // ★修正: DrawFormatStringを使用★
         int yOffset = (int)(20 * (scale - 1.0f));
-        DrawString(640 - textWidth / 2, 280 - yOffset, numStr, color);
+        DrawFormatString(580, 280 - yOffset, color, "%d", m_countdownNumber);
 
         SetFontSize(16);
     }
@@ -305,10 +312,10 @@ void PlayScene::DrawCountdown()
         int alpha = (int)(255 * progress);
 
         SetFontSize((int)(100 * scale));
-        const char* startText = "START!";
-        int textWidth = GetDrawStringWidth(startText, (int)strlen(startText));
-        DrawString(640 - textWidth / 2, 300, startText,
-            GetColor(255, 255 - (255 - alpha), alpha));
+        unsigned int color = GetColor(255, 255 - (255 - alpha), alpha);
+
+        // ★修正: 中央寄せを簡略化★
+        DrawString(520, 300, "START!", color);
         SetFontSize(16);
     }
 
@@ -318,5 +325,10 @@ void PlayScene::DrawCountdown()
         GetColor(200, 200, 200));
     DrawString(450, 520, "カウント中も操作可能！",
         GetColor(255, 255, 100));
+
+    // ★カウントダウン残り時間を表示（デバッグ用）★
+    DrawFormatString(500, 560, GetColor(150, 150, 150),
+        "残り %.1f秒", m_countdownTimer / 60.0f);
+
     SetFontSize(16);
 }
