@@ -52,15 +52,13 @@ void ShopScene::Draw()
         DrawBox(0, 0, 1280, 720, GetColor(100, 50, 50), TRUE);
     }
 
-    DrawString(550, 100, "ショップ", GetColor(255, 255, 255));
+    DrawString(550, 100, "ショップ", GetColor(25, 255, 255));
 
     const char* items[] = {
-        "体力回復薬 - 100G",
-        "攻撃力UP - 200G",
-        "防御力UP - 200G",
-        "スピードUP - 150G",
-        "特殊武器 - 500G",
-        "復活アイテム - 300G"
+            "体力UP",
+            "Bome増加",
+            "攻撃速度UP",
+            "Bome範囲",
     };
 
     for (int i = 0; i < ITEM_COUNT; i++)
@@ -69,5 +67,5 @@ void ShopScene::Draw()
         DrawString(450, 200 + i * 50, items[i], color);
     }
 
-    DrawString(450, 600, "SPACE: 購入 / ESC: タイトルへ", GetColor(255, 255, 255));
+    DrawString(450, 600, " / ESC: タイトルへ", GetColor(255, 255, 255));
 }
