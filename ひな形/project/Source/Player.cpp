@@ -42,7 +42,7 @@ Player::Player() : GameObject()
     isActive = true;
 
     // ƒ{ƒ€ŠÖ˜A
-    bombCount = 3;
+    bombCount = 10;
     bombSize = BOMB_SIZE;
     bombSpeed = BOMB_SPEED;
 }
@@ -158,5 +158,8 @@ void Player::Update()
 void Player::Draw()
 {
     DrawGraph((int)x, (int)y, hImage, TRUE);
+    DrawFormatString(1000, 270, GetColor(0, 255, 255), "=== PLAYER ===");
+    DrawFormatString(1000, 300, GetColor(0, 255, 255), "PLAYER HP: %d", hp);
+    DrawFormatString(1000, 330, GetColor(0, 255, 255), "BOMB: %d", bombCount);
     // ƒ{ƒ€‚Í’e‚Æ‚µ‚Ä“G’e‚ğÁ‚·‚Ì‚Å•`‰æ‚Í enemyBullet ‚É”C‚¹‚é
 }

@@ -337,7 +337,8 @@ void Boss1::Draw()
             DrawGraph((int)x, (int)y, bossImage, TRUE);
         }
 
-        DrawFormatString(10, 40, GetColor(255, 0, 0), "Boss HP: %d", currentHp);
+        DrawFormatString(1000, 100, GetColor(255, 0, 0), "BOSS HP: %d", currentHp);
+        DrawFormatString(1000, 70, GetColor(255, 0, 0), "=== BOSS1 ===");
     }
 }
 
