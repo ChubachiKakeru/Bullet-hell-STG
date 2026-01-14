@@ -16,7 +16,7 @@
 // コンストラクタ / デストラクタ
 // ========================================
 
-PlayScene::PlayScene(){
+PlayScene::PlayScene() {
     // ★背景と地形を先に生成（カウントダウン中も表示）★
     BackGround* bg = new BackGround();
     new Field();
@@ -25,7 +25,7 @@ PlayScene::PlayScene(){
     new Player();
 
     // ★ステージ選択画面で選んだステージ番号を取得★
-    int selectedStage = StageSelectScene::GetSelectedStage();
+    int selectedStage = StageSelectScene::GetSelectedStageNumber();
 
     // ★ステージごとにカウントダウン時間を設定★
     switch (selectedStage)
@@ -49,7 +49,7 @@ PlayScene::PlayScene(){
 
     // ステージデータを取得（表示用）
     m_stageData = StageSelectScene::GetCurrentStageData();
-    int stageNumber = StageSelectScene::GetSelectedStage();
+    int stageNumber = StageSelectScene::GetSelectedStageNumber();
 
     if (m_stageData != nullptr)
     {
@@ -65,6 +65,9 @@ PlayScene::PlayScene(){
     {
         printfDx("エラー: ステージデータが取得できませんでした\n");
     }
+
+    // ★次ステージ遷移タイマーの初期化★
+    m_nextStageTimer = 0;
 }
 
 PlayScene::~PlayScene()
@@ -131,7 +134,7 @@ void PlayScene::Update()
         break;
 
     case GameState::STAGE_CLEAR:
-        // ステージクリア処理
+        UpdateStageClear();
         break;
     }
 }
@@ -155,7 +158,7 @@ void PlayScene::UpdateCountdown()
     if (m_countdownTimer <= 0)
     {
         m_gameState = GameState::PLAYING;
-        printfDx("ステージ%d 本格開始！\n", StageSelectScene::GetSelectedStage());
+        printfDx("ステージ%d 本格開始！\n", StageSelectScene::GetSelectedStageNumber());
 
         // ★敵の出現を開始する合図をEnemyManagerに送る★
         EnemyManager* em = FindGameObject<EnemyManager>();
@@ -178,10 +181,40 @@ void PlayScene::UpdatePlaying()
     // GameObjectシステムで各オブジェクトのUpdate()が自動的に呼ばれる想定
     // Player, EnemyManager, Boss, zako1, Bullet等
 
-    // ステージデータがある場合の進行管理（オプション）
-    // if (m_stageData != nullptr) {
-    //     // フェーズ進行のロジックをここに追加可能
-    // }
+    // ★ゲームクリア判定★
+    EnemyManager* em = FindGameObject<EnemyManager>();
+    if (em && em->GetCurrentPhase() == GamePhase::PHASE_CLEAR)
+    {
+        // ステージクリア状態に遷移
+        m_gameState = GameState::STAGE_CLEAR;
+        m_nextStageTimer = 60 * 3; // 3秒後に次のステージへ
+        printfDx("ステージクリア！ 3秒後に次のステージへ...\n");
+    }
+}
+
+// ========================================
+// ステージクリア更新処理
+// ========================================
+void PlayScene::UpdateStageClear()
+{
+    m_nextStageTimer--;
+
+    // タイマーが0になったら次のステージへ
+    if (m_nextStageTimer <= 0)
+    {
+        int currentStage = StageSelectScene::GetSelectedStageNumber();
+
+        if (currentStage < 2) // まだ次のステージがある
+        {
+            printfDx("ステージ%dからステージ%dへ移動\n", currentStage, currentStage + 1);
+            StageSelectScene::GoToNextStage();
+        }
+        else // 全ステージクリア
+        {
+            printfDx("全ステージクリア！ クリア画面へ\n");
+            SceneManager::ChangeScene("CLEAR");
+        }
+    }
 }
 
 // ========================================
@@ -195,6 +228,11 @@ void PlayScene::Draw()
         // カウントダウン中の描画
         DrawCountdown();
     }
+    else if (m_gameState == GameState::STAGE_CLEAR)
+    {
+        // ステージクリア画面
+        DrawStageClear();
+    }
     else
     {
         // 通常のゲーム情報表示
@@ -204,7 +242,7 @@ void PlayScene::Draw()
         // ステージ番号の表示
         if (m_stageData != nullptr)
         {
-            int stageNumber = StageSelectScene::GetSelectedStage();
+            int stageNumber = StageSelectScene::GetSelectedStageNumber();
             DrawFormatString(10, 50, GetColor(255, 255, 255),
                 "Stage: %d | Phase: %d/%d",
                 stageNumber,
@@ -252,13 +290,7 @@ void PlayScene::Draw()
                     "DEFEAT THE BOSS!");
                 break;
             case GamePhase::PHASE_CLEAR:
-                // ゲームクリア画面
-                DrawFormatString(220, 250, GetColor(255, 255, 0),
-                    "*** CONGRATULATIONS ***");
-                DrawFormatString(280, 280, GetColor(255, 255, 255),
-                    "YOU WIN!");
-                DrawFormatString(240, 320, GetColor(200, 200, 200),
-                    "Press [O] to return to Title");
+                // ゲームクリア画面はDrawStageClear()で描画
                 break;
             }
         }
@@ -274,7 +306,7 @@ void PlayScene::Draw()
 void PlayScene::DrawCountdown()
 {
     // ステージ番号表示
-    int stageNumber = StageSelectScene::GetSelectedStage();
+    int stageNumber = StageSelectScene::GetSelectedStageNumber();
     SetFontSize(48);
     DrawFormatString(400, 150, GetColor(255, 255, 255),
         "=== STAGE %d ===", stageNumber);
@@ -331,4 +363,51 @@ void PlayScene::DrawCountdown()
         "残り %.1f秒", m_countdownTimer / 60.0f);
 
     SetFontSize(16);
+}
+
+// ========================================
+// ステージクリア描画処理
+// ========================================
+void PlayScene::DrawStageClear()
+{
+    int currentStage = StageSelectScene::GetSelectedStageNumber();
+    float timeLeft = m_nextStageTimer / 60.0f;
+
+    // 背景を少し暗くする
+    SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+    DrawBox(0, 0, 1280, 720, GetColor(0, 0, 0), TRUE);
+    SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+    // クリアメッセージ
+    SetFontSize(60);
+    DrawFormatString(350, 200, GetColor(255, 255, 0),
+        "STAGE %d CLEAR!", currentStage);
+    SetFontSize(16);
+
+    // 次のステージへの案内
+    if (currentStage < 2)
+    {
+        SetFontSize(36);
+        DrawFormatString(320, 300, GetColor(255, 255, 255),
+            "Next: STAGE %d", currentStage + 1);
+        SetFontSize(16);
+
+        // カウントダウン表示
+        SetFontSize(48);
+        DrawFormatString(550, 380, GetColor(200, 200, 200),
+            "%.1f", timeLeft);
+        SetFontSize(16);
+    }
+    else
+    {
+        // 全ステージクリア
+        SetFontSize(48);
+        DrawString(320, 300, "ALL STAGES CLEAR!", GetColor(255, 255, 0));
+        SetFontSize(16);
+
+        SetFontSize(24);
+        DrawFormatString(420, 380, GetColor(200, 200, 200),
+            "Moving to Clear Scene... %.1f", timeLeft);
+        SetFontSize(16);
+    }
 }

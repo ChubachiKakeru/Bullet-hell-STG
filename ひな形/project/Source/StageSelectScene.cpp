@@ -56,6 +56,25 @@ void StageSelectScene::LoadStageData(int stageNumber)
     }
 }
 
+// 次のステージに進む（ステージクリア時に呼ぶ）
+void StageSelectScene::GoToNextStage()
+{
+    s_selectedStageNumber++;
+
+    // 最後のステージを超えたら1に戻す（またはゲームクリア画面へ）
+    if (s_selectedStageNumber > STAGE_COUNT)
+    {
+        s_selectedStageNumber = 1; // ループする場合
+        // または SceneManager::ChangeScene("GAMECLEAR"); // ゲームクリア画面がある場合
+    }
+
+    // 次のステージデータを読み込む
+    LoadStageData(s_selectedStageNumber);
+
+    // プレイシーンへ遷移
+    SceneManager::ChangeScene("PLAY");
+}
+
 void StageSelectScene::Update()
 {
     m_keyWait++;
@@ -92,8 +111,8 @@ void StageSelectScene::Update()
         SceneManager::ChangeScene("PLAY");
     }
 
-    // キャンセルキー
-    if (CheckHitKey(KEY_INPUT_ESCAPE))
+    // キャンセルキー（Oキーでタイトルへ）
+    if (CheckHitKey(KEY_INPUT_O))
     {
         //PlaySoundMem(/* キャンセル音 */, DX_PLAYTYPE_BACK);
         SceneManager::ChangeScene("TITLE");
@@ -141,7 +160,7 @@ void StageSelectScene::Draw()
 
     // 操作説明
     SetFontSize(24);
-    DrawString(400, 620, "↑↓キーで選択 / SPACE/ENTER: 決定 / ESC: タイトルへ",
+    DrawString(400, 620, "↑↓キーで選択 / SPACE/ENTER: 決定 / O: タイトルへ",
         GetColor(200, 200, 200));
     SetFontSize(16); // フォントサイズを元に戻す
 }

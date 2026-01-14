@@ -1,6 +1,6 @@
 #include "ClearScene.h"
 #include "../Library/SceneManager.h"
-#include <DxLib.h>
+#include"StageSelectScene.h"
 
 ClearScene::ClearScene()
     : m_clearImage(-1)
@@ -20,6 +20,7 @@ ClearScene::~ClearScene()
 void ClearScene::Update()
 {
     m_timer++;
+
 
     if (CheckHitKey(KEY_INPUT_SPACE))
     {
