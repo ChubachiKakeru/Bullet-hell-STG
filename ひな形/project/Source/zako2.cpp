@@ -13,22 +13,17 @@ namespace {
 
 zako2::zako2(float sx, float sy, Zako2Pattern pat)
 {
-    // Boss1と同じスタイルで本体内で初期化
-    zakoImage = LoadGraph("data/image/zako2.jpg");
-
+    zakoImage = LoadGraph("data/image/zako2.png");
     x = sx;
     y = sy;
-
     pattern = pat;
     moveTimer = 0;
     shotTimer = 0;
     shotInterval = SHOT_INTERVAL;
     moveSpeed = 0.0f;
-
     isActive = true;
     patternComplete = false;
 
-    // 基底クラスの変数も初期化
     hp = 1;
     isDead = false;
 
@@ -53,12 +48,63 @@ zako2::~zako2()
 
 void zako2::Update()
 {
+    if (!isActive) {
+        isDead = true;
+        return;
+    }
 
+    moveTimer++;
+    shotTimer++;
+
+    // 横方向に移動（パターンに応じて左右）
+    x += moveSpeed;
+
+    // 弾発射（2秒ごと）
+    if (shotTimer >= shotInterval) {
+        ShootBullet();
+        shotTimer = 0;
+    }
+
+    // 画面外判定（画面外に出たら削除）
+    if (x < Field::STAGE_LEFT - 100.0f || x > Field::STAGE_RIGHT + 100.0f) {
+        isActive = false;
+        isDead = true;
+        DestroyMe();
+    }
 }
 
 void zako2::ShootBullet()
 {
+    // プレイヤーを探す
+    Player* player = FindGameObject<Player>();
+    if (!player) return;
 
+    // プレイヤーへの角度を計算
+    float dx = player->GetX() - x;
+    float dy = player->GetY() - y;
+    float angle = atan2f(dy, dx);
+
+    // 敵弾を生成（プレイヤー狙い）
+    new enemyBullet(x, y, angle, 3.0f);
+}
+
+bool zako2::IsHit(float bx, float by, int rad)
+{
+    if (!isActive || isDead) return false;
+
+    float dx = x - bx;
+    float dy = y - by;
+    float distance = sqrtf(dx * dx + dy * dy);
+
+    if (distance < RADIUS + rad) {
+        hp--;
+        if (hp <= 0) {
+            isDead = true;
+            isActive = false;
+        }
+        return true;
+    }
+    return false;
 }
 
 void zako2::Draw()
@@ -69,16 +115,16 @@ void zako2::Draw()
     }
 
     // デバッグ用：当たり判定を表示
+#ifdef _DEBUG
     if (isActive) {
         // 当たり判定の円（赤）
         DrawCircle((int)x, (int)y, (int)RADIUS, GetColor(255, 0, 0), FALSE);
-
         // 中心点（黄色）
         DrawCircle((int)x, (int)y, 3, GetColor(255, 255, 0), TRUE);
-
-        // 画像の矩形範囲（緑）- デバッグ用
+        // 画像の矩形範囲（緑）
         DrawBox((int)(x - 50), (int)(y - 50),
             (int)(x + 50), (int)(y + 50),
             GetColor(0, 255, 0), FALSE);
     }
+#endif
 }

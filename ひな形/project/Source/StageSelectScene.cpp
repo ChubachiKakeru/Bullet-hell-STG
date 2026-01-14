@@ -1,12 +1,22 @@
+// StageSelectScene.cpp
 #include "StageSelectScene.h"
 #include "../Library/SceneManager.h"
-#include <DxLib.h>
+#include "DxLib.h"
+
+// 静的メンバの初期化
+int StageSelectScene::s_selectedStageNumber = 1;
+Stage1Data StageSelectScene::s_stage1;
+Stage2Data StageSelectScene::s_stage2;
+StageData* StageSelectScene::s_currentStageData = nullptr;
 
 StageSelectScene::StageSelectScene()
     : m_backgroundImage(-1)
     , m_selectedStage(0)
+    , m_keyWait(0)
 {
     m_backgroundImage = LoadGraph("Graphics/StageSelect.png");
+    // 前回の選択を復元（1-indexedから0-indexedに変換）
+    m_selectedStage = s_selectedStageNumber - 1;
 }
 
 StageSelectScene::~StageSelectScene()
@@ -17,38 +27,82 @@ StageSelectScene::~StageSelectScene()
     }
 }
 
+void StageSelectScene::LoadStageData(int stageNumber)
+{
+    switch (stageNumber)
+    {
+    case 1:
+        if (!s_stage1.LoadFromCSV("data/stage1.csv"))
+        {
+            printfDx("Stage1 CSV not found, using hardcoded data\n");
+            s_stage1.Initialize();
+        }
+        s_currentStageData = &s_stage1;
+        break;
+
+    case 2:
+        if (!s_stage2.LoadFromCSV("data/stage2.csv"))
+        {
+            printfDx("Stage2 CSV not found, using hardcoded data\n");
+            s_stage2.Initialize();
+        }
+        s_currentStageData = &s_stage2;
+        break;
+
+    default:
+        printfDx("Invalid stage number: %d\n", stageNumber);
+        s_currentStageData = nullptr;
+        break;
+    }
+}
+
 void StageSelectScene::Update()
 {
-    static int keyWait = 0;
-    keyWait++;
+    m_keyWait++;
 
-    if (keyWait > 10)
+    // キー入力の受付（連続入力防止）
+    if (m_keyWait > 10)
     {
         if (CheckHitKey(KEY_INPUT_UP))
         {
             m_selectedStage = (m_selectedStage - 1 + STAGE_COUNT) % STAGE_COUNT;
-            keyWait = 0;
+            m_keyWait = 0;
+            //PlaySoundMem(/* カーソル移動音 */, DX_PLAYTYPE_BACK);
         }
-        if (CheckHitKey(KEY_INPUT_DOWN))
+        else if (CheckHitKey(KEY_INPUT_DOWN))
         {
             m_selectedStage = (m_selectedStage + 1) % STAGE_COUNT;
-            keyWait = 0;
+            m_keyWait = 0;
+            //PlaySoundMem(/* カーソル移動音 */, DX_PLAYTYPE_BACK);
         }
     }
 
-    if (CheckHitKey(KEY_INPUT_SPACE))
+    // 決定キー
+    if (CheckHitKey(KEY_INPUT_SPACE) || CheckHitKey(KEY_INPUT_RETURN))
     {
+        // 選択されたステージ番号を保存（0-indexedから1-indexedに変換）
+        s_selectedStageNumber = m_selectedStage + 1;
+
+        // ステージデータを読み込む
+        LoadStageData(s_selectedStageNumber);
+
+        //PlaySoundMem(/* 決定音 */, DX_PLAYTYPE_BACK);
+
+        // ★カウントダウンを削除し、即座にPlaySceneへ遷移★
         SceneManager::ChangeScene("PLAY");
     }
 
+    // キャンセルキー
     if (CheckHitKey(KEY_INPUT_ESCAPE))
     {
+        //PlaySoundMem(/* キャンセル音 */, DX_PLAYTYPE_BACK);
         SceneManager::ChangeScene("TITLE");
     }
 }
 
 void StageSelectScene::Draw()
 {
+    // 背景描画
     if (m_backgroundImage != -1)
     {
         DrawGraph(0, 0, m_backgroundImage, FALSE);
@@ -58,13 +112,36 @@ void StageSelectScene::Draw()
         DrawBox(0, 0, 1280, 720, GetColor(50, 50, 100), TRUE);
     }
 
-    DrawString(500, 100, "ステージ選択", GetColor(255, 255, 255));
+    // タイトル
+    SetFontSize(48);
+    DrawString(450, 100, "=== ステージ選択 ===", GetColor(255, 255, 255));
 
+    // ステージリスト（2ステージのみ）
+    SetFontSize(36);
     for (int i = 0; i < STAGE_COUNT; i++)
     {
-        int color = (i == m_selectedStage) ? GetColor(255, 255, 0) : GetColor(200, 200, 200);
-        DrawFormatString(550, 200 + i * 50, color, "ステージ %d", i + 1);
+        int yPos = 300 + i * 80; // 位置を調整
+
+        // 選択中のステージはハイライト
+        if (i == m_selectedStage)
+        {
+            // カーソル表示
+            DrawString(480, yPos, "＞", GetColor(255, 255, 0));
+            // 選択枠
+            DrawBox(500, yPos - 5, 780, yPos + 45, GetColor(255, 255, 0), FALSE);
+            // テキスト（黄色）
+            DrawFormatString(520, yPos, GetColor(255, 255, 0), "ステージ %d", i + 1);
+        }
+        else
+        {
+            // 非選択時（グレー）
+            DrawFormatString(520, yPos, GetColor(180, 180, 180), "ステージ %d", i + 1);
+        }
     }
 
-    DrawString(450, 600, "SPACE: 決定 / ESC: タイトルへ", GetColor(255, 255, 255));
+    // 操作説明
+    SetFontSize(24);
+    DrawString(400, 620, "↑↓キーで選択 / SPACE/ENTER: 決定 / ESC: タイトルへ",
+        GetColor(200, 200, 200));
+    SetFontSize(16); // フォントサイズを元に戻す
 }

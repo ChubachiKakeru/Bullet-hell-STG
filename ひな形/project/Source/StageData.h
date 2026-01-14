@@ -1,5 +1,6 @@
 #pragma once
 #include "zako1.h"
+#include"zako2.h"
 #include <vector>
 #include <string>
 

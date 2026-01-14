@@ -1,33 +1,39 @@
 #pragma once
 #include "../Library/SceneBase.h"
-#include "Player.h"
-#include "Boss1.h"
-#include "Bullet.h"
-#include <vector>
+#include "StageData.h"
 
-
-/// <summary>
-/// ゲームプレイのシーンを制御する
-/// </summary>
 class PlayScene : public SceneBase
 {
 public:
-	PlayScene();
-	~PlayScene();
-	void Update() override;
-	void Draw() override;
-    // 弾の発射
-    void FirePlayerBullet();
-    void FireBoss1Bullet();
+    PlayScene();
+    virtual ~PlayScene();
+
+    virtual void Update() override;
+    virtual void Draw() override;
 
 private:
-    
-    std::vector<Bullet*> playerBullets;
-    std::vector<Bullet*> bossBullets;
+    // ★ゲーム状態★
+    enum class GameState
+    {
+        COUNTDOWN,      // カウントダウン中（自機操作可能、敵未出現）
+        PLAYING,        // ゲーム中
+        GAME_OVER,      // ゲームオーバー
+        STAGE_CLEAR     // ステージクリア
+    };
 
-    // 当たり判定用の関数
-    void CheckCollisions();
-    void RemoveDeadBullets(std::vector<Bullet*>& bullets);  // 死んだ弾削除用
+    // ★メンバ関数の宣言★
+    void UpdateCountdown();     // カウントダウン更新
+    void UpdatePlaying();       // ゲーム中の更新
+    void DrawCountdown();       // カウントダウン描画
+    void SpawnWave(StageData* stageData);
 
+    // ★メンバ変数★
+    GameState m_gameState;      // 現在のゲーム状態
+    int m_countdownTimer;       // カウントダウンタイマー（フレーム数）
+    int m_countdownNumber;      // 表示するカウントダウン数字（3, 2, 1）
 
+    StageData* m_stageData;
+    int m_currentPhase;
+    int m_currentWave;
+    float m_phaseTimer;
 };
