@@ -70,8 +70,9 @@ Boss2::Boss2(float sx, float sy)
 
 Boss2::~Boss2()
 {
-	if (hImage != -1) {
-		DeleteGraph(hImage);
+	if (bossImage != -1) {
+		DeleteGraph(bossImage);
+		bossImage = -1;
 	}
 }
 
@@ -304,7 +305,10 @@ void Boss2::ShootBullet()
 
 void Boss2::Draw()
 {
-	DrawGraph(x, y, hImage, TRUE);
+	if (isActive && bossImage != -1) {
+		DrawGraph((int)x, (int)y, bossImage, TRUE);
+		DrawFormatString(10, 40, GetColor(255, 0, 0), "Boss HP: %d", currentHp);
+	}
 }
 
 void Boss2::TakeDamage(int damage)

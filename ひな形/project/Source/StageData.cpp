@@ -277,10 +277,10 @@ void Stage2Data::Initialize() {
         float centerX = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f;
 
         // šBoss2‚ªÀ‘•‚³‚ê‚Ä‚¢‚éê‡: enemyType = 3š
-        // wave.enemies.push_back({ 3, centerX - 60.0f, Field::STAGE_TOP + 20.0f, 0, 0.0f });
+         wave.enemies.push_back({ 3, centerX - 60.0f, Field::STAGE_TOP + 20.0f, 0, 0.0f });
 
         // šBoss2‚ª–¢À‘•‚Ìê‡: ˆê“I‚ÉBoss1‚ğg—pš
-        wave.enemies.push_back({ 1, centerX - 60.0f, Field::STAGE_TOP + 20.0f, 0, 0.0f });
+        //wave.enemies.push_back({ 1, centerX - 60.0f, Field::STAGE_TOP + 20.0f, 0, 0.0f });
 
         phase.waves.push_back(wave);
     }
