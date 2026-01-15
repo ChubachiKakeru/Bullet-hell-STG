@@ -171,12 +171,12 @@ void Boss2::OnPhaseChanged(int newPhase)
 
 void Boss2::UpdatePhase1()
 {
-	// フェーズ1：動かない（仕様通り）
+	// フェーズ1：動かない
 }
 
 void Boss2::UpdatePhase2()
 {
-	// フェーズ2：動かない（仕様通り）
+	// フェーズ2：動かない
 }
 
 void Boss2::UpdatePhase3()
