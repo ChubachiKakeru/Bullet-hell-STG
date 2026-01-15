@@ -155,7 +155,7 @@ void enemyBullet::Update() {
         }
 
         if (distance < hitRadius) {
-            p->TakeDamage(10);
+            p->TakeDamage(100);
             DestroyMe();
             return;
         }
