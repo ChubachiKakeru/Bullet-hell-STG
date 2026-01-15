@@ -67,10 +67,12 @@ Player::~Player()
 void Player::TakeDamage(int damage)
 {
     hp -= damage;
+    PlaySoundFile(GAME_PHIT_SOUND_PATH, DX_PLAYTYPE_BACK);
     if (hp <= 0) {
         hp = 0;
         // ゲームオーバーシーンに遷移
         SceneManager::ChangeScene("GAMEOVER");
+        //PlaySoundFile(GAME_DEATH_SOUND_PATH, DX_PLAYTYPE_BACK);
     }
 }
 // ========================================
@@ -97,6 +99,8 @@ void Player::ShootBullet()
     int bulletX = (int)x + 50 / 2;
     int bulletY = (int)y + 50 / 2;
     new playerBullet(bulletX, bulletY, 0, BULLET_SPEED, BULLET_RADIUS);
+
+    PlaySoundFile(GAME_PSHOT_SOUND_PATH, DX_PLAYTYPE_BACK);
 }
 
 // ========================================
@@ -117,6 +121,8 @@ void Player::ShootBomb()
 
     // Bombクラスとして生成
     new Bomb(startX, startY, bombVX, bombVY, BOMB_SIZE);
+
+    PlaySoundFile(GAME_PBOMB_SOUND_PATH, DX_PLAYTYPE_BACK);
 }
 
 // ========================================

@@ -143,4 +143,9 @@ private:
     void UpdatePhase1();                      // フェーズ1の更新
     void UpdatePhase2();                      // フェーズ2の更新
     void UpdatePhase3();                      // フェーズ3の更新
+
+    // サウンドパス
+    const char* GAME_EDEATH_SOUND_PATH = "data/Sound/enemydeath.mp3";      //エネミーDeathジングル
+    //  サウンドハンドル
+    int enemyDeathSoundHandle;		//	エネミーDeathサウンドハンドル
 };

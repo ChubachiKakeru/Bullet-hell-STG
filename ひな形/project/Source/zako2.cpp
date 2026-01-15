@@ -152,6 +152,7 @@ bool zako2::IsHit(float bx, float by, int rad)
     if (distance < RADIUS + rad) {
         hp--;
         if (hp <= 0) {
+            PlaySoundFile(GAME_EDEATH_SOUND_PATH, DX_PLAYTYPE_BACK);
             isDead = true;
             isActive = false;
         }

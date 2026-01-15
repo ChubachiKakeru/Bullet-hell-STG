@@ -111,6 +111,7 @@ bool zako1::IsHit(float bx, float by, int rad)
 
     if (distance < RADIUS + rad) {
         // “–‚½‚Á‚½‚ç–³Œø‰»iEnemyManager‚ªíœ‚·‚éj
+        PlaySoundFile(GAME_EDEATH_SOUND_PATH, DX_PLAYTYPE_BACK);
         isActive = false;
         isDead = true;
         return true;

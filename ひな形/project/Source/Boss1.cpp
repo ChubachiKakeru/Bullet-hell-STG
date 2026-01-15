@@ -363,6 +363,7 @@ bool Boss1::IsHit(float bx, float by, int rad)
     float d = sqrt(dx * dx + dy * dy);
 
     if (d < 100 + rad) {
+        PlaySoundFile(GAME_EDEATH_SOUND_PATH, DX_PLAYTYPE_BACK);
         TakeDamage(100);
         return true;
     }

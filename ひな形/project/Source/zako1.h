@@ -39,4 +39,9 @@ private:
     float moveSpeed;  // 横移動速度
 
     void ShootBullet();
+
+    // サウンドパス
+    const char* GAME_EDEATH_SOUND_PATH = "data/Sound/enemydeath.mp3";      //エネミーDeathジングル
+    //  サウンドハンドル
+    int enemyDeathSoundHandle;		//	エネミーDeathサウンドハンドル
 };

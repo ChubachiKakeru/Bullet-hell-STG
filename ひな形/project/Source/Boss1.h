@@ -107,4 +107,9 @@ private:
     void UpdatePhase1();
     void UpdatePhase2();
     void UpdatePhase3();
+
+    // サウンドパス
+    const char* GAME_EDEATH_SOUND_PATH = "data/Sound/enemydeath.mp3";      //エネミーDeathジングル
+    //  サウンドハンドル
+    int enemyDeathSoundHandle;		//	エネミーDeathサウンドハンドル
 };
