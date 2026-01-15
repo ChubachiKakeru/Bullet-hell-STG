@@ -145,6 +145,8 @@ void Stage1Data::Initialize() {
         WaveData wave1;
         wave1.waveDelay = 0.0f;
 
+        wave1.enemies.push_back({ 0, Field::STAGE_LEFT, Field::STAGE_TOP + 50.0f,
+                                 static_cast<int>(Zako1Pattern::PATTERN_LEFT_TO_RIGHT), 0.0f });
         wave1.enemies.push_back({ 0, Field::STAGE_LEFT + 150.0f, Field::STAGE_TOP + 50.0f,
                                  static_cast<int>(Zako1Pattern::PATTERN_LEFT_TO_RIGHT), 0.0f });
         wave1.enemies.push_back({ 0, Field::STAGE_LEFT + 300.0f, Field::STAGE_TOP + 50.0f,
@@ -153,24 +155,20 @@ void Stage1Data::Initialize() {
                                  static_cast<int>(Zako1Pattern::PATTERN_LEFT_TO_RIGHT), 0.0f });
         wave1.enemies.push_back({ 0, Field::STAGE_LEFT + 600.0f, Field::STAGE_TOP + 50.0f,
                                  static_cast<int>(Zako1Pattern::PATTERN_LEFT_TO_RIGHT), 0.0f });
-        wave1.enemies.push_back({ 0, Field::STAGE_LEFT + 750.0f, Field::STAGE_TOP + 50.0f,
-                                 static_cast<int>(Zako1Pattern::PATTERN_LEFT_TO_RIGHT), 0.0f });
-
-        phase.waves.push_back(wave1);
 
         // ÉEÉFÅ[Éu2: 2ïbå„Ç…âEÇ©ÇÁ3ëÃ
-        WaveData wave2;
-        wave2.waveDelay = 2.0f;  // ëÊ1îgÇ©ÇÁ2ïbå„
+        // WaveData wave2;
+        //wave2.waveDelay = 2.0f;  // ëÊ1îgÇ©ÇÁ2ïbå„
 
-        float rightStart = Field::STAGE_RIGHT - 150.0f;
-        wave2.enemies.push_back({ 0, rightStart, Field::STAGE_TOP + 50.0f,
+        float rightStart = Field::STAGE_RIGHT - 100.0f;
+        wave1.enemies.push_back({ 0, rightStart - 200.0f, Field::STAGE_TOP + 70.0f,
                                  static_cast<int>(Zako1Pattern::PATTERN_RIGHT_TO_LEFT), 0.0f });
-        wave2.enemies.push_back({ 0, rightStart - 150.0f, Field::STAGE_TOP + 50.0f,
+        wave1.enemies.push_back({ 0, rightStart + 0.0f, Field::STAGE_TOP + 70.0f,
                                  static_cast<int>(Zako1Pattern::PATTERN_RIGHT_TO_LEFT), 0.0f });
-        wave2.enemies.push_back({ 0, rightStart - 300.0f, Field::STAGE_TOP + 50.0f,
+        wave1.enemies.push_back({ 0, rightStart + 200.0f, Field::STAGE_TOP + 70.0f,
                                  static_cast<int>(Zako1Pattern::PATTERN_RIGHT_TO_LEFT), 0.0f });
 
-        phase.waves.push_back(wave2);
+        phase.waves.push_back(wave1);
     }
 
     // ========================================

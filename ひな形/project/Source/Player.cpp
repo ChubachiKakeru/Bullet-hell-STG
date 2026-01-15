@@ -1,11 +1,14 @@
 #include "Player.h"
 #include "Field.h"
 #include "playerBullet.h"
+#include "enemyBullet.h"
+#include "EnemyBullet2.h"
+#include "Screen.h"
 #include "Common.h"
-#include"Screen.h"
+#include <cmath>
 
 // ========================================
-// 定数定義
+// 定数
 // ========================================
 namespace {
     constexpr float MOVE_SPEED = 7.0f;
@@ -15,6 +18,9 @@ namespace {
     constexpr float PLAYER_CENTER_OFFSET = 60.0f;
     constexpr float BULLET_SPEED = -10.0f;
     constexpr float BULLET_RADIUS = 8.0f;
+
+    constexpr float BOMB_SIZE = 150.0f;
+    constexpr float BOMB_SPEED = -10.0f; // 上方向
 }
 
 // ========================================
@@ -23,32 +29,34 @@ namespace {
 Player::Player() : GameObject()
 {
     hImage = LoadGraph("data/image/file/chara/player.png");
+    hBombImage = LoadGraph("data/image/bomb.png");
+
     x = 300;
     y = 900;
     velocity = 0;
     onGround = false;
     shotTimer = 0.0f;
     hp = INITIAL_HP;
+    size = 50.0f;
+
     isActive = true;
+
+    // ボム関連
+    bombCount = 10;
+    bombSize = BOMB_SIZE;
+    bombSpeed = BOMB_SPEED;
 }
 
-Player::Player(int sx, int sy) : GameObject()
+Player::Player(int sx, int sy) : Player()
 {
-    hImage = LoadGraph("data/image/file/chara/player.png");
     x = sx;
     y = sy;
-    velocity = 0;
-    onGround = false;
-    shotTimer = 0.0f;
-    hp = INITIAL_HP;
-    isActive = true;
 }
 
 Player::~Player()
 {
-    if (hImage != -1) {
-        DeleteGraph(hImage);
-    }
+    if (hImage != -1) DeleteGraph(hImage);
+    if (hBombImage != -1) DeleteGraph(hBombImage);
 }
 
 // ========================================
@@ -80,6 +88,37 @@ bool Player::IsHit(float bx, float by, int rad)
 }
 
 // ========================================
+// 弾発射
+// ========================================
+void Player::ShootBullet()
+{
+    int bulletX = (int)x + 50 / 2;
+    int bulletY = (int)y + 50 / 2;
+    new playerBullet(bulletX, bulletY, 0, BULLET_SPEED, BULLET_RADIUS);
+}
+
+// ========================================
+// ボム発射（変わり種弾として扱う）
+// ========================================
+void Player::ShootBomb()
+{
+    if (bombCount <= 0) return;
+
+    bombCount--;
+
+    // 弾として自キャラの上方向に発射（中心を自キャラの上）
+    float startX = x + size / 2.0f - BOMB_SIZE / 2.0f;
+    float startY = y - BOMB_SIZE; // 自キャラの前に配置
+
+    // 弾の大きさ固定150x150
+    float bombVY = -8.0f; // 上方向速度
+    float bombVX = 0.0f;
+
+    // 敵弾に当たると消える処理は enemyBullet 側で判定する想定
+    new enemyBullet(startX, startY, bombVX, bombVY, BOMB_SIZE, 0);
+}
+
+// ========================================
 // 更新処理
 // ========================================
 void Player::Update()
@@ -87,86 +126,40 @@ void Player::Update()
     Field* field = FindGameObject<Field>();
     if (!field) return;
 
-    // 移動前の座標を保存
-    float prevX = x;
-    float prevY = y;
+    // 移動
+    if (CheckHitKey(KEY_INPUT_D)) x += MOVE_SPEED;
+    if (CheckHitKey(KEY_INPUT_A)) x -= MOVE_SPEED;
+    if (CheckHitKey(KEY_INPUT_W)) y -= MOVE_SPEED;
+    if (CheckHitKey(KEY_INPUT_S)) y += MOVE_SPEED;
 
-    // 右移動 (Dキー)
-    if (CheckHitKey(KEY_INPUT_D)) {
-        x += MOVE_SPEED;
-        int push1 = field->HitCheckRight(x + 50 / 2, y + 5);
-        int push2 = field->HitCheckRight(x + 50 / 2, y + 63);
-        x -= max(push1, push2);
-    }
+    // ステージ境界内に制限（画面の青い部分のみ） 
+     if (x < Field::STAGE_LEFT) x = Field::STAGE_LEFT; 
+     if (x > Field::STAGE_RIGHT - 50 / 2) x = Field::STAGE_RIGHT - 50 / 2;
+     // プレイヤー幅を考慮 
+     if (y < Field::STAGE_TOP) y = Field::STAGE_TOP; 
+     if (y > Screen::HEIGHT - 100) y = Screen::HEIGHT - 100; // 画面下端まで移動可能
 
-    // 左移動 (Aキー)
-    if (CheckHitKey(KEY_INPUT_A)) {
-        x -= MOVE_SPEED;
-        int push1 = field->HitCheckLeft(x + 14, y + 5);
-        int push2 = field->HitCheckLeft(x + 14, y + 63);
-        x -= max(push1, push2);
-    }
-
-    // 上移動 (Wキー)
-    if (CheckHitKey(KEY_INPUT_W)) {
-        y -= MOVE_SPEED;
-        int push1 = field->HitCheckUp(x + 14, y + 5);
-        int push2 = field->HitCheckUp(x + 50 / 2, y + 5);
-        int push = max(push1, push2);
-        if (push > 0) {
-            y += push;
-            velocity = 0;
-        }
-    }
-
-    // 下移動 (Sキー)
-    if (CheckHitKey(KEY_INPUT_S)) {
-        y += MOVE_SPEED;
-        int push1 = field->HitCheckDown(x + 14, y + 64);
-        int push2 = field->HitCheckDown(x + 50, y + 64);
-        int push = max(push1, push2);
-        if (push > 0) {
-            y -= push - 1;
-            velocity = 0;
-            onGround = false;
-        }
-    }
-
-    // ステージ境界内に制限（画面の青い部分のみ）
-    if (x < Field::STAGE_LEFT) x = Field::STAGE_LEFT;
-    if (x > Field::STAGE_RIGHT - 50 / 2) x = Field::STAGE_RIGHT - 50 / 2;  // プレイヤー幅を考慮
-    if (y < Field::STAGE_TOP) y = Field::STAGE_TOP;
-    if (y > Screen::HEIGHT - 100) y = Screen::HEIGHT - 100;  // 画面下端まで移動可能
-
-    // 弾発射タイマー更新
+    // 弾発射
     shotTimer += 1.0f;
-
-    // Hキーで弾発射
     if (CheckHitKey(KEY_INPUT_H) && shotTimer >= SHOT_COOLDOWN) {
         ShootBullet();
         shotTimer = 0.0f;
     }
-}
 
-
-// ========================================
-// 弾発射処理
-// ========================================
-void Player::ShootBullet()
-{
-    // プレイヤーの中心から弾を発射
-    int bulletX = (int)x + 50 / 2;
-    int bulletY = (int)y + 50 / 2;
-    new playerBullet(bulletX, bulletY, 0, BULLET_SPEED, BULLET_RADIUS);
+    // ボム発射
+    if (CheckHitKey(KEY_INPUT_J)) {
+        ShootBomb();
+    }
 }
 
 // ========================================
-// 描画処理
+// 描画
 // ========================================
 void Player::Draw()
 {
-
-    DrawGraph(x, y, hImage, TRUE);
-    Field* field = FindGameObject<Field>();
+    DrawGraph((int)x, (int)y, hImage, TRUE);
+    DrawFormatString(1000, 270, GetColor(0, 255, 255), "=== PLAYER ===");
+    DrawFormatString(1000, 300, GetColor(0, 255, 255), "PLAYER HP: %d", hp);
+    DrawFormatString(1000, 330, GetColor(0, 255, 255), "BOMB: %d", bombCount);
+    // ボムは弾として敵弾を消すので描画は enemyBullet に任せる
 }
-

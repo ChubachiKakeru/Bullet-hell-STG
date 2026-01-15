@@ -7,7 +7,7 @@
 #include"../Library/myDxLib.h"
 
 namespace {
-    constexpr float SHOT_INTERVAL = 120.0f;  // 2秒（60FPS想定）
+    constexpr float SHOT_INTERVAL = 60.0f*1.5f;  // 2秒（60FPS想定）
     constexpr float PATTERN_TIME = 300.0f;   // 5秒で消える
     constexpr float RADIUS = 40.0f;
 }
