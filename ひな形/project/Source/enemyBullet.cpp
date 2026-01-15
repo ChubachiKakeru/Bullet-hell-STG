@@ -155,7 +155,7 @@ void enemyBullet::Update() {
         }
 
         if (distance < hitRadius) {
-            p->TakeDamage(10);
+            p->TakeDamage(1);
             DestroyMe();
             return;
         }
@@ -203,13 +203,13 @@ void enemyBullet::Draw() {
     }
 
     // デバッグ用の当たり判定表示（必要に応じてコメントアウト）
-    
-    if (currentImageType == 1) {
-        DrawCircle((int)(x + 75.0f), (int)(y + 75.0f), 50, GetColor(255, 0, 255), FALSE);
-    }
-    else {
-        DrawCircle((int)(x + 38.0f), (int)(y + 41.5f), 40, GetColor(255, 0, 255), FALSE);
-    }
+    //
+    //if (currentImageType == 1) {
+    //    DrawCircle((int)(x + 75.0f), (int)(y + 75.0f), 50, GetColor(255, 0, 255), FALSE);
+    //}
+    //else {
+    //    DrawCircle((int)(x + 38.0f), (int)(y + 41.5f), 40, GetColor(255, 0, 255), FALSE);
+    //}
     
 
     // ホーミング弾には追加の視覚効果

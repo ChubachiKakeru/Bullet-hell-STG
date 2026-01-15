@@ -99,10 +99,6 @@ void zako1::Draw()
         // 中心点（黄色）
         DrawCircle((int)x, (int)y, 3, GetColor(255, 255, 0), TRUE);
 
-        // 画像の矩形範囲（緑）- デバッグ用
-        DrawBox((int)(x - 50), (int)(y - 50),
-            (int)(x + 50), (int)(y + 50),
-            GetColor(0, 255, 0), FALSE);
     }
 }
 bool zako1::IsHit(float bx, float by, int rad)
