@@ -1,6 +1,8 @@
 #include "playerBullet.h"
 #include "Boss1.h"
 #include "zako1.h"
+#include "zako2.h"
+#include "Boss2.h"
 #include "EnemyManager.h"
 
 playerBullet::playerBullet(float sx, float sy, float vx, float vy, float bulletsize)
@@ -30,15 +32,28 @@ void playerBullet::Update() {
         for (Enemy* enemy : enemies) {
             if (enemy && !enemy->IsDead()) {
                 // “G‚ÌŽí—Þ‚É‰ž‚¶‚ÄƒLƒƒƒXƒg
-                Boss1* boss = dynamic_cast<Boss1*>(enemy);
-                if (boss && boss->IsHit(x + 40, y + 40, 10)) {
+                Boss1* bossA = dynamic_cast<Boss1*>(enemy);
+                if (bossA && bossA->IsHit(x + 40, y + 40, 10)) {
                     DestroyMe();
                     return;
                 }
 
                 // zako1‚Ì“–‚½‚è”»’è
-                zako1* zako = dynamic_cast<zako1*>(enemy);
-                if (zako && zako->IsHit(x + 40, y + 40, 10)) {
+                zako1* zakoA = dynamic_cast<zako1*>(enemy);
+                if (zakoA && zakoA->IsHit(x + 40, y + 40, 10)) {
+                    DestroyMe();
+                    return;
+                }
+
+                // zako2‚Ì“–‚½‚è”»’è
+                zako2* zakoB = dynamic_cast<zako2*>(enemy);
+                if (zakoB && zakoB->IsHit(x + 40, y + 40, 10)) {
+                    DestroyMe();
+                    return;
+                }
+
+                Boss2* bossB = dynamic_cast<Boss2*>(enemy);
+                if (bossB && bossB->IsHit(x + 40, y + 40, 10)) {
                     DestroyMe();
                     return;
                 }

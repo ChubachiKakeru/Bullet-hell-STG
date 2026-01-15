@@ -34,6 +34,10 @@ Boss2::Boss2()
 	// 基底クラスの変数も初期化
 	hp = maxHp;
 	isDead = false;
+
+	/// ★追加: 出現直後の無敵設定
+	spawnInvincible = true;
+	spawnInvincibleTimer = 60.0f;
 }
 
 Boss2::Boss2(float sx, float sy)
@@ -66,6 +70,10 @@ Boss2::Boss2(float sx, float sy)
 	// 基底クラスの変数も初期化
 	hp = maxHp;
 	isDead = false;
+
+	/// ★追加: 出現直後の無敵設定
+	spawnInvincible = true;
+	spawnInvincibleTimer = 60.0f; // 60FPS → 1秒
 }
 
 Boss2::~Boss2()
@@ -78,6 +86,15 @@ Boss2::~Boss2()
 
 void Boss2::Update()
 {
+	if (spawnInvincible)
+	{
+		spawnInvincibleTimer -= 1.0f;
+		if (spawnInvincibleTimer <= 0.0f)
+		{
+			spawnInvincible = false;
+		}
+	}
+
 	if (!isActive) {
 		isDead = true;
 		return;
@@ -153,9 +170,8 @@ void Boss2::OnPhaseChanged(int newPhase)
 		break;
 
 	case BulletPhase2::PHASE_2:
-		x = Field::STAGE_LEFT + 50.0f;
+		x = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f - 60.0f;
 		y = Field::STAGE_TOP + 20.0f;
-		moveDirection = 2.0f;
 		shotInterval = 60.0f;
 		break;
 
@@ -306,27 +322,47 @@ void Boss2::ShootBullet()
 void Boss2::Draw()
 {
 	if (isActive && bossImage != -1) {
-		DrawGraph((int)x, (int)y, bossImage, TRUE);
-		DrawFormatString(10, 40, GetColor(255, 0, 0), "Boss HP: %d", currentHp);
+
+		/// ★無敵中は点滅描画でフィードバック
+		if (spawnInvincible) {
+			if (((int)(spawnInvincibleTimer / 5)) % 2 == 0)
+			{
+				DrawGraph((int)x, (int)y, bossImage, TRUE);
+			}
+		}
+		else {
+			DrawGraph((int)x, (int)y, bossImage, TRUE);
+		}
+
+		DrawFormatString(1000, 100, GetColor(255, 0, 0), "BOSS HP: %d", currentHp);
+		DrawFormatString(1000, 70, GetColor(255, 0, 0), "=== BOSS2 ===");
 	}
 }
 
-void Boss2::TakeDamage(int damage)
+void Boss2::TakeDamage(int dmg)
 {
-	if (!isActive) return;
-	currentHp -= damage;
-	hp = currentHp;  // 基底クラスのhpも同期
+	/// ★追加: 登場1秒無敵中は無効
+	if (spawnInvincible) return;
 
+	currentHp -= dmg;
 	if (currentHp <= 0) {
 		currentHp = 0;
-		hp = 0;
-		isActive = false;
 		isDead = true;
 	}
 }
 
 bool Boss2::IsHit(float bx, float by, int rad)
 {
+	if (!isActive) return false;
+
+	float dx = bx - (x + 60);
+	float dy = by - (y + 60);
+	float d = sqrt(dx * dx + dy * dy);
+
+	if (d < 60 + rad) {
+		TakeDamage(100);
+		return true;
+	}
 	return false;
 }
 
