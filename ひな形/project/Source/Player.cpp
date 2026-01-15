@@ -69,10 +69,10 @@ void Player::TakeDamage(int damage)
     hp -= damage;
     if (hp <= 0) {
         hp = 0;
-        SceneManager::ChangeScene("TITLE");
+        // ゲームオーバーシーンに遷移
+        SceneManager::ChangeScene("GAMEOVER");
     }
 }
-
 // ========================================
 // 当たり判定
 // ========================================
