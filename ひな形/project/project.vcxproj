@@ -153,6 +153,7 @@
     <ClInclude Include="Library\SceneManager.h" />
     <ClInclude Include="Library\Time.h" />
     <ClInclude Include="Source\BackGround.h" />
+    <ClInclude Include="Source\Bomb.h" />
     <ClInclude Include="Source\BootScene.h" />
     <ClInclude Include="Source\Boss1.h" />
     <ClInclude Include="Source\Boss2.h" />
@@ -195,6 +196,7 @@
     <ClCompile Include="Library\SceneManager.cpp" />
     <ClCompile Include="Library\Time.cpp" />
     <ClCompile Include="Source\BackGround.cpp" />
+    <ClCompile Include="Source\Bomb.cpp" />
     <ClCompile Include="Source\BootScene.cpp" />
     <ClCompile Include="Source\Boss1.cpp" />
     <ClCompile Include="Source\Boss2.cpp" />
