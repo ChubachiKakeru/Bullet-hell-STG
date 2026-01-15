@@ -13,5 +13,5 @@ public:
 private:
     int m_backgroundImage;
     int m_selectedItem;
-    static const int ITEM_COUNT = 6;
+    static const int ITEM_COUNT = 4;
 };

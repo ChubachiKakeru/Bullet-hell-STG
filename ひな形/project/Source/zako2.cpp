@@ -1,6 +1,6 @@
 #include "zako2.h"
 #include "Field.h"
-#include "enemyBullet.h"
+#include "EnemyBullet2.h"
 #include "Player.h"
 #include "BackGround.h"
 #include <cmath>
@@ -138,7 +138,7 @@ void zako2::ShootBullet()
     float angle = atan2f(dy, dx);
 
     // 敵弾を生成（プレイヤー狙い）
-    new enemyBullet(x, y, angle, 3.0f);
+    new EnemyBullet2(x, y, angle, 3.0f);
 }
 
 bool zako2::IsHit(float bx, float by, int rad)
