@@ -358,11 +358,11 @@ bool Boss1::IsHit(float bx, float by, int rad)
 {
     if (!isActive) return false;
 
-    float dx = bx - (x + 60);
-    float dy = by - (y + 60);
+    float dx = bx - (x + 100);
+    float dy = by - (y + 100);
     float d = sqrt(dx * dx + dy * dy);
 
-    if (d < 60 + rad) {
+    if (d < 100 + rad) {
         TakeDamage(100);
         return true;
     }

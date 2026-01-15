@@ -41,6 +41,7 @@
     <ClCompile Include="Source\zako1.cpp" />
     <ClCompile Include="Source\zako2.cpp" />
     <ClCompile Include="Source\EnemyBullet2.cpp" />
+    <ClCompile Include="Source\Bomb.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imconfig.h" />
@@ -87,5 +88,6 @@
     <ClInclude Include="Source\zako1.h" />
     <ClInclude Include="Source\zako2.h" />
     <ClInclude Include="Source\EnemyBullet2.h" />
+    <ClInclude Include="Source\Bomb.h" />
   </ItemGroup>
 </Project>

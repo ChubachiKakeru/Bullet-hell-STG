@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Field.h"
 #include "playerBullet.h"
+#include "Bomb.h"
 #include "enemyBullet.h"
 #include "EnemyBullet2.h"
 #include "Screen.h"
@@ -45,6 +46,7 @@ Player::Player() : GameObject()
     bombCount = 10;
     bombSize = BOMB_SIZE;
     bombSpeed = BOMB_SPEED;
+    prevBombKeyPressed = false;
 }
 
 Player::Player(int sx, int sy) : Player()
@@ -67,10 +69,10 @@ void Player::TakeDamage(int damage)
     hp -= damage;
     if (hp <= 0) {
         hp = 0;
-        SceneManager::ChangeScene("TITLE");
+        // ゲームオーバーシーンに遷移
+        SceneManager::ChangeScene("GAMEOVER");
     }
 }
-
 // ========================================
 // 当たり判定
 // ========================================
@@ -106,16 +108,15 @@ void Player::ShootBomb()
 
     bombCount--;
 
-    // 弾として自キャラの上方向に発射（中心を自キャラの上）
+    // ボムとして自キャラの上方向に発射
     float startX = x + size / 2.0f - BOMB_SIZE / 2.0f;
-    float startY = y - BOMB_SIZE; // 自キャラの前に配置
+    float startY = y - BOMB_SIZE;
 
-    // 弾の大きさ固定150x150
     float bombVY = -8.0f; // 上方向速度
     float bombVX = 0.0f;
 
-    // 敵弾に当たると消える処理は enemyBullet 側で判定する想定
-    new enemyBullet(startX, startY, bombVX, bombVY, BOMB_SIZE, 0);
+    // Bombクラスとして生成
+    new Bomb(startX, startY, bombVX, bombVY, BOMB_SIZE);
 }
 
 // ========================================
@@ -133,11 +134,11 @@ void Player::Update()
     if (CheckHitKey(KEY_INPUT_S)) y += MOVE_SPEED;
 
     // ステージ境界内に制限（画面の青い部分のみ） 
-     if (x < Field::STAGE_LEFT) x = Field::STAGE_LEFT; 
-     if (x > Field::STAGE_RIGHT - 50 / 2) x = Field::STAGE_RIGHT - 50 / 2;
-     // プレイヤー幅を考慮 
-     if (y < Field::STAGE_TOP) y = Field::STAGE_TOP; 
-     if (y > Screen::HEIGHT - 100) y = Screen::HEIGHT - 100; // 画面下端まで移動可能
+    if (x < Field::STAGE_LEFT) x = Field::STAGE_LEFT;
+    if (x > Field::STAGE_RIGHT - 50 / 2) x = Field::STAGE_RIGHT - 50 / 2;
+    // プレイヤー幅を考慮 
+    if (y < Field::STAGE_TOP) y = Field::STAGE_TOP;
+    if (y > Screen::HEIGHT - 100) y = Screen::HEIGHT - 100; // 画面下端まで移動可能
 
     // 弾発射
     shotTimer += 1.0f;
@@ -146,10 +147,12 @@ void Player::Update()
         shotTimer = 0.0f;
     }
 
-    // ボム発射
-    if (CheckHitKey(KEY_INPUT_J)) {
+    // ボム発射（キーが押された瞬間のみ発射）
+    bool currentBombKeyPressed = CheckHitKey(KEY_INPUT_J);
+    if (currentBombKeyPressed && !prevBombKeyPressed) {
         ShootBomb();
     }
+    prevBombKeyPressed = currentBombKeyPressed;
 }
 
 // ========================================
@@ -161,5 +164,4 @@ void Player::Draw()
     DrawFormatString(1000, 270, GetColor(0, 255, 255), "=== PLAYER ===");
     DrawFormatString(1000, 300, GetColor(0, 255, 255), "PLAYER HP: %d", hp);
     DrawFormatString(1000, 330, GetColor(0, 255, 255), "BOMB: %d", bombCount);
-    // ボムは弾として敵弾を消すので描画は enemyBullet に任せる
 }
