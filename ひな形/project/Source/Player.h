@@ -46,12 +46,10 @@ private:
     bool prevBombKeyPressed;  // ボムキーの前フレーム状態（連続発射防止用）
     // サウンドパス
     const char* GAME_PHIT_SOUND_PATH = "data/Sound/playerhit.mp3";      //プレイヤー死亡ジングル
-    //const char* GAME_DEATH_SOUND_PATH = "data/Sound/playerdeath.mp3";      //プレイヤーHItジングル
     const char* GAME_PSHOT_SOUND_PATH = "data/Sound/playerattack.mp3";      //自機弾発射ジングル
     const char* GAME_PBOMB_SOUND_PATH = "data/Sound/bombattack.mp3";      //ボム発射ジングル
     //  サウンドハンドル
     int playerHitSoundHandle;		//	プレイヤーHitサウンドハンドル
-    //int playerDeathSoundHandle;         // プレイヤーDeathサウンドハンドル
     int playerShotSoundHandle;         // プレイヤーShotサウンドハンドル
     int playerBombSoundHandle;         // プレイヤーBombサウンドハンドル
 };

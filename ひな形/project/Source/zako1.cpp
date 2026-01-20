@@ -17,6 +17,8 @@ zako1::zako1(float sx, float sy, Zako1Pattern pat) : Enemy()
     // Boss1と同じスタイルで本体内で初期化
     zakoImage = LoadGraph("data/image/zako1.png");
 
+    enemyDeathSoundHandle = LoadSoundMem(GAME_EDEATH_SOUND_PATH);
+
     x = sx;
     y = sy;
 
@@ -50,6 +52,7 @@ zako1::~zako1()
         DeleteGraph(zakoImage);
         zakoImage = -1;
     }
+    DeleteSoundMem(enemyDeathSoundHandle);
 }
 
 void zako1::Update()
@@ -111,7 +114,8 @@ bool zako1::IsHit(float bx, float by, int rad)
 
     if (distance < RADIUS + rad) {
         // 当たったら無効化（EnemyManagerが削除する）
-        PlaySoundFile(GAME_EDEATH_SOUND_PATH, DX_PLAYTYPE_BACK);
+        static int enemyDeathSE = LoadSoundMem("data/Sound/enemydeath.mp3");
+        PlaySoundMem(enemyDeathSE, DX_PLAYTYPE_BACK);
         isActive = false;
         isDead = true;
         return true;

@@ -31,10 +31,12 @@ PlayScene::PlayScene() {
     switch (selectedStage)
     {
     case 1:
+        PlaySoundFile("data/Sound/stage1.mp3", DX_PLAYTYPE_LOOP);
         m_countdownTimer = 60 * 5;  // 5•b
         m_countdownNumber = 5;
         break;
     case 2:
+        PlaySoundFile("data/Sound/stage2.mp3", DX_PLAYTYPE_LOOP);
         m_countdownTimer = 60 * 3;  // 3•b
         m_countdownNumber = 3;
         break;
