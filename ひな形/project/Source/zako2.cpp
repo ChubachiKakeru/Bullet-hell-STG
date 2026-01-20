@@ -33,6 +33,10 @@ zako2::zako2(float sx, float sy, Zako2Pattern pat)
     hp = 1;
     isDead = false;
 
+    isBurst = false;
+    burstCount = 0;
+    burstTimer = 0;
+
     // パターンに応じて移動速度を設定
     switch (pattern) {
     case Zako2Pattern::PATTERN_LEFT_TO_RIGHT:
@@ -75,12 +79,6 @@ void zako2::Update()
 
     // 横方向に移動（パターンに応じて左右）
     x += moveSpeed;
-
-    // 弾発射（2秒ごと）
-    if (shotTimer >= shotInterval) {
-        ShootBullet();
-        shotTimer = 0;
-    }
 
     // ---- 攻撃管理 ----
     if (!isBurst)
@@ -136,9 +134,13 @@ void zako2::ShootBullet()
     float dx = player->GetX() - x;
     float dy = player->GetY() - y;
     float angle = atan2f(dy, dx);
+    // 角度 → 速度ベクトルに変換
+    float speed = 6.0f;
+    float vx = cosf(angle) * speed;
+    float vy = sinf(angle) * speed;
 
     // 敵弾を生成（プレイヤー狙い）
-    new EnemyBullet2(x, y, angle, 3.0f);
+    new EnemyBullet2(x, y, vx, vy, angle, 3.0f);
 }
 
 bool zako2::IsHit(float bx, float by, int rad)
