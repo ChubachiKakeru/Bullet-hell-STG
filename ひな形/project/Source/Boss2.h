@@ -109,6 +109,12 @@ private:
     float shotTimer;        // 弾発射タイマー
     float shotInterval;     // 弾発射間隔
 
+    float normalBulletTimer = 0.0f;
+    float normalBulletInterval = 90.0f; // 通常弾発射間隔（1.5秒）
+    float aimedShotTimer = 0.0f;
+    float aimedShotInterval = 60.0f; // 自機狙い弾発射間隔（1秒）
+    int aimedShotCount = 0; // 2回発射のカウント管理
+
     // ========================================
     // 移動管理（フェーズ2,3用）
     // ========================================

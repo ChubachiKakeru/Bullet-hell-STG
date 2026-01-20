@@ -1,6 +1,6 @@
-#include "Boss2.h"
+ï»¿#include "Boss2.h"
 #include"Field.h"
-#include"enemyBullet.h"
+#include"EnemyBullet2.h"
 #include"Player.h"
 #include <cmath>
 
@@ -31,13 +31,20 @@ Boss2::Boss2()
 
 	isActive = true;
 
-	// Šî’êƒNƒ‰ƒX‚Ì•Ï”‚à‰Šú‰»
+	// åŸºåº•ã‚¯ãƒ©ã‚¹ã®å¤‰æ•°ã‚‚åˆæœŸåŒ–
 	hp = maxHp;
 	isDead = false;
 
-	/// š’Ç‰Á: oŒ»’¼Œã‚Ì–³“Gİ’è
+	/// â˜…è¿½åŠ : å‡ºç¾ç›´å¾Œã®ç„¡æ•µè¨­å®š
 	spawnInvincible = true;
 	spawnInvincibleTimer = 60.0f;
+
+	// ãƒ•ã‚§ãƒ¼ã‚º2ç”¨ã‚¿ã‚¤ãƒãƒ¼åˆæœŸåŒ–
+	normalBulletTimer = 0.0f;
+	normalBulletInterval = 90.0f;  // é€šå¸¸å¼¾ç™ºå°„é–“éš”
+	aimedShotTimer = 0.0f;
+	aimedShotInterval = 60.0f;     // è‡ªæ©Ÿç‹™ã„å¼¾ç™ºå°„é–“éš”
+	aimedShotCount = 0;
 }
 
 Boss2::Boss2(float sx, float sy)
@@ -67,13 +74,20 @@ Boss2::Boss2(float sx, float sy)
 
 	isActive = true;
 
-	// Šî’êƒNƒ‰ƒX‚Ì•Ï”‚à‰Šú‰»
+	// åŸºåº•ã‚¯ãƒ©ã‚¹ã®å¤‰æ•°ã‚‚åˆæœŸåŒ–
 	hp = maxHp;
 	isDead = false;
 
-	/// š’Ç‰Á: oŒ»’¼Œã‚Ì–³“Gİ’è
+	/// â˜…è¿½åŠ : å‡ºç¾ç›´å¾Œã®ç„¡æ•µè¨­å®š
 	spawnInvincible = true;
-	spawnInvincibleTimer = 60.0f; // 60FPS ¨ 1•b
+	spawnInvincibleTimer = 60.0f; // 60FPS â†’ 1ç§’
+
+	// ãƒ•ã‚§ãƒ¼ã‚º2ç”¨ã‚¿ã‚¤ãƒãƒ¼åˆæœŸåŒ–
+	normalBulletTimer = 0.0f;
+	normalBulletInterval = 90.0f;  // é€šå¸¸å¼¾ç™ºå°„é–“éš”
+	aimedShotTimer = 0.0f;
+	aimedShotInterval = 60.0f;     // è‡ªæ©Ÿç‹™ã„å¼¾ç™ºå°„é–“éš”
+	aimedShotCount = 0;
 }
 
 Boss2::~Boss2()
@@ -100,13 +114,13 @@ void Boss2::Update()
 		return;
 	}
 
-	// HPƒx[ƒX‚ÌƒtƒF[ƒYƒ`ƒFƒbƒN
+	// HPãƒ™ãƒ¼ã‚¹ã®ãƒ•ã‚§ãƒ¼ã‚ºãƒã‚§ãƒƒã‚¯
 	CheckPhaseTransition();
 
-	// ’e”­Ëƒ^ƒCƒ}[XV
+	// å¼¾ç™ºå°„ã‚¿ã‚¤ãƒãƒ¼æ›´æ–°
 	shotTimer += 1.0f;
 
-	// ŠeƒtƒF[ƒY‚ÌXV
+	// å„ãƒ•ã‚§ãƒ¼ã‚ºã®æ›´æ–°
 	switch (bulletPhase) {
 	case BulletPhase2::PHASE_1:
 		UpdatePhase1();
@@ -119,21 +133,9 @@ void Boss2::Update()
 		break;
 	}
 
-	// ’e”­Ë”»’è
-	if (shotTimer >= shotInterval) {
-		switch (bulletPhase) {
-		case BulletPhase2::PHASE_1:
-			ShotBullet(45.0f, 8.0f);
-			break;
-		case BulletPhase2::PHASE_2:
-			ShotBullet(30.0f, 3.0f);
-			break;
-		case BulletPhase2::PHASE_3:
-			if (!isCharging) {
-				ShotBullet(25.0f, 5.0f);
-			}
-			break;
-		}
+	// ãƒ•ã‚§ãƒ¼ã‚º3ã ã‘ã“ã“ã§ç™ºå°„
+	if (bulletPhase == BulletPhase2::PHASE_3 && shotTimer >= shotInterval && !isCharging) {
+		ShotBullet(moveDirection, 6);
 		shotTimer = 0.0f;
 	}
 }
@@ -159,9 +161,9 @@ void Boss2::CheckPhaseTransition()
 
 void Boss2::OnPhaseChanged(int newPhase)
 {
-	printfDx("ƒtƒF[ƒY %d ‚ÉˆÚsIHP: %d\n", newPhase, currentHp);
+	printfDx("ãƒ•ã‚§ãƒ¼ã‚º %d ã«ç§»è¡Œï¼HP: %d\n", newPhase, currentHp);
 
-	// ƒtƒF[ƒY‚²‚Æ‚Ì‰Šú‰»
+	// ãƒ•ã‚§ãƒ¼ã‚ºã”ã¨ã®åˆæœŸåŒ–
 	switch (bulletPhase) {
 	case BulletPhase2::PHASE_1:
 		x = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f - 60.0f;
@@ -187,24 +189,86 @@ void Boss2::OnPhaseChanged(int newPhase)
 
 void Boss2::UpdatePhase1()
 {
-	// ƒtƒF[ƒY1F“®‚©‚È‚¢
+	// ãƒ•ã‚§ãƒ¼ã‚º1ï¼šå‹•ã‹ãªã„
+
+	// å¼¾ã‚’æ’ƒã¤ã‚¿ã‚¤ãƒŸãƒ³ã‚°ãªã‚‰
+	if (shotTimer >= shotInterval) {
+		ShootBullet();  // ãƒ•ã‚§ãƒ¼ã‚º1ç”¨ã®å¼¾å¹•ç™ºå°„é–¢æ•°
+		shotTimer = 0.0f;
+	}
 }
 
 void Boss2::UpdatePhase2()
 {
-	// ƒtƒF[ƒY2F“®‚©‚È‚¢
+	// ãƒ•ã‚§ãƒ¼ã‚º2ï¼šå‹•ã‹ãªã„
+
+	// ãƒ•ã‚§ãƒ¼ã‚º2ï¼šè‡ªæ©Ÿç‹™ã„å¼¾(4ç™ºÃ—2å›)ã¨é€šå¸¸å¼¾ã‚’æ··åˆã§ç™ºå°„
+
+	normalBulletTimer += 1.0f;
+	aimedShotTimer += 1.0f;
+
+	Player* player = FindGameObject<Player>();
+	if (!player) return;
+
+	// è‡ªæ©Ÿç‹™ã„å¼¾ã®ç™ºå°„
+	if (aimedShotTimer >= aimedShotInterval) {
+		aimedShotTimer = 0.0f;
+
+		float dx = player->GetX() - x;
+		float dy = player->GetY() - y;
+		float baseAngle = atan2f(dy, dx);
+
+		const int bulletCount = 3;
+		const float spread = 0.5f;
+
+		for (int i = 0; i < bulletCount; i++) {
+			float t = (float)i / (bulletCount - 1);
+			float angle = baseAngle - spread * 0.5f + spread * t;
+
+			float speed = 6.0f;
+			float vx = cosf(angle) * speed;
+			float vy = sinf(angle) * speed;
+
+			new EnemyBullet2(x + 32, y + 32, vx, vy, 8.0f, 1);
+		}
+
+		aimedShotCount++;
+
+		if (aimedShotCount >= 2) {
+			aimedShotCount = 0;
+			aimedShotTimer = -30.0f;  // å°‘ã—é…å»¶ã‚’å…¥ã‚Œã‚‹ï¼ˆ0.5ç§’ï¼‰
+		}
+	}
+
+	// é€šå¸¸å¼¾ã®ç™ºå°„ï¼ˆä¸‹æ–¹å‘ã«æµã‚Œã‚‹ï¼‰
+	if (normalBulletTimer >= normalBulletInterval) {
+		normalBulletTimer = 0.0f;
+
+		const int whiteCount = 5;
+
+		for (int i = 0; i < whiteCount; i++) {
+			float offset = (i - (whiteCount - 1) * 0.5f) * 0.2f;
+			float angle = 3.14159265f / 2.0f + offset;  // ä¸‹æ–¹å‘ï¼ˆ90åº¦ï¼‰
+
+			float speed = 3.0f;
+			float vx = cosf(angle) * speed;
+			float vy = sinf(angle) * speed;
+
+			new EnemyBullet2(x + 32, y + 32, vx, vy, 8.0f, 0);
+		}
+	}
 }
 
 void Boss2::UpdatePhase3()
 {
-	// ƒtƒF[ƒY3F‰ñ“]Šp‚¾‚¯XViƒ{ƒX‚Í“®‚©‚È‚¢j
-	moveDirection += 0.05f;  // ‰ñ“]ƒXƒs[ƒhi’²®‰Âj
+	// ãƒ•ã‚§ãƒ¼ã‚º3ï¼šå›è»¢è§’ã ã‘æ›´æ–°ï¼ˆãƒœã‚¹ã¯å‹•ã‹ãªã„ï¼‰
+	moveDirection += 0.05f;  // å›è»¢ã‚¹ãƒ”ãƒ¼ãƒ‰ï¼ˆèª¿æ•´å¯ï¼‰
 }
 
 void Boss2::ShotBullet(float angle, float num)
 {
 	// ==========================
-	// ƒtƒF[ƒY1F©‹@‘_‚¢î3’i
+	// ãƒ•ã‚§ãƒ¼ã‚º1ï¼šè‡ªæ©Ÿç‹™ã„æ‰‡3æ®µ
 	// ==========================
 	if (bulletPhase == BulletPhase2::PHASE_1)
 	{
@@ -215,7 +279,7 @@ void Boss2::ShotBullet(float angle, float num)
 		float dy = player->GetY() - y;
 		float baseAngle = atan2f(dy, dx);
 
-		const int bulletCount = 9;
+		const int bulletCount = 5;
 		const float spread = 0.7f;
 
 		float speeds[3] = { 4.0f, 5.5f, 7.0f };
@@ -230,61 +294,28 @@ void Boss2::ShotBullet(float angle, float num)
 				float vx = cosf(a) * speeds[layer];
 				float vy = sinf(a) * speeds[layer];
 
-				new enemyBullet(x + 32, y + 32, vx, vy, 8.0f, 1); // ‰Š
+				new EnemyBullet2(x + 32, y + 32, vx, vy, 8.0f, 1); // ç‚
 			}
 		}
 	}
+
+	//ã€€ãƒ•ã‚§ãƒ¼ã‚º2ã¯UpdataPhase2ã§ç®¡ç†
+
 	// ==========================
-	// ƒtƒF[ƒY2F‰Ši©‹@‘_‚¢j{”’i‰ºj
-	// ==========================
-	else if (bulletPhase == BulletPhase2::PHASE_2)
-	{
-		Player* player = FindGameObject<Player>();
-		if (!player) return;
-
-		float dx = player->GetX() - x;
-		float dy = player->GetY() - y;
-		float baseAngle = atan2f(dy, dx);
-
-		// --- ‰Š ---
-		const int fireCount = 5;
-		const float fireSpread = 0.4f;
-
-		for (int i = 0; i < fireCount; i++)
-		{
-			float t = (float)i / (fireCount - 1);
-			float a = baseAngle - fireSpread * 0.5f + fireSpread * t;
-
-			new enemyBullet(x + 32, y + 32,
-				cosf(a) * 5.0f, sinf(a) * 5.0f, 8.0f, 1);
-		}
-
-		// --- ”’ ---
-		const int whiteCount = 7;
-
-		for (int i = 0; i < whiteCount; i++)
-		{
-			float offset = (i - (whiteCount - 1) * 0.5f) * 0.2f;
-			float a = PI / 2.0f + offset;
-
-			new enemyBullet(x + 32, y + 32,
-				cosf(a) * 3.0f, sinf(a) * 3.0f, 8.0f, 0);
-		}
-	}
-	// ==========================
-	// ƒtƒF[ƒY3F6—ñ‰ñ“]’e–‹
+	// ãƒ•ã‚§ãƒ¼ã‚º3ï¼š6åˆ—å›è»¢å¼¾å¹•
 	// ==========================
 	else if (bulletPhase == BulletPhase2::PHASE_3)
 	{
 		const int lineCount = 6;
 		const float speed = 4.0f;
 
-		for (int i = 0; i < lineCount; i++)
-		{
-			float a = angle + (2.0f * PI / lineCount) * i;
+		for (int i = 0; i < lineCount; i++) {
+			float a = angle + (2.0f * 3.14159265f / lineCount) * i;
 
-			new enemyBullet(x + 32, y + 32,
-				cosf(a) * speed, sinf(a) * speed, 8.0f, 1);
+			float vx = cosf(a) * speed;
+			float vy = sinf(a) * speed;
+
+			new EnemyBullet2(x + 32, y + 32, vx, vy, 8.0f, 0);
 		}
 	}
 }
@@ -298,24 +329,29 @@ void Boss2::ShootBullet()
 	float dy = player->GetY() - y;
 	float length = sqrt(dx * dx + dy * dy);
 
-	if (length > 0) {
-		dx /= length;
-		dy /= length;
-	}
+	if (length == 0) length = 1.0f;  // 0å‰²é˜²æ­¢
+	dx /= length;
+	dy /= length;
 
-	float bulletSpeed = 5.0f;
+	float bulletSpeed = 6.0f;  // å¼¾é€Ÿèª¿æ•´å¯
 
-	float angles[] = { 0.0f, 0.3f, -0.3f, 0.5f, -0.5f };
+	// 5å€‹ã®å¼¾ã‚’å°‘ã—è§’åº¦ã‚’ãšã‚‰ã—ã¦åŒæ™‚ç™ºå°„
+	const int bulletCount = 5;
+	const float spreadAngle = 0.7f;  // ãƒ©ã‚¸ã‚¢ãƒ³ã§å·¦å³ã«ãšã‚‰ã™è§’åº¦å¹…
 
-	for (int i = 0; i < 5; i++) {
-		float a = angles[i];
-		float cosA = cos(a);
-		float sinA = sin(a);
+	for (int i = 0; i < bulletCount; i++)
+	{
+		// -spread/2 ã€œ +spread/2 ã®ç¯„å›²ã«è§’åº¦ã‚’ãšã‚‰ã™
+		float offset = ((float)i / (bulletCount - 1) - 0.5f) * spreadAngle;
 
-		float newDx = dx * cosA - dy * sinA;
-		float newDy = dx * sinA + dy * cosA;
+		// ãƒ™ã‚¯ãƒˆãƒ«å›è»¢
+		float cosA = cosf(offset);
+		float sinA = sinf(offset);
+		float vx = dx * cosA - dy * sinA;
+		float vy = dx * sinA + dy * cosA;
 
-		new enemyBullet(x + 32, y + 32, newDx * bulletSpeed, newDy * bulletSpeed, 8.0f, 1);
+		// EnemyBullet2ã®ãƒ›ãƒ¼ãƒŸãƒ³ã‚°å¼¾ï¼ˆimageType=1ï¼‰ã§ç™ºå°„
+		new EnemyBullet2(x + 32, y + 32, vx * bulletSpeed, vy * bulletSpeed, 8.0f, 1);
 	}
 }
 
@@ -323,7 +359,7 @@ void Boss2::Draw()
 {
 	if (isActive && bossImage != -1) {
 
-		/// š–³“G’†‚Í“_–Å•`‰æ‚ÅƒtƒB[ƒhƒoƒbƒN
+		/// â˜…ç„¡æ•µä¸­ã¯ç‚¹æ»…æç”»ã§ãƒ•ã‚£ãƒ¼ãƒ‰ãƒãƒƒã‚¯
 		if (spawnInvincible) {
 			if (((int)(spawnInvincibleTimer / 5)) % 2 == 0)
 			{
@@ -341,7 +377,7 @@ void Boss2::Draw()
 
 void Boss2::TakeDamage(int dmg)
 {
-	/// š’Ç‰Á: “oê1•b–³“G’†‚Í–³Œø
+	/// â˜…è¿½åŠ : ç™»å ´1ç§’ç„¡æ•µä¸­ã¯ç„¡åŠ¹
 	if (spawnInvincible) return;
 
 	currentHp -= dmg;
