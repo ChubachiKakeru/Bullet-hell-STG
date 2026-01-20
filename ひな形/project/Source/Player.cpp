@@ -32,6 +32,12 @@ Player::Player() : GameObject()
     hImage = LoadGraph("data/image/file/chara/player.png");
     hBombImage = LoadGraph("data/image/bomb.png");
 
+    // ===== SEロード =====
+    playerHitSoundHandle = LoadSoundMem(GAME_PHIT_SOUND_PATH);
+    playerShotSoundHandle = LoadSoundMem(GAME_PSHOT_SOUND_PATH);
+    playerBombSoundHandle = LoadSoundMem(GAME_PBOMB_SOUND_PATH);
+
+
     x = 300;
     y = 900;
     velocity = 0;
@@ -59,6 +65,9 @@ Player::~Player()
 {
     if (hImage != -1) DeleteGraph(hImage);
     if (hBombImage != -1) DeleteGraph(hBombImage);
+    DeleteSoundMem(playerHitSoundHandle);
+    DeleteSoundMem(playerShotSoundHandle);
+    DeleteSoundMem(playerBombSoundHandle);
 }
 
 // ========================================
@@ -67,12 +76,12 @@ Player::~Player()
 void Player::TakeDamage(int damage)
 {
     hp -= damage;
-    PlaySoundFile(GAME_PHIT_SOUND_PATH, DX_PLAYTYPE_BACK);
+    PlaySoundMem(playerHitSoundHandle, DX_PLAYTYPE_BACK);
     if (hp <= 0) {
         hp = 0;
+        StopSoundFile();  // ★BGM停止（1回）
         // ゲームオーバーシーンに遷移
         SceneManager::ChangeScene("GAMEOVER");
-        //PlaySoundFile(GAME_DEATH_SOUND_PATH, DX_PLAYTYPE_BACK);
     }
 }
 // ========================================
@@ -100,7 +109,7 @@ void Player::ShootBullet()
     int bulletY = (int)y + 50 / 2;
     new playerBullet(bulletX, bulletY, 0, BULLET_SPEED, BULLET_RADIUS);
 
-    PlaySoundFile(GAME_PSHOT_SOUND_PATH, DX_PLAYTYPE_BACK);
+    PlaySoundMem(playerShotSoundHandle, DX_PLAYTYPE_BACK);
 }
 
 // ========================================
@@ -122,7 +131,7 @@ void Player::ShootBomb()
     // Bombクラスとして生成
     new Bomb(startX, startY, bombVX, bombVY, BOMB_SIZE);
 
-    PlaySoundFile(GAME_PBOMB_SOUND_PATH, DX_PLAYTYPE_BACK);
+    PlaySoundMem(playerBombSoundHandle, DX_PLAYTYPE_BACK);
 }
 
 // ========================================
@@ -167,6 +176,12 @@ void Player::Update()
 void Player::Draw()
 {
     DrawGraph((int)x, (int)y, hImage, TRUE);
+    Field* field = FindGameObject<Field>();
+
+    if (isActive) {
+        // 当たり判定の円(水色)
+        DrawCircle((float)x + 78, (float)y + 50, (int)BULLET_RADIUS + 10.0f, GetColor(0, 255, 255), FALSE);
+    }
     DrawFormatString(1000, 270, GetColor(0, 255, 255), "=== PLAYER ===");
     DrawFormatString(1000, 300, GetColor(0, 255, 255), "PLAYER HP: %d", hp);
     DrawFormatString(1000, 330, GetColor(0, 255, 255), "BOMB: %d", bombCount);

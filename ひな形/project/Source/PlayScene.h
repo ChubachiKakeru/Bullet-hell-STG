@@ -48,4 +48,9 @@ private:
     int m_currentPhase;         // 現在のフェーズ番号
     int m_currentWave;          // 現在のウェーブ番号
     float m_phaseTimer;         // フェーズタイマー
+
+    // サウンドパス
+    const char* GAME_STAGE1_SOUND_PATH = "data/Sound/stage1.mp3";      //1面ジングル
+    //  サウンドハンドル
+    int stage1HitSoundHandle;		//	1面サウンドハンドル
 };

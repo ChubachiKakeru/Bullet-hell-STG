@@ -20,4 +20,9 @@ private:
     float velocityX, velocityY;
     float size;
     bool isActive;
+
+    // サウンドパス
+    const char* GAME_PBOMB_SOUND_PATH = "data/Sound/bombattack.mp3";      //ボム発射ジングル
+    //  サウンドハンドル
+    int playerBombSoundHandle;         // プレイヤーBombサウンドハンドル
 };

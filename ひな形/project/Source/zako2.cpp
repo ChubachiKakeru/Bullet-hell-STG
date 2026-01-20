@@ -20,6 +20,7 @@ namespace {
 zako2::zako2(float sx, float sy, Zako2Pattern pat)
 {
     zakoImage = LoadGraph("data/image/zako2.png");
+    enemyDeathSoundHandle = LoadSoundMem(GAME_EDEATH_SOUND_PATH);
     x = sx;
     y = sy;
     pattern = pat;
@@ -61,6 +62,7 @@ zako2::~zako2()
         DeleteGraph(zakoImage);
         zakoImage = -1;
     }
+    DeleteSoundMem(enemyDeathSoundHandle);
 }
 
 void zako2::Update()
@@ -152,7 +154,8 @@ bool zako2::IsHit(float bx, float by, int rad)
     if (distance < RADIUS + rad) {
         hp--;
         if (hp <= 0) {
-            PlaySoundFile(GAME_EDEATH_SOUND_PATH, DX_PLAYTYPE_BACK);
+            static int enemyDeathSE = LoadSoundMem("data/Sound/enemydeath.mp3");
+            PlaySoundMem(enemyDeathSE, DX_PLAYTYPE_BACK);
             isDead = true;
             isActive = false;
         }

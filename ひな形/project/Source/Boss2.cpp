@@ -7,6 +7,7 @@
 Boss2::Boss2()
 {
 	bossImage = LoadGraph("data/image/file/chara/boss2.png");
+	enemyDeathSoundHandle = LoadSoundMem(GAME_EDEATH_SOUND_PATH);
 	x = 200.0f;
 	y = 200.0f;
 	centerX = 300.0f;
@@ -43,6 +44,7 @@ Boss2::Boss2()
 Boss2::Boss2(float sx, float sy)
 {
 	bossImage = LoadGraph("data/image/file/chara/boss2.png");
+	enemyDeathSoundHandle = LoadSoundMem(GAME_EDEATH_SOUND_PATH);
 	x = sx;
 	y = sy;
 	centerX = sx;
@@ -82,6 +84,7 @@ Boss2::~Boss2()
 		DeleteGraph(bossImage);
 		bossImage = -1;
 	}
+	DeleteSoundMem(enemyDeathSoundHandle);
 }
 
 void Boss2::Update()
@@ -360,7 +363,7 @@ bool Boss2::IsHit(float bx, float by, int rad)
 	float d = sqrt(dx * dx + dy * dy);
 
 	if (d < 60 + rad) {
-		PlaySoundFile(GAME_EDEATH_SOUND_PATH, DX_PLAYTYPE_BACK);
+		PlaySoundMem(enemyDeathSoundHandle, DX_PLAYTYPE_BACK);
 		TakeDamage(100);
 		return true;
 	}
