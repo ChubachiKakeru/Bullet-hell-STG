@@ -8,6 +8,8 @@ int StageSelectScene::s_selectedStageNumber = 1;
 Stage1Data StageSelectScene::s_stage1;
 Stage2Data StageSelectScene::s_stage2;
 StageData* StageSelectScene::s_currentStageData = nullptr;
+int StageSelectScene::s_totalGameTimer = 0;  // ★追加★
+
 
 StageSelectScene::StageSelectScene()
     : m_backgroundImage(-1)
@@ -120,6 +122,13 @@ void StageSelectScene::Update()
     {
         // 選択されたステージ番号を保存（0-indexedから1-indexedに変換）
         s_selectedStageNumber = m_selectedStage + 1;
+
+        // ★ステージ1を選んだ場合のみタイマーをリセット★
+        if (s_selectedStageNumber == 1)
+        {
+            s_totalGameTimer = 0;
+        }
+
         // ステージデータを読み込む
         LoadStageData(s_selectedStageNumber);
         //PlaySoundMem(/* 決定音 */, DX_PLAYTYPE_BACK);
@@ -133,6 +142,7 @@ void StageSelectScene::Update()
         SceneManager::ChangeScene("TITLE");
     }
 }
+
 void StageSelectScene::Draw()
 {
     // 背景描画

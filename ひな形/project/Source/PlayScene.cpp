@@ -180,17 +180,15 @@ void PlayScene::UpdateCountdown()
 // ========================================
 void PlayScene::UpdatePlaying()
 {
-    // ★通常のゲームプレイ★
-    // GameObjectシステムで各オブジェクトのUpdate()が自動的に呼ばれる想定
-    // Player, EnemyManager, Boss, zako1, Bullet等
+    // ★ゲーム全体のタイマーを増やす★
+    StageSelectScene::s_totalGameTimer++;
 
-    // ★ゲームクリア判定★
+    // 既存のコード...
     EnemyManager* em = FindGameObject<EnemyManager>();
     if (em && em->GetCurrentPhase() == GamePhase::PHASE_CLEAR)
     {
-        // ステージクリア状態に遷移
         m_gameState = GameState::STAGE_CLEAR;
-        m_nextStageTimer = 60 * 3; // 3秒後に次のステージへ
+        m_nextStageTimer = 60 * 3;
         printfDx("ステージクリア！ 3秒後に次のステージへ...\n");
     }
 }
