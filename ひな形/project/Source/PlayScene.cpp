@@ -26,6 +26,7 @@ PlayScene::PlayScene() {
 
     // ★ステージ選択画面で選んだステージ番号を取得★
     int selectedStage = StageSelectScene::GetSelectedStageNumber();
+    printfDx("PlayScene開始: ステージ番号 = %d\n", selectedStage);
 
     // ★ステージごとにカウントダウン時間を設定★
     switch (selectedStage)
@@ -206,12 +207,18 @@ void PlayScene::UpdateStageClear()
     {
         int currentStage = StageSelectScene::GetSelectedStageNumber();
 
-        if (currentStage < 2) // まだ次のステージがある
+        if (currentStage == 1) // ステージ1クリア後はショップへ
         {
-            printfDx("ステージ%dからステージ%dへ移動\n", currentStage, currentStage + 1);
+            printfDx("ステージ1クリア！ ショップへ移動\n");
+            // ★ステージ番号を2に更新してからショップへ★
             StageSelectScene::GoToNextStage();
         }
-        else // 全ステージクリア
+        else if (currentStage == 2) // ステージ2クリア後はクリア画面へ
+        {
+            printfDx("ステージ2クリア！ クリア画面へ\n");
+            SceneManager::ChangeScene("CLEAR");
+        }
+        else // それ以外（念のため）
         {
             printfDx("全ステージクリア！ クリア画面へ\n");
             SceneManager::ChangeScene("CLEAR");
@@ -224,6 +231,10 @@ void PlayScene::UpdateStageClear()
 // ========================================
 void PlayScene::Draw()
 {
+        // ★デバッグ表示★
+        DrawFormatString(10, 680, GetColor(255, 255, 0), "PlayScene - ステージ番号: %d", StageSelectScene::GetSelectedStageNumber());
+
+        // 以下、既存のコード...
     // ★ゲーム状態に応じた描画★
     if (m_gameState == GameState::COUNTDOWN)
     {

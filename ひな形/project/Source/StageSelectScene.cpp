@@ -17,6 +17,8 @@ StageSelectScene::StageSelectScene()
     m_backgroundImage = LoadGraph("Graphics/StageSelect.png");
     // 前回の選択を復元（1-indexedから0-indexedに変換）
     m_selectedStage = s_selectedStageNumber - 1;
+    // ★キー入力を受け付けない期間を設定★
+    m_keyWait = -60; // 60フレーム（1秒）待機
 }
 
 StageSelectScene::~StageSelectScene()
@@ -59,7 +61,19 @@ void StageSelectScene::LoadStageData(int stageNumber)
 // 次のステージに進む（ステージクリア時に呼ぶ）
 void StageSelectScene::GoToNextStage()
 {
+    // ★現在のステージ番号を保存してから増やす★
+    int previousStage = s_selectedStageNumber;
     s_selectedStageNumber++;
+
+    // ★ステージ1クリア後（previousStageが1）はショップへ★
+    if (previousStage == 1)
+    {
+        // 次のステージ（ステージ2）のデータを読み込む
+        LoadStageData(s_selectedStageNumber);
+        // ショップシーンへ遷移
+        SceneManager::ChangeScene("SHOP");
+        return;
+    }
 
     // 最後のステージを超えたら1に戻す（またはゲームクリア画面へ）
     if (s_selectedStageNumber > STAGE_COUNT)
@@ -79,6 +93,12 @@ void StageSelectScene::Update()
 {
     m_keyWait++;
 
+    // ★キー入力待機中は何もしない★
+    if (m_keyWait < 0)
+    {
+        return;
+    }
+
     // キー入力の受付（連続入力防止）
     if (m_keyWait > 10)
     {
@@ -95,22 +115,17 @@ void StageSelectScene::Update()
             //PlaySoundMem(/* カーソル移動音 */, DX_PLAYTYPE_BACK);
         }
     }
-
     // 決定キー
-    if (CheckHitKey(KEY_INPUT_SPACE) || CheckHitKey(KEY_INPUT_RETURN))
+    if (m_keyWait > 10 && (CheckHitKey(KEY_INPUT_SPACE) || CheckHitKey(KEY_INPUT_RETURN)))
     {
         // 選択されたステージ番号を保存（0-indexedから1-indexedに変換）
         s_selectedStageNumber = m_selectedStage + 1;
-
         // ステージデータを読み込む
         LoadStageData(s_selectedStageNumber);
-
         //PlaySoundMem(/* 決定音 */, DX_PLAYTYPE_BACK);
-
         // ★カウントダウンを削除し、即座にPlaySceneへ遷移★
         SceneManager::ChangeScene("PLAY");
     }
-
     // キャンセルキー（Oキーでタイトルへ）
     if (CheckHitKey(KEY_INPUT_O))
     {
@@ -118,7 +133,6 @@ void StageSelectScene::Update()
         SceneManager::ChangeScene("TITLE");
     }
 }
-
 void StageSelectScene::Draw()
 {
     // 背景描画

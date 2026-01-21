@@ -111,20 +111,15 @@ void TitleScene::Draw()
     // メニュー表示（画像の下部に重ねて表示）
     int textStartY = 850; // 画像の下部エリア
 
-    // P操作説明（縁取り付き白色テキスト）
+    // P操作説明（縁取り付き白色テキスト・拡大表示）
     // 黒い縁取りで視認性向上
-    DrawString(501, textStartY + 1, "P: ゲーム開始", GetColor(0, 0, 0));
-    DrawString(499, textStartY + 1, "P: ゲーム開始", GetColor(0, 0, 0));
-    DrawString(501, textStartY - 1, "P: ゲーム開始", GetColor(0, 0, 0));
-    DrawString(499, textStartY - 1, "P: ゲーム開始", GetColor(0, 0, 0));
-    DrawString(500, textStartY, "P: ゲーム開始", GetColor(255, 255, 255));
-
-    // Dキー操作説明（縁取り付き）
-    DrawString(461, textStartY + 31, "D: デバッグメニュー", GetColor(0, 0, 0));
-    DrawString(459, textStartY + 31, "D: デバッグメニュー", GetColor(0, 0, 0));
-    DrawString(461, textStartY + 29, "D: デバッグメニュー", GetColor(0, 0, 0));
-    DrawString(459, textStartY + 29, "D: デバッグメニュー", GetColor(0, 0, 0));
-    DrawString(460, textStartY + 30, "D: デバッグメニュー", GetColor(200, 200, 200));
+    SetFontSize(32);
+    DrawString(461, textStartY + 1, "P: ゲーム開始", GetColor(0, 0, 0));
+    DrawString(459, textStartY + 1, "P: ゲーム開始", GetColor(0, 0, 0));
+    DrawString(461, textStartY - 1, "P: ゲーム開始", GetColor(0, 0, 0));
+    DrawString(459, textStartY - 1, "P: ゲーム開始", GetColor(0, 0, 0));
+    DrawString(460, textStartY, "P: ゲーム開始", GetColor(255, 255, 255));
+    SetFontSize(16);
 
     // デバッグメニューが有効な時のみ表示
     if (m_showDebugMenu)
