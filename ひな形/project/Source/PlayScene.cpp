@@ -26,7 +26,6 @@ PlayScene::PlayScene() {
 
     // ★ステージ選択画面で選んだステージ番号を取得★
     int selectedStage = StageSelectScene::GetSelectedStageNumber();
-    printfDx("PlayScene開始: ステージ番号 = %d\n", selectedStage);
 
     // ★ステージごとにカウントダウン時間を設定★
     switch (selectedStage)
@@ -56,17 +55,9 @@ PlayScene::PlayScene() {
 
     if (m_stageData != nullptr)
     {
-        printfDx("ステージ%d 開始準備\n", stageNumber);
-        printfDx("カウントダウン開始...\n");
-        printfDx("フェーズ数: %d\n", m_stageData->phases.size());
-
         m_currentPhase = 0;
         m_currentWave = 0;
         m_phaseTimer = 0.0f;
-    }
-    else
-    {
-        printfDx("エラー: ステージデータが取得できませんでした\n");
     }
 
     // ★次ステージ遷移タイマーの初期化★
@@ -91,21 +82,13 @@ void PlayScene::SpawnWave(StageData* stageData)
 
     WaveData& wave = phase.waves[m_currentWave];
 
-    printfDx("フェーズ%d ウェーブ%d 開始 (敵数: %d)\n",
-        m_currentPhase, m_currentWave, wave.enemies.size());
-
     // EnemyManagerを取得して敵を生成
     EnemyManager* em = FindGameObject<EnemyManager>();
     if (em)
     {
         for (const auto& enemyData : wave.enemies)
         {
-            printfDx("敵生成: タイプ%d 座標(%.1f, %.1f) パターン%d 遅延%.1f秒\n",
-                enemyData.enemyType,
-                enemyData.spawnX,
-                enemyData.spawnY,
-                enemyData.pattern,
-                enemyData.delayTime);
+            // 敵生成処理
         }
     }
 }
@@ -161,14 +144,12 @@ void PlayScene::UpdateCountdown()
     if (m_countdownTimer <= 0)
     {
         m_gameState = GameState::PLAYING;
-        printfDx("ステージ%d 本格開始！\n", StageSelectScene::GetSelectedStageNumber());
 
         // ★敵の出現を開始する合図をEnemyManagerに送る★
         EnemyManager* em = FindGameObject<EnemyManager>();
         if (em)
         {
             em->StartGame();  // ★ゲーム開始を通知★
-            printfDx("EnemyManager: ゲーム開始！\n");
         }
 
         //PlaySoundMem(/* スタート音 */, DX_PLAYTYPE_BACK);
@@ -189,7 +170,6 @@ void PlayScene::UpdatePlaying()
     {
         m_gameState = GameState::STAGE_CLEAR;
         m_nextStageTimer = 60 * 3;
-        printfDx("ステージクリア！ 3秒後に次のステージへ...\n");
     }
 }
 
@@ -207,18 +187,15 @@ void PlayScene::UpdateStageClear()
 
         if (currentStage == 1) // ステージ1クリア後はショップへ
         {
-            printfDx("ステージ1クリア！ ショップへ移動\n");
             // ★ステージ番号を2に更新してからショップへ★
             StageSelectScene::GoToNextStage();
         }
         else if (currentStage == 2) // ステージ2クリア後はクリア画面へ
         {
-            printfDx("ステージ2クリア！ クリア画面へ\n");
             SceneManager::ChangeScene("CLEAR");
         }
         else // それ以外（念のため）
         {
-            printfDx("全ステージクリア！ クリア画面へ\n");
             SceneManager::ChangeScene("CLEAR");
         }
     }
@@ -229,10 +206,6 @@ void PlayScene::UpdateStageClear()
 // ========================================
 void PlayScene::Draw()
 {
-        // ★デバッグ表示★
-        DrawFormatString(10, 680, GetColor(255, 255, 0), "PlayScene - ステージ番号: %d", StageSelectScene::GetSelectedStageNumber());
-
-        // 以下、既存のコード...
     // ★ゲーム状態に応じた描画★
     if (m_gameState == GameState::COUNTDOWN)
     {
@@ -339,7 +312,6 @@ void PlayScene::DrawCountdown()
 
         unsigned int color = GetColor(255, 255, alpha);
 
-        // ★修正: DrawFormatStringを使用★
         int yOffset = (int)(20 * (scale - 1.0f));
         DrawFormatString(580, 280 - yOffset, color, "%d", m_countdownNumber);
 
@@ -357,7 +329,6 @@ void PlayScene::DrawCountdown()
         SetFontSize((int)(100 * scale));
         unsigned int color = GetColor(255, 255 - (255 - alpha), alpha);
 
-        // ★修正: 中央寄せを簡略化★
         DrawString(520, 300, "START!", color);
         SetFontSize(16);
     }
@@ -368,10 +339,6 @@ void PlayScene::DrawCountdown()
         GetColor(200, 200, 200));
     DrawString(450, 520, "カウント中も操作可能！",
         GetColor(255, 255, 100));
-
-    // ★カウントダウン残り時間を表示（デバッグ用）★
-    DrawFormatString(500, 560, GetColor(150, 150, 150),
-        "残り %.1f秒", m_countdownTimer / 60.0f);
 
     SetFontSize(16);
 }
@@ -386,7 +353,7 @@ void PlayScene::DrawStageClear()
 
     // 背景を少し暗くする
     SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
-    DrawBox(0, 0, 1280, 720, GetColor(0, 0, 0), TRUE);
+    DrawBox(0, 0, 1280, 1280, GetColor(0, 0, 0), TRUE);
     SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
     // クリアメッセージ
@@ -396,11 +363,11 @@ void PlayScene::DrawStageClear()
     SetFontSize(16);
 
     // 次のステージへの案内
-    if (currentStage < 2)
+    if (currentStage == 1)
     {
+        // ★ステージ1クリア後はショップへ★
         SetFontSize(36);
-        DrawFormatString(320, 300, GetColor(255, 255, 255),
-            "Next: STAGE %d", currentStage + 1);
+        DrawString(480, 300, "Next: SHOP", GetColor(255, 255, 255));
         SetFontSize(16);
 
         // カウントダウン表示
@@ -409,7 +376,7 @@ void PlayScene::DrawStageClear()
             "%.1f", timeLeft);
         SetFontSize(16);
     }
-    else
+    else if (currentStage == 2)
     {
         // 全ステージクリア
         SetFontSize(48);
