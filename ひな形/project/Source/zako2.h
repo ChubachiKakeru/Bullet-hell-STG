@@ -51,6 +51,13 @@ private:
     int burstTimer;     // 次の弾までの間隔
     bool isBurst;       // 連射中かどうか
 
+    // --- 円弧移動用（フェーズ1） ---
+    bool isCurveMove;
+    float curveAngle;
+    float curveRadius;
+    float curveCenterX;
+    float curveCenterY;
+
     void ShootBullet();
 
     // サウンドパス

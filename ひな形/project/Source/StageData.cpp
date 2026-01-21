@@ -206,14 +206,17 @@ void Stage2Data::Initialize() {
         WaveData wave;
         wave.waveDelay = 0.0f;
 
-        // 3列の敵（★zako2に変更: enemyType = 2★）
-        float spacing = (Field::STAGE_RIGHT - Field::STAGE_LEFT) / 4.0f;
-        wave.enemies.push_back({ 2, Field::STAGE_LEFT + spacing, Field::STAGE_TOP,  // ★0→2に変更★
+        // 4列の敵
+        float sx = Field::STAGE_LEFT - 60.0f;
+        float sy = Field::STAGE_TOP - 60.0f;
+        wave.enemies.push_back({ 2, Field::STAGE_LEFT , Field::STAGE_TOP,
                                 static_cast<int>(Zako2Pattern::PATTERN_LEFT_TO_RIGHT), 0.0f });
-        wave.enemies.push_back({ 2, Field::STAGE_LEFT + spacing * 2, Field::STAGE_TOP,
-                                static_cast<int>(Zako2Pattern::PATTERN_LEFT_TO_RIGHT), 0.5f });
-        wave.enemies.push_back({ 2, Field::STAGE_LEFT + spacing * 3, Field::STAGE_TOP,
-                                static_cast<int>(Zako2Pattern::PATTERN_LEFT_TO_RIGHT), 1.0f });
+        wave.enemies.push_back({ 2, Field::STAGE_LEFT , Field::STAGE_TOP,
+                                static_cast<int>(Zako2Pattern::PATTERN_LEFT_TO_RIGHT), 0.6f });
+        wave.enemies.push_back({ 2, Field::STAGE_LEFT , Field::STAGE_TOP,
+                                static_cast<int>(Zako2Pattern::PATTERN_LEFT_TO_RIGHT), 1.2f });
+        wave.enemies.push_back({ 2, Field::STAGE_LEFT , Field::STAGE_TOP,
+                               static_cast<int>(Zako2Pattern::PATTERN_LEFT_TO_RIGHT), 1.8f });
 
         phase.waves.push_back(wave);
     }

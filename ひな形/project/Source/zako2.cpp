@@ -51,8 +51,21 @@ zako2::zako2(float sx, float sy, Zako2Pattern pat)
     pattern = pat;
 
     baseX = sx;
+    baseY = sy;
     sAmplitude = 120.0f;
     sFrequency = 0.03f;
+    verticalSpeed = 0.0f;
+
+    // --- 円弧移動 初期化 ---
+    isCurveMove = true;
+    curveRadius = 140.0f;          // カーブの大きさ（調整可）
+
+    // ★ 180度（左向き）からスタート
+    curveAngle = DX_PI_F;          // = 180°
+
+    // ★ 円の中心を「開始位置の右下」に置く
+    curveCenterX = sx + curveRadius;
+    curveCenterY = sy + curveRadius;
 
     if (pattern == Zako2Pattern::PATTERN_S_UP)
         verticalSpeed = -1.2f;   // 上へ
@@ -79,8 +92,37 @@ void zako2::Update()
     moveTimer++;
     shotTimer++;
 
-    // 横方向に移動（パターンに応じて左右）
-    x += moveSpeed;
+    // =====================================
+    // 左上から「外側にふくらむ」円弧 → 水平直進
+    // =====================================
+    if (pattern == Zako2Pattern::PATTERN_LEFT_TO_RIGHT)
+    {
+        if (isCurveMove)
+        {
+            // 円弧を進める
+            curveAngle -= 0.02f;   // 角度を減らしていく
+
+            if (curveAngle <= DX_PI_F / 2.0f)   // 90度
+            {
+                curveAngle = DX_PI_F / 2.0f;
+                isCurveMove = false;
+            }
+
+            // 円運動
+            x = curveCenterX + cosf(curveAngle) * curveRadius;
+            y = curveCenterY + sinf(curveAngle) * curveRadius;
+        }
+        else
+        {
+            // 水平直進
+            x += 2.0f;
+        }
+    }
+    else
+    {
+        // 既存処理
+        x += moveSpeed;
+    }
 
     // ---- 攻撃管理 ----
     if (!isBurst)
