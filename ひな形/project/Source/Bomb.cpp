@@ -12,7 +12,7 @@ Bomb::Bomb(float sx, float sy, float vx, float vy, float bombsize)
     y = sy;
     velocityX = vx;
     velocityY = vy;
-    size = bombsize;
+    size = 200.0f; // ★200x200の画像サイズに固定★
     isActive = true;
 }
 
@@ -32,10 +32,10 @@ void Bomb::Update()
     x += velocityX;
     y += velocityY;
 
-    // ボムの中心位置
-    float bombCenterX = x + size / 2.0f;
-    float bombCenterY = y + size / 2.0f;
-    float bombRadius = size / 2.0f;
+    // ★ボムの中心位置（200x200画像の中心）★
+    float bombCenterX = x + 100.0f; // 200 / 2
+    float bombCenterY = y + 100.0f; // 200 / 2
+    float bombRadius = 100.0f;       // 200 / 2
 
     // 敵弾との当たり判定
     auto bullets = FindGameObjects<enemyBullet>();
@@ -43,7 +43,6 @@ void Bomb::Update()
         if (bullet && bullet->IsActive()) {
             float bulletCenterX = bullet->GetX() + 38.0f; // 76x83の中心
             float bulletCenterY = bullet->GetY() + 41.5f;
-
             float dx = bombCenterX - bulletCenterX;
             float dy = bombCenterY - bulletCenterY;
             float distance = sqrt(dx * dx + dy * dy);
@@ -61,7 +60,6 @@ void Bomb::Update()
         if (bullet && bullet->IsActive()) {
             float bulletCenterX = bullet->GetX() + 38.0f;
             float bulletCenterY = bullet->GetY() + 41.5f;
-
             float dx = bombCenterX - bulletCenterX;
             float dy = bombCenterY - bulletCenterY;
             float distance = sqrt(dx * dx + dy * dy);
@@ -72,8 +70,11 @@ void Bomb::Update()
         }
     }
 
-    // 画面外判定
-    if (y < -200) {
+    // 画面外判定（1280x1280画面対応）
+    if (y < -200 ||
+        y > 1280 + 200 ||
+        x < -200 ||
+        x > 1280 + 200) {
         DestroyMe();
     }
 }
@@ -82,8 +83,8 @@ void Bomb::Draw()
 {
     if (isActive && hImage != -1) {
         DrawGraph((int)x, (int)y, hImage, TRUE);
-        // デバッグ用：ボムの当たり判定円を表示
-        DrawCircle((int)(x + size / 2.0f), (int)(y + size / 2.0f),
-            (int)(size / 2.0f), GetColor(0, 255, 0), FALSE);
+
+        // ★デバッグ用：ボムの当たり判定円を表示（200x200画像に合わせて）★
+        DrawCircle((int)(x + 100.0f), (int)(y + 100.0f), 100, GetColor(0, 255, 0), FALSE);
     }
 }
