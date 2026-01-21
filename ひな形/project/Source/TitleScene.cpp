@@ -1,16 +1,19 @@
 #include "TitleScene.h"
 #include "../Library/SceneManager.h"
 #include "DebugSceneSelector.h"
+#include "StageSelectScene.h"  // ★追加: タイマーリセット用★
 
 
 TitleScene::TitleScene()
     : m_titleImage(-1)
     , m_showDebugMenu(false)
     , m_debugKeyWait(0)
+    , m_blinkTimer(0)           // ★追加: 点滅用タイマー★
+    , m_startPressed(false)     // ★追加: Pキー押下フラグ★
+    , m_fadeOutTimer(0)         // ★追加: フェードアウト用タイマー★
 {
     // タイトル画像を読み込む
     m_titleImage = LoadGraph("data/image/title.png");
-
 }
 
 TitleScene::~TitleScene()
@@ -27,6 +30,7 @@ void TitleScene::Update()
     DebugSceneSelector::Update();
 
     m_debugKeyWait++;
+    m_blinkTimer++;  // ★追加: 点滅タイマー更新★
 
     // Dキーでデバッグメニューの表示切り替え（連続入力防止）
     if (m_debugKeyWait > 10 && CheckHitKey(KEY_INPUT_D))
@@ -35,10 +39,25 @@ void TitleScene::Update()
         m_debugKeyWait = 0;
     }
 
-    // 通常の遷移（Pキーでステージ選択へ）
-    if (CheckHitKey(KEY_INPUT_P))
+    // ★Pキーが押されたらフェードアウト開始★
+    if (!m_startPressed && CheckHitKey(KEY_INPUT_P))
     {
-        SceneManager::ChangeScene("STAGESELECT");
+        m_startPressed = true;
+        m_fadeOutTimer = 0;
+        StageSelectScene::ResetTotalTimer();  // ★タイマーをリセット★
+    }
+
+    // ★フェードアウト中の処理★
+    if (m_startPressed)
+    {
+        m_fadeOutTimer++;
+
+        // ★60フレーム（1秒）後にシーン遷移★
+        if (m_fadeOutTimer >= 60)
+        {
+            SceneManager::ChangeScene("STAGESELECT");
+            return;
+        }
     }
 
     // デバッグメニューが表示されている時のみ数字キーを有効化
@@ -74,9 +93,6 @@ void TitleScene::Draw()
     const int screenWidth = 1280;
     const int screenHeight = 1280;
 
-    // 背景を黒で塗りつぶし
-    DrawBox(0, 0, screenWidth, screenHeight, GetColor(0, 0, 0), TRUE);
-
     // タイトル画像を877:650の比率を保ったまま画面いっぱいに表示
     if (m_titleImage != -1)
     {
@@ -111,15 +127,57 @@ void TitleScene::Draw()
     // メニュー表示（画像の下部に重ねて表示）
     int textStartY = 850; // 画像の下部エリア
 
-    // P操作説明（縁取り付き白色テキスト・拡大表示）
-    // 黒い縁取りで視認性向上
-    SetFontSize(32);
-    DrawString(461, textStartY + 1, "P: ゲーム開始", GetColor(0, 0, 0));
-    DrawString(459, textStartY + 1, "P: ゲーム開始", GetColor(0, 0, 0));
-    DrawString(461, textStartY - 1, "P: ゲーム開始", GetColor(0, 0, 0));
-    DrawString(459, textStartY - 1, "P: ゲーム開始", GetColor(0, 0, 0));
-    DrawString(460, textStartY, "P: ゲーム開始", GetColor(255, 255, 255));
-    SetFontSize(16);
+    // ★「P: ゲーム開始」の描画（点滅 or フェードアウト）★
+    if (m_startPressed)
+    {
+        // ★フェードアウト中: 拡大しながら透明に★
+        float progress = m_fadeOutTimer / 60.0f; // 0.0 → 1.0
+        float scale = 1.0f + progress * 0.5f;    // 1.0 → 1.5倍
+        int alpha = (int)(255 * (1.0f - progress)); // 255 → 0
+
+        int fontSize = (int)(32 * scale);
+        SetFontSize(fontSize);
+
+        // 中央寄せ用のオフセット計算
+        int textWidth = GetDrawStringWidth("P: ゲーム開始", (int)strlen("P: ゲーム開始"));
+        int centerX = screenWidth / 2 - textWidth / 2;
+        int offsetY = (int)(-20 * progress); // 上に移動
+
+        // 黒い縁取り
+        DrawString(centerX + 1, textStartY + offsetY + 1, "P: ゲーム開始", GetColor(0, 0, 0));
+        DrawString(centerX - 1, textStartY + offsetY + 1, "P: ゲーム開始", GetColor(0, 0, 0));
+        DrawString(centerX + 1, textStartY + offsetY - 1, "P: ゲーム開始", GetColor(0, 0, 0));
+        DrawString(centerX - 1, textStartY + offsetY - 1, "P: ゲーム開始", GetColor(0, 0, 0));
+
+        // ★メイン（透明度付き紫色）★
+        DrawString(centerX, textStartY + offsetY, "P: ゲーム開始", GetColor(200, alpha, 255));
+
+        SetFontSize(16);
+    }
+    else
+    {
+        // ★通常時: 点滅（画面中央配置）★
+        // 60フレーム周期で点滅（45フレーム表示、15フレーム非表示）
+        bool isVisible = (m_blinkTimer % 60) < 45;
+
+        if (isVisible)
+        {
+            SetFontSize(32);
+
+            // ★中央寄せ用のオフセット計算★
+            int textWidth = GetDrawStringWidth("P: ゲーム開始", (int)strlen("P: ゲーム開始"));
+            int centerX = screenWidth / 2 - textWidth / 2;
+
+            // 黒い縁取りで視認性向上
+            DrawString(centerX + 1, textStartY + 1, "P: ゲーム開始", GetColor(0, 0, 0));
+            DrawString(centerX - 1, textStartY + 1, "P: ゲーム開始", GetColor(0, 0, 0));
+            DrawString(centerX + 1, textStartY - 1, "P: ゲーム開始", GetColor(0, 0, 0));
+            DrawString(centerX - 1, textStartY - 1, "P: ゲーム開始", GetColor(0, 0, 0));
+            DrawString(centerX, textStartY, "P: ゲーム開始", GetColor(255, 255, 255));
+
+            SetFontSize(16);
+        }
+    }
 
     // デバッグメニューが有効な時のみ表示
     if (m_showDebugMenu)
