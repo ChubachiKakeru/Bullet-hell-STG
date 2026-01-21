@@ -18,4 +18,8 @@ private:
     int font;
     bool m_showDebugMenu;       // デバッグメニュー表示フラグ
     int m_debugKeyWait;         // デバッグメニュー切り替えキーの待機時間
+    // サウンドパス
+    const char* GAME_TITLE_SOUND_PATH = "data/Sound/title.mp3";      //タイトルジングル
+    //  サウンドハンドル
+    int titleSoundHandle;		//	1面サウンドハンドル
 };

@@ -182,7 +182,8 @@ void Player::Draw()
         // ìñÇΩÇËîªíËÇÃâ~(êÖêF)
         DrawCircle((float)x + 78, (float)y + 50, (int)BULLET_RADIUS + 10.0f, GetColor(0, 255, 255), FALSE);
     }
-    DrawFormatString(1000, 270, GetColor(0, 255, 255), "=== PLAYER ===");
-    DrawFormatString(1000, 300, GetColor(0, 255, 255), "PLAYER HP: %d", hp);
-    DrawFormatString(1000, 330, GetColor(0, 255, 255), "BOMB: %d", bombCount);
+    SetFontSize(40);
+    DrawFormatString(920, 350, GetColor(0, 255, 255), "=== PLAYER ===");
+    DrawFormatString(925, 400, GetColor(0, 255, 255), "PLAYER HP: %d", hp);
+    DrawFormatString(980, 450, GetColor(0, 255, 255), "BOMB: %d", bombCount);
 }

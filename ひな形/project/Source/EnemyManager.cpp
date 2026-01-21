@@ -306,22 +306,22 @@ void EnemyManager::DrawDebugInfo() {
         "Stage %d - %s", currentStageNumber, phaseNames[phaseIndex]);
 
     DrawFormatString(10, 80, GetColor(255, 255, 0),
-        "Active Enemies: %d", enemies.size());
+        " ", enemies.size()); //Active Enemies : % d
 
     if (currentPhaseIndex < currentStageData->phases.size()) {
         DrawFormatString(10, 100, GetColor(255, 255, 0),
-            "Wave: %d/%d",
+            " ",
             currentWaveIndex + 1,
-            currentStageData->phases[currentPhaseIndex].waves.size());
+            currentStageData->phases[currentPhaseIndex].waves.size()); //Wave: %d/%d
     }
 
     // 各敵の座標表示（最大5体）
     for (size_t i = 0; i < enemies.size() && i < 5; i++) {
         if (enemies[i]) {
             DrawFormatString(10, 120 + i * 20, GetColor(0, 255, 255),
-                "Enemy[%d]: X=%.1f, Y=%.1f, HP=%d",
+                " ",
                 i, enemies[i]->GetX(), enemies[i]->GetY(),
-                enemies[i]->GetHP());
+                enemies[i]->GetHP()); //Enemy[%d]: X=%.1f, Y=%.1f, HP=%d
         }
     }
 

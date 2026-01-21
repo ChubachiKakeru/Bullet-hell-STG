@@ -10,7 +10,11 @@ TitleScene::TitleScene()
 {
     // タイトル画像を読み込む
     m_titleImage = LoadGraph("data/image/title.png");
+    // ===== BGMロード =====
+    titleSoundHandle = LoadSoundMem(GAME_TITLE_SOUND_PATH);
 
+    titleSoundHandle = LoadSoundMem(GAME_TITLE_SOUND_PATH);
+    PlaySoundMem(titleSoundHandle, DX_PLAYTYPE_LOOP);
 }
 
 TitleScene::~TitleScene()
@@ -19,6 +23,7 @@ TitleScene::~TitleScene()
     {
         DeleteGraph(m_titleImage);
     }
+    DeleteSoundMem(titleSoundHandle);
 }
 
 void TitleScene::Update()
@@ -47,6 +52,7 @@ void TitleScene::Update()
         // デバッグ用：数字キーでシーン遷移
         if (CheckHitKey(KEY_INPUT_1))
         {
+            StopSoundMem(titleSoundHandle);
             SceneManager::ChangeScene("STAGESELECT");
         }
         if (CheckHitKey(KEY_INPUT_2))

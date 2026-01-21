@@ -27,16 +27,20 @@ PlayScene::PlayScene() {
     // ★ステージ選択画面で選んだステージ番号を取得★
     int selectedStage = StageSelectScene::GetSelectedStageNumber();
 
+    // ===== BGMロード =====
+    stage1SoundHandle = LoadSoundMem(GAME_STAGE1_SOUND_PATH);
+    stage2SoundHandle = LoadSoundMem(GAME_STAGE2_SOUND_PATH);
+
     // ★ステージごとにカウントダウン時間を設定★
     switch (selectedStage)
     {
     case 1:
-        PlaySoundFile("data/Sound/stage1.mp3", DX_PLAYTYPE_LOOP);
+        PlaySoundMem(stage1SoundHandle, DX_PLAYTYPE_LOOP);
         m_countdownTimer = 60 * 5;  // 5秒
         m_countdownNumber = 5;
         break;
     case 2:
-        PlaySoundFile("data/Sound/stage2.mp3", DX_PLAYTYPE_LOOP);
+        PlaySoundMem(stage2SoundHandle, DX_PLAYTYPE_LOOP);
         m_countdownTimer = 60 * 3;  // 3秒
         m_countdownNumber = 3;
         break;
@@ -74,6 +78,8 @@ PlayScene::PlayScene() {
 
 PlayScene::~PlayScene()
 {
+    DeleteSoundMem(stage1SoundHandle);
+    DeleteSoundMem(stage2SoundHandle);
     // 弾の削除は各Bulletクラスのデストラクタで処理される想定
 }
 
@@ -238,18 +244,18 @@ void PlayScene::Draw()
     else
     {
         // 通常のゲーム情報表示
-        DrawString(0, 0, "PLAY SCENE", GetColor(255, 255, 255));
-        DrawString(100, 550, "Push [O]Key To Title", GetColor(255, 255, 255));
+        DrawString(0, 0, " ", GetColor(255, 255, 255)); //PLAY SCENE
+        DrawString(100, 550, " ", GetColor(255, 255, 255)); //Push [O]Key To Title
 
         // ステージ番号の表示
         if (m_stageData != nullptr)
         {
             int stageNumber = StageSelectScene::GetSelectedStageNumber();
             DrawFormatString(10, 50, GetColor(255, 255, 255),
-                "Stage: %d | Phase: %d/%d",
+                " ",
                 stageNumber,
                 m_currentPhase + 1,
-                m_stageData->phases.size());
+                m_stageData->phases.size());//Stage: %d | Phase: %d/%d
         }
 
         // フェーズ情報とゲーム状態の表示
@@ -271,25 +277,25 @@ void PlayScene::Draw()
 
             // 敵の数を表示
             DrawFormatString(10, 10, GetColor(255, 255, 255),
-                "Enemies: %d", em->GetEnemyCount());
+                " ", em->GetEnemyCount()); //Enemies: %d
 
             // フェーズごとの説明を表示
             switch (currentPhase) {
             case GamePhase::PHASE_1:
                 DrawFormatString(10, 30, GetColor(200, 200, 200),
-                    "3 enemies moving left to right");
+                    " "); //3 enemies moving left to right
                 break;
             case GamePhase::PHASE_2:
                 DrawFormatString(10, 30, GetColor(200, 200, 200),
-                    "3 enemies moving right to left");
+                    " "); //3 enemies moving right to left
                 break;
             case GamePhase::PHASE_3:
                 DrawFormatString(10, 30, GetColor(200, 200, 200),
-                    "6 enemies - Wave 1 then Wave 2");
+                    " "); //6 enemies - Wave 1 then Wave 2
                 break;
             case GamePhase::PHASE_BOSS:
                 DrawFormatString(10, 30, GetColor(255, 100, 100),
-                    "DEFEAT THE BOSS!");
+                    " "); //DEFEAT THE BOSS!
                 break;
             case GamePhase::PHASE_CLEAR:
                 // ゲームクリア画面はDrawStageClear()で描画

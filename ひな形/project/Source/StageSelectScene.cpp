@@ -15,6 +15,10 @@ StageSelectScene::StageSelectScene()
     , m_keyWait(0)
 {
     m_backgroundImage = LoadGraph("Graphics/StageSelect.png");
+    // ===== SEロード =====
+    CancelSoundHandle = LoadSoundMem(GAME_CANCEL_SOUND_PATH);
+    CusorSoundHandle = LoadSoundMem(GAME_CURSOR_SOUND_PATH);
+    DecisionSoundHandle = LoadSoundMem(GAME_DECISION_SOUND_PATH);
     // 前回の選択を復元（1-indexedから0-indexedに変換）
     m_selectedStage = s_selectedStageNumber - 1;
 }
@@ -25,6 +29,9 @@ StageSelectScene::~StageSelectScene()
     {
         DeleteGraph(m_backgroundImage);
     }
+    DeleteSoundMem(CancelSoundHandle);
+    DeleteSoundMem(CusorSoundHandle);
+    DeleteSoundMem(DecisionSoundHandle);
 }
 
 void StageSelectScene::LoadStageData(int stageNumber)
@@ -86,13 +93,13 @@ void StageSelectScene::Update()
         {
             m_selectedStage = (m_selectedStage - 1 + STAGE_COUNT) % STAGE_COUNT;
             m_keyWait = 0;
-            //PlaySoundMem(/* カーソル移動音 */, DX_PLAYTYPE_BACK);
+            PlaySoundMem(CusorSoundHandle, DX_PLAYTYPE_BACK);
         }
         else if (CheckHitKey(KEY_INPUT_DOWN))
         {
             m_selectedStage = (m_selectedStage + 1) % STAGE_COUNT;
             m_keyWait = 0;
-            //PlaySoundMem(/* カーソル移動音 */, DX_PLAYTYPE_BACK);
+            PlaySoundMem(CusorSoundHandle, DX_PLAYTYPE_BACK);
         }
     }
 
@@ -105,7 +112,8 @@ void StageSelectScene::Update()
         // ステージデータを読み込む
         LoadStageData(s_selectedStageNumber);
 
-        //PlaySoundMem(/* 決定音 */, DX_PLAYTYPE_BACK);
+        DecisionSoundHandle = LoadSoundMem(GAME_DECISION_SOUND_PATH);
+        PlaySoundMem(DecisionSoundHandle, DX_PLAYTYPE_BACK);
 
         // ★カウントダウンを削除し、即座にPlaySceneへ遷移★
         SceneManager::ChangeScene("PLAY");
@@ -114,7 +122,8 @@ void StageSelectScene::Update()
     // キャンセルキー（Oキーでタイトルへ）
     if (CheckHitKey(KEY_INPUT_O))
     {
-        //PlaySoundMem(/* キャンセル音 */, DX_PLAYTYPE_BACK);
+        CancelSoundHandle = LoadSoundMem(GAME_CANCEL_SOUND_PATH);
+        PlaySoundMem(CancelSoundHandle, DX_PLAYTYPE_BACK);
         SceneManager::ChangeScene("TITLE");
     }
 }
