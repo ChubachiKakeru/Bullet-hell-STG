@@ -1,10 +1,12 @@
 #pragma once
 #include "../Library/GameObject.h"
 #include <vector>
+
 class Field;
 class enemyBullet;
 class EnemyBullet2;
 class Bomb;
+
 class Player : public GameObject
 {
 public:
@@ -25,9 +27,11 @@ public:
     bool IsHit(float bx, float by, int rad);
     bool IsActive() const { return isActive; }
     void ShootBullet();
-    void ShootBomb();        // ★ボム発射用
+    void ShootBomb();
     void AddBomb(int num) { bombCount += num; }
     int GetBombCount() const { return bombCount; }
+    bool IsInvincible() const { return invincibleTimer > 0; }  // ★追加★
+
 private:
     int hImage;
     int hBombImage;
@@ -39,17 +43,24 @@ private:
     float size;
     int hp;
     bool isActive;
+
     // ボム関連
     int bombCount;
-    float bombSize;      // 150固定
-    float bombSpeed;     // 弾としての移動速度
-    bool prevBombKeyPressed;  // ボムキーの前フレーム状態（連続発射防止用）
+    float bombSize;
+    float bombSpeed;
+    bool prevBombKeyPressed;
+
+    // ★無敵時間関連を追加★
+    int invincibleTimer;
+    static constexpr int INVINCIBLE_DURATION = 120;  // 無敵時間（2秒 = 120フレーム）
+
     // サウンドパス
-    const char* GAME_PHIT_SOUND_PATH = "data/Sound/playerhit.mp3";      //プレイヤー死亡ジングル
-    const char* GAME_PSHOT_SOUND_PATH = "data/Sound/playerattack.mp3";      //自機弾発射ジングル
-    const char* GAME_PBOMB_SOUND_PATH = "data/Sound/bombattack.mp3";      //ボム発射ジングル
-    //  サウンドハンドル
-    int playerHitSoundHandle;		//	プレイヤーHitサウンドハンドル
-    int playerShotSoundHandle;         // プレイヤーShotサウンドハンドル
-    int playerBombSoundHandle;         // プレイヤーBombサウンドハンドル
+    const char* GAME_PHIT_SOUND_PATH = "data/Sound/playerhit.mp3";
+    const char* GAME_PSHOT_SOUND_PATH = "data/Sound/playerattack.mp3";
+    const char* GAME_PBOMB_SOUND_PATH = "data/Sound/bombattack.mp3";
+
+    // サウンドハンドル
+    int playerHitSoundHandle;
+    int playerShotSoundHandle;
+    int playerBombSoundHandle;
 };

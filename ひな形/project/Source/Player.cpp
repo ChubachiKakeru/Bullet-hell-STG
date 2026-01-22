@@ -21,7 +21,7 @@ namespace {
     constexpr float BULLET_RADIUS = 8.0f;
 
     constexpr float BOMB_SIZE = 150.0f;
-    constexpr float BOMB_SPEED = -10.0f; // 上方向
+    constexpr float BOMB_SPEED = -10.0f;
 }
 
 // ========================================
@@ -36,7 +36,6 @@ Player::Player() : GameObject()
     playerHitSoundHandle = LoadSoundMem(GAME_PHIT_SOUND_PATH);
     playerShotSoundHandle = LoadSoundMem(GAME_PSHOT_SOUND_PATH);
     playerBombSoundHandle = LoadSoundMem(GAME_PBOMB_SOUND_PATH);
-
 
     x = 300;
     y = 900;
@@ -53,6 +52,9 @@ Player::Player() : GameObject()
     bombSize = BOMB_SIZE;
     bombSpeed = BOMB_SPEED;
     prevBombKeyPressed = false;
+
+    // ★無敵時間の初期化★
+    invincibleTimer = 0;
 }
 
 Player::Player(int sx, int sy) : Player()
@@ -75,20 +77,30 @@ Player::~Player()
 // ========================================
 void Player::TakeDamage(int damage)
 {
+    // ★無敵時間中はダメージを受けない★
+    if (invincibleTimer > 0) return;
+
     hp -= damage;
     PlaySoundMem(playerHitSoundHandle, DX_PLAYTYPE_BACK);
+
+    // ★ダメージを受けたら無敵時間を設定★
+    invincibleTimer = INVINCIBLE_DURATION;
+
     if (hp <= 0) {
         hp = 0;
-        StopSoundFile();  // ★BGM停止（1回）
-        // ゲームオーバーシーンに遷移
+        StopSoundFile();
         SceneManager::ChangeScene("GAMEOVER");
     }
 }
+
 // ========================================
 // 当たり判定
 // ========================================
 bool Player::IsHit(float bx, float by, int rad)
 {
+    // ★無敵時間中は当たり判定をスキップ★
+    if (invincibleTimer > 0) return false;
+
     float dx = bx - (x + PLAYER_CENTER_OFFSET);
     float dy = by - (y + PLAYER_CENTER_OFFSET);
     float distance = sqrt(dx * dx + dy * dy);
@@ -121,14 +133,12 @@ void Player::ShootBomb()
 
     bombCount--;
 
-    // ボムとして自キャラの上方向に発射
     float startX = x + size / 2.0f - BOMB_SIZE / 2.0f;
     float startY = y - BOMB_SIZE;
 
-    float bombVY = -8.0f; // 上方向速度
+    float bombVY = -8.0f;
     float bombVX = 0.0f;
 
-    // Bombクラスとして生成
     new Bomb(startX, startY, bombVX, bombVY, BOMB_SIZE);
 
     PlaySoundMem(playerBombSoundHandle, DX_PLAYTYPE_BACK);
@@ -142,18 +152,22 @@ void Player::Update()
     Field* field = FindGameObject<Field>();
     if (!field) return;
 
+    // ★無敵時間を減らす★
+    if (invincibleTimer > 0) {
+        invincibleTimer--;
+    }
+
     // 移動
     if (CheckHitKey(KEY_INPUT_D)) x += MOVE_SPEED;
     if (CheckHitKey(KEY_INPUT_A)) x -= MOVE_SPEED;
     if (CheckHitKey(KEY_INPUT_W)) y -= MOVE_SPEED;
     if (CheckHitKey(KEY_INPUT_S)) y += MOVE_SPEED;
 
-    // ステージ境界内に制限（画面の青い部分のみ） 
+    // ステージ境界内に制限
     if (x < Field::STAGE_LEFT) x = Field::STAGE_LEFT;
     if (x > Field::STAGE_RIGHT - 50 / 2) x = Field::STAGE_RIGHT - 50 / 2;
-    // プレイヤー幅を考慮 
     if (y < Field::STAGE_TOP) y = Field::STAGE_TOP;
-    if (y > Screen::HEIGHT - 100) y = Screen::HEIGHT - 100; // 画面下端まで移動可能
+    if (y > Screen::HEIGHT - 100) y = Screen::HEIGHT - 100;
 
     // 弾発射
     shotTimer += 1.0f;
@@ -162,7 +176,7 @@ void Player::Update()
         shotTimer = 0.0f;
     }
 
-    // ボム発射（キーが押された瞬間のみ発射）
+    // ボム発射
     bool currentBombKeyPressed = CheckHitKey(KEY_INPUT_SPACE);
     if (currentBombKeyPressed && !prevBombKeyPressed) {
         ShootBomb();
@@ -175,15 +189,30 @@ void Player::Update()
 // ========================================
 void Player::Draw()
 {
-    DrawGraph((int)x, (int)y, hImage, TRUE);
+    // ★無敵時間中は点滅表示★
+    if (invincibleTimer > 0 && (invincibleTimer / 5) % 2 == 0) {
+        // 5フレームごとに点滅（描画をスキップ）
+        // 何も描画しない
+    }
+    else {
+        DrawGraph((int)x, (int)y, hImage, TRUE);
+    }
+
     Field* field = FindGameObject<Field>();
 
     if (isActive) {
-        // 当たり判定の円(水色)
-        DrawCircle((float)x + 78, (float)y + 50, (int)BULLET_RADIUS + 10.0f, GetColor(0, 255, 255), FALSE);
+        // 当たり判定の円(水色) ★無敵中は赤色に変更★
+        int circleColor = (invincibleTimer > 0) ? GetColor(255, 0, 0) : GetColor(0, 255, 255);
+        DrawCircle((float)x + 78, (float)y + 50, (int)BULLET_RADIUS + 10.0f, circleColor, FALSE);
     }
+
     SetFontSize(40);
     DrawFormatString(920, 350, GetColor(0, 255, 255), "=== PLAYER ===");
     DrawFormatString(925, 400, GetColor(0, 255, 255), "PLAYER HP: %d", hp);
     DrawFormatString(980, 450, GetColor(0, 255, 255), "BOMB: %d", bombCount);
+
+    // ★デバッグ用: 無敵時間表示★
+    // if (invincibleTimer > 0) {
+    //     DrawFormatString(925, 500, GetColor(255, 0, 0), "INVINCIBLE: %d", invincibleTimer);
+    // }
 }
