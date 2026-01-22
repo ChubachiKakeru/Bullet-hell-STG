@@ -291,3 +291,26 @@ void Stage2Data::Initialize() {
         phase.waves.push_back(wave);
     }
 }
+
+void Stage3Data::Initialize() {
+    phases.clear();
+    phases.resize(1);  // ★ボス戦のみ★
+
+    // ========================================
+    // フェーズ1: Boss3との戦闘のみ
+    // ========================================
+    {
+        PhaseData& phase = phases[0];
+        phase.transitionWait = 3.0f;
+
+        WaveData wave;
+        wave.waveDelay = 0.0f;
+
+        float centerX = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f;
+
+        // ★Boss3: enemyType = 4★
+        wave.enemies.push_back({ 4, centerX - 60.0f, Field::STAGE_TOP + 20.0f, 0, 0.0f });
+
+        phase.waves.push_back(wave);
+    }
+}

@@ -2,6 +2,7 @@
 #include "Enemy.h"
 #include "Boss1.h"
 #include "Boss2.h"
+#include "Boss3.h"  // ★追加★
 #include "zako1.h"
 #include "zako2.h"
 #include "BackGround.h"
@@ -19,11 +20,10 @@ EnemyManager::EnemyManager(BackGround* bg, int stageNumber)
     waveSpawned(false),
     phaseTransitionTimer(0.0f),
     phaseCleared(false),
-    m_gameStarted(false)  // ★追加: 初期状態はゲーム未開始★
+    m_gameStarted(false)
 {
     LoadStageFromCSV(stageNumber);
 }
-
 
 EnemyManager::~EnemyManager() {
     for (auto* enemy : enemies) delete enemy;
@@ -36,25 +36,20 @@ EnemyManager::~EnemyManager() {
 }
 
 bool EnemyManager::LoadStageFromCSV(int stageNumber) {
-    // 既存のステージデータを削除
     if (currentStageData) {
         delete currentStageData;
         currentStageData = nullptr;
     }
 
-    // 敵を全て削除
     for (auto* enemy : enemies) delete enemy;
     enemies.clear();
     delayedSpawns.clear();
 
-    // CSVファイル名を生成（例: "stage1.csv", "stage2.csv"）
     char filename[64];
     sprintf_s(filename, "stage%d.csv", stageNumber);
 
-    // CSVからデータを読み込み
     currentStageData = new StageData();
     if (!currentStageData->LoadFromCSV(filename)) {
-        // CSVが無い場合はコード定義のデフォルトデータを使用
         delete currentStageData;
 
         switch (stageNumber) {
@@ -63,6 +58,9 @@ bool EnemyManager::LoadStageFromCSV(int stageNumber) {
             break;
         case 2:
             currentStageData = new Stage2Data();
+            break;
+        case 3:  // ★追加★
+            currentStageData = new Stage3Data();
             break;
         default:
             currentStageData = new Stage1Data();
@@ -74,7 +72,6 @@ bool EnemyManager::LoadStageFromCSV(int stageNumber) {
 
     currentStageNumber = stageNumber;
 
-    // 状態をリセット
     currentPhase = GamePhase::PHASE_1;
     currentPhaseIndex = 0;
     currentWaveIndex = 0;
@@ -82,7 +79,7 @@ bool EnemyManager::LoadStageFromCSV(int stageNumber) {
     waveTimer = 0.0f;
     phaseCleared = false;
     phaseTransitionTimer = 0.0f;
-    m_gameStarted = false;  // ★ゲーム開始フラグもリセット★
+    m_gameStarted = false;
 
     return true;
 }
@@ -90,10 +87,7 @@ bool EnemyManager::LoadStageFromCSV(int stageNumber) {
 void EnemyManager::Update() {
     if (!pBackground || !currentStageData) return;
 
-    // ★カウントダウン中は敵の出現処理をスキップ★
     if (!m_gameStarted) {
-        // ゲーム開始前は何もしない
-        // （既に出現している敵がいれば更新するが、通常はいないはず）
         for (auto* enemy : enemies) {
             if (enemy) enemy->Update();
         }
@@ -101,30 +95,25 @@ void EnemyManager::Update() {
         return;
     }
 
-    // ★ゲーム開始後の通常処理★
     UpdatePhaseLogic();
     UpdateWaveSpawning();
     UpdateDelayedSpawns();
 
-    // 全敵の更新
     for (auto* enemy : enemies) {
         if (enemy) enemy->Update();
     }
 
     RemoveDeadEnemies();
-    //DrawDebugInfo();
 }
 
 void EnemyManager::UpdatePhaseLogic() {
     if (currentPhase == GamePhase::PHASE_CLEAR) return;
 
-    // フェーズクリア判定
     if (!phaseCleared && IsPhaseCleared()) {
         phaseCleared = true;
         phaseTransitionTimer = 0.0f;
     }
 
-    // フェーズクリア後の遷移待機
     if (phaseCleared) {
         float waitTime = (currentPhaseIndex < currentStageData->phases.size())
             ? currentStageData->phases[currentPhaseIndex].transitionWait
@@ -144,16 +133,13 @@ void EnemyManager::UpdateWaveSpawning() {
 
     const PhaseData& phase = currentStageData->phases[currentPhaseIndex];
 
-    // 現在のウェーブがまだある場合
     if (currentWaveIndex < phase.waves.size()) {
         const WaveData& wave = phase.waves[currentWaveIndex];
 
         if (!waveSpawned) {
             waveTimer += 1.0f / 60.0f;
 
-            // ウェーブの遅延時間経過後に出現
             if (waveTimer >= wave.waveDelay) {
-                // ウェーブ内の全敵を遅延スポーン登録
                 for (const auto& enemyData : wave.enemies) {
                     DelayedSpawn ds;
                     ds.data = enemyData;
@@ -168,7 +154,6 @@ void EnemyManager::UpdateWaveSpawning() {
             }
         }
 
-        // 現在のウェーブの敵が全滅したら次のウェーブへ
         if (waveSpawned && IsCurrentWaveCleared()) {
             AdvanceToNextWave();
         }
@@ -187,7 +172,6 @@ void EnemyManager::UpdateDelayedSpawns() {
         }
     }
 
-    // 出現済みのものを削除
     delayedSpawns.erase(
         std::remove_if(delayedSpawns.begin(), delayedSpawns.end(),
             [](const DelayedSpawn& ds) { return ds.spawned; }),
@@ -199,28 +183,27 @@ void EnemyManager::SpawnEnemy(const EnemySpawnData& data) {
     Enemy* newEnemy = nullptr;
 
     switch (data.enemyType) {
-    case 0:  // zako1（ステージ1用）
+    case 0:
         newEnemy = new zako1(data.spawnX, data.spawnY,
             static_cast<Zako1Pattern>(data.pattern));
         break;
 
-    case 1:  // Boss1
+    case 1:
         newEnemy = new Boss1(data.spawnX, data.spawnY);
         break;
 
-    case 2:  // zako2（ステージ2用）
+    case 2:
         newEnemy = new zako2(data.spawnX, data.spawnY,
             static_cast<Zako2Pattern>(data.pattern));
         break;
 
-    case 3:  // Boss2（ステージ2ボス）
+    case 3:
         newEnemy = new Boss2(data.spawnX, data.spawnY);
         break;
 
-        // 将来の拡張用
-        // case 4:  // zako3
-        //     newEnemy = new zako3(data.spawnX, data.spawnY, data.pattern);
-        //     break;
+    case 4:  // ★Boss3追加★
+        newEnemy = new Boss3(data.spawnX, data.spawnY);
+        break;
 
     default:
         printfDx("不明な敵タイプ: %d\n", data.enemyType);
@@ -243,7 +226,6 @@ bool EnemyManager::IsPhaseCleared() const {
 
     const PhaseData& phase = currentStageData->phases[currentPhaseIndex];
 
-    // 全ウェーブが完了 && 全敵撃破
     return (currentWaveIndex >= phase.waves.size())
         && enemies.empty()
         && delayedSpawns.empty();
@@ -258,12 +240,10 @@ void EnemyManager::AdvanceToNextWave() {
 void EnemyManager::AdvanceToNextPhase() {
     currentPhaseIndex++;
 
-    // フェーズ番号の更新
     if (currentPhaseIndex >= currentStageData->phases.size()) {
         currentPhase = GamePhase::PHASE_CLEAR;
     }
     else {
-        // フェーズ番号を更新（PHASE_1, PHASE_2, ...）
         if (currentPhaseIndex == 0) currentPhase = GamePhase::PHASE_1;
         else if (currentPhaseIndex == 1) currentPhase = GamePhase::PHASE_2;
         else if (currentPhaseIndex == 2) currentPhase = GamePhase::PHASE_3;
@@ -296,36 +276,32 @@ void EnemyManager::DrawDebugInfo() {
     const char* phaseNames[] = { "PHASE 1", "PHASE 2", "PHASE 3", "BOSS", "CLEAR!" };
     int phaseIndex = static_cast<int>(currentPhase);
 
-    // ★ゲーム開始状態を表示★
     if (!m_gameStarted) {
         DrawString(10, 40, "COUNTDOWN...", GetColor(255, 255, 0));
     }
 
-    // ステージとフェーズ表示
     DrawFormatString(10, 60, GetColor(255, 255, 0),
         "Stage %d - %s", currentStageNumber, phaseNames[phaseIndex]);
 
     DrawFormatString(10, 80, GetColor(255, 255, 0),
-        " ", enemies.size()); //Active Enemies : % d
+        " ", enemies.size());
 
     if (currentPhaseIndex < currentStageData->phases.size()) {
         DrawFormatString(10, 100, GetColor(255, 255, 0),
             " ",
             currentWaveIndex + 1,
-            currentStageData->phases[currentPhaseIndex].waves.size()); //Wave: %d/%d
+            currentStageData->phases[currentPhaseIndex].waves.size());
     }
 
-    // 各敵の座標表示（最大5体）
     for (size_t i = 0; i < enemies.size() && i < 5; i++) {
         if (enemies[i]) {
             DrawFormatString(10, 120 + i * 20, GetColor(0, 255, 255),
                 " ",
                 i, enemies[i]->GetX(), enemies[i]->GetY(),
-                enemies[i]->GetHP()); //Enemy[%d]: X=%.1f, Y=%.1f, HP=%d
+                enemies[i]->GetHP());
         }
     }
 
-    // フェーズクリア待機表示
     if (phaseCleared && currentPhase != GamePhase::PHASE_CLEAR) {
         float waitTime = (currentPhaseIndex < currentStageData->phases.size())
             ? currentStageData->phases[currentPhaseIndex].transitionWait
@@ -360,5 +336,5 @@ void EnemyManager::Reset() {
     waveTimer = 0.0f;
     phaseCleared = false;
     phaseTransitionTimer = 0.0f;
-    m_gameStarted = false;  // ★リセット時もゲーム未開始に戻す★
+    m_gameStarted = false;
 }

@@ -3,6 +3,7 @@
 #include "zako1.h"
 #include "zako2.h"
 #include "Boss2.h"
+#include"Boss3.h"
 #include "EnemyManager.h"
 
 playerBullet::playerBullet(float sx, float sy, float vx, float vy, float bulletsize)
@@ -54,6 +55,12 @@ void playerBullet::Update() {
 
                 Boss2* bossB = dynamic_cast<Boss2*>(enemy);
                 if (bossB && bossB->IsHit(x + 40, y + 40, 10)) {
+                    DestroyMe();
+                    return;
+                }
+
+                Boss3* bossC = dynamic_cast<Boss3*>(enemy);
+                if (bossC && bossC->IsHit(x + 40, y + 40, 10)) {
                     DestroyMe();
                     return;
                 }

@@ -1,12 +1,12 @@
 #pragma once
 #include "zako1.h"
-#include"zako2.h"
+#include "zako2.h"
 #include <vector>
 #include <string>
 
 // 敵の出現データ
 struct EnemySpawnData {
-    int enemyType;          // 0=zako1, 1=Boss1, 2=zako2, など
+    int enemyType;          // 0=zako1, 1=Boss1, 2=zako2, 3=Boss2, 4=Boss3
     float spawnX;           // 出現X座標
     float spawnY;           // 出現Y座標
     int pattern;            // 行動パターン
@@ -52,8 +52,14 @@ public:
     void Initialize() override;
 };
 
-// ステージ2のデータ（コード定義版・例）
+// ステージ2のデータ（コード定義版）
 class Stage2Data : public StageData {
+public:
+    void Initialize() override;
+};
+
+// ステージ3のデータ（コード定義版）★追加★
+class Stage3Data : public StageData {
 public:
     void Initialize() override;
 };

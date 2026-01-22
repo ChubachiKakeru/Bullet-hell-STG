@@ -1,14 +1,15 @@
 #include "BackGround.h"
-#include "StageSelectScene.h"  // ★追加★
+#include "StageSelectScene.h"
 
 BackGround::BackGround() : GameObject() {
     // ★ステージ番号を取得して背景を切り替え★
     int stageNumber = StageSelectScene::GetSelectedStageNumber();
 
-    if (stageNumber == 2) {
+    // ★ステージ2と3は同じ背景を使用★
+    if (stageNumber == 2 || stageNumber == 3) {
         hImage = LoadGraph("data/image/bg2.png");
         hImage2 = LoadGraph("data/image/bg2.png");
-        scrollSpeed = 0.7f;  // ステージ2は少し速く
+        scrollSpeed = 0.7f;  // ステージ2/3は少し速く
     }
     else {
         hImage = LoadGraph("data/image/bg.png");
@@ -26,7 +27,8 @@ BackGround::BackGround(float offX, float offY) : GameObject() {
     // ★ステージ番号を取得して背景を切り替え★
     int stageNumber = StageSelectScene::GetSelectedStageNumber();
 
-    if (stageNumber == 2) {
+    // ★ステージ2と3は同じ背景を使用★
+    if (stageNumber == 2 || stageNumber == 3) {
         hImage = LoadGraph("data/image/bg2.png");
         hImage2 = LoadGraph("data/image/bg2.png");
         scrollSpeed = 0.7f;
@@ -55,6 +57,7 @@ BackGround::~BackGround() {
 void BackGround::Update() {
     // スクロール更新
     scrollY += scrollSpeed;
+
     // 背景画像の高さを超えたらリセット
     int bgHeight = 960;
     if (scrollY >= bgHeight) {
