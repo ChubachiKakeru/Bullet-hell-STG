@@ -17,15 +17,17 @@
 // ========================================
 
 PlayScene::PlayScene() {
-    // ★背景と地形を先に生成（カウントダウン中も表示）★
+    // ★ステージ選択画面で選んだステージ番号を先に取得★
+    int selectedStage = StageSelectScene::GetSelectedStageNumber();
+
+    // ★背景を最初に生成（ステージ番号は内部で自動判定）★
     BackGround* bg = new BackGround();
+
+    // ★地形を生成（カウントダウン中も表示）★
     new Field();
 
     // ★自機を生成（カウントダウン中も表示・操作可能）★
     new Player();
-
-    // ★ステージ選択画面で選んだステージ番号を取得★
-    int selectedStage = StageSelectScene::GetSelectedStageNumber();
 
     // ===== BGMロード =====
     stage1SoundHandle = LoadSoundMem(GAME_STAGE1_SOUND_PATH);
@@ -67,7 +69,6 @@ PlayScene::PlayScene() {
     // ★次ステージ遷移タイマーの初期化★
     m_nextStageTimer = 0;
 }
-
 PlayScene::~PlayScene()
 {
     DeleteSoundMem(stage1SoundHandle);

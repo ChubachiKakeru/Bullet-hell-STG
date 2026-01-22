@@ -1,21 +1,43 @@
 #include "BackGround.h"
-#include "DxLib.h"
+#include "StageSelectScene.h"  // ★追加★
 
 BackGround::BackGround() : GameObject() {
-    hImage = LoadGraph("data/image/bg.png");
-    hImage2 = LoadGraph("data/image/bg.png");
+    // ★ステージ番号を取得して背景を切り替え★
+    int stageNumber = StageSelectScene::GetSelectedStageNumber();
+
+    if (stageNumber == 2) {
+        hImage = LoadGraph("data/image/bg2.png");
+        hImage2 = LoadGraph("data/image/bg2.png");
+        scrollSpeed = 0.7f;  // ステージ2は少し速く
+    }
+    else {
+        hImage = LoadGraph("data/image/bg.png");
+        hImage2 = LoadGraph("data/image/bg.png");
+        scrollSpeed = 1.0f;
+    }
+
     scrollY = 0.0f;
-    scrollSpeed = 1.0f;   //ゆっくり（0.5ピクセル/フレーム）
-    offsetX = 0.0f;     // 中央
-    offsetY = 0.0f;     // 上端
-    scale = 1.0f;       // 等倍
+    offsetX = 0.0f;
+    offsetY = 0.0f;
+    scale = 1.0f;
 }
 
 BackGround::BackGround(float offX, float offY) : GameObject() {
-    hImage = LoadGraph("data/image/bg.png");
-    hImage2 = LoadGraph("data/image/bg.png");
+    // ★ステージ番号を取得して背景を切り替え★
+    int stageNumber = StageSelectScene::GetSelectedStageNumber();
+
+    if (stageNumber == 2) {
+        hImage = LoadGraph("data/image/bg2.png");
+        hImage2 = LoadGraph("data/image/bg2.png");
+        scrollSpeed = 0.7f;
+    }
+    else {
+        hImage = LoadGraph("data/image/bg.png");
+        hImage2 = LoadGraph("data/image/bg.png");
+        scrollSpeed = 0.5f;
+    }
+
     scrollY = 0.0f;
-    scrollSpeed = 0.5f;
     offsetX = offX;
     offsetY = offY;
     scale = 1.0f;
@@ -42,6 +64,7 @@ void BackGround::Update() {
 
 void BackGround::Draw() {
     if (hImage == -1) return;
+
     int bgHeight = 960;       // 表示する高さ
     int screenWidth = 840;    // 表示する幅
     int screenHeight = 1280;  // 画面高さ
@@ -53,7 +76,6 @@ void BackGround::Draw() {
     // 上から下まで確実にカバー
     for (int i = -1; i <= 2; i++) {
         int drawY = drawY1 + (i * bgHeight);
-
         DrawExtendGraph(
             (int)offsetX,
             drawY,
