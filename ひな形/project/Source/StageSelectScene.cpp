@@ -31,7 +31,7 @@ StageSelectScene::~StageSelectScene()
     }
     DeleteSoundMem(CancelSoundHandle);
     DeleteSoundMem(CusorSoundHandle);
-    DeleteSoundMem(DecisionSoundHandle);
+    //DeleteSoundMem(DecisionSoundHandle);
 }
 
 void StageSelectScene::LoadStageData(int stageNumber)
@@ -106,14 +106,13 @@ void StageSelectScene::Update()
     // 決定キー
     if (CheckHitKey(KEY_INPUT_SPACE) || CheckHitKey(KEY_INPUT_RETURN))
     {
+        PlaySoundMem(DecisionSoundHandle, DX_PLAYTYPE_BACK);
+
         // 選択されたステージ番号を保存（0-indexedから1-indexedに変換）
         s_selectedStageNumber = m_selectedStage + 1;
 
         // ステージデータを読み込む
         LoadStageData(s_selectedStageNumber);
-
-        DecisionSoundHandle = LoadSoundMem(GAME_DECISION_SOUND_PATH);
-        PlaySoundMem(DecisionSoundHandle, DX_PLAYTYPE_BACK);
 
         // ★カウントダウンを削除し、即座にPlaySceneへ遷移★
         SceneManager::ChangeScene("PLAY");

@@ -43,6 +43,7 @@ void TitleScene::Update()
     // 通常の遷移（Pキーでステージ選択へ）
     if (CheckHitKey(KEY_INPUT_P))
     {
+        StopSoundMem(titleSoundHandle);
         SceneManager::ChangeScene("STAGESELECT");
     }
 
