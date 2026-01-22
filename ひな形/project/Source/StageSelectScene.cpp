@@ -10,7 +10,6 @@ Stage2Data StageSelectScene::s_stage2;
 StageData* StageSelectScene::s_currentStageData = nullptr;
 int StageSelectScene::s_totalGameTimer = 0;  // ★追加★
 
-
 StageSelectScene::StageSelectScene()
     : m_backgroundImage(-1)
     , m_selectedStage(0)
@@ -21,6 +20,11 @@ StageSelectScene::StageSelectScene()
     m_selectedStage = s_selectedStageNumber - 1;
     // ★キー入力を受け付けない期間を設定★
     m_keyWait = -60; // 60フレーム（1秒）待機
+
+    // ===== SEロード =====
+    CancelSoundHandle = LoadSoundMem(GAME_CANCEL_SOUND_PATH);
+    CusorSoundHandle = LoadSoundMem(GAME_CURSOR_SOUND_PATH);
+    DecisionSoundHandle = LoadSoundMem(GAME_DECISION_SOUND_PATH);
 }
 
 StageSelectScene::~StageSelectScene()

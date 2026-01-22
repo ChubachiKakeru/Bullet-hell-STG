@@ -37,4 +37,12 @@ private:
     int m_backgroundImage;                  // 背景画像
     int m_selectedStage;                    // 選択中のステージ（0-indexed）
     int m_keyWait;                          // キー入力待機時間
+    // サウンドパス
+    const char* GAME_CANCEL_SOUND_PATH = "data/Sound/cancel.mp3";      //キャンセルジングル
+    const char* GAME_CURSOR_SOUND_PATH = "data/Sound/cursor.mp3";      //選択ジングル
+    const char* GAME_DECISION_SOUND_PATH = "data/Sound/decision.mp3";      //決定ジングル
+    //  サウンドハンドル
+    int CancelSoundHandle;		//	キャンセルサウンドハンドル
+    int CusorSoundHandle;         // 選択サウンドハンドル
+    int DecisionSoundHandle;         // 決定サウンドハンドル
 };
