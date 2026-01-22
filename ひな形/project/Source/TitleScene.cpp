@@ -14,6 +14,11 @@ TitleScene::TitleScene()
 {
     // タイトル画像を読み込む
     m_titleImage = LoadGraph("data/image/title.png");
+    // ===== BGMロード =====
+    titleSoundHandle = LoadSoundMem(GAME_TITLE_SOUND_PATH);
+
+    titleSoundHandle = LoadSoundMem(GAME_TITLE_SOUND_PATH);
+    PlaySoundMem(titleSoundHandle, DX_PLAYTYPE_LOOP);
 }
 
 TitleScene::~TitleScene()
@@ -22,6 +27,7 @@ TitleScene::~TitleScene()
     {
         DeleteGraph(m_titleImage);
     }
+    DeleteSoundMem(titleSoundHandle);
 }
 
 void TitleScene::Update()
@@ -58,6 +64,8 @@ void TitleScene::Update()
             SceneManager::ChangeScene("STAGESELECT");
             return;
         }
+        StopSoundMem(titleSoundHandle);
+        SceneManager::ChangeScene("STAGESELECT");
     }
 
     // デバッグメニューが表示されている時のみ数字キーを有効化

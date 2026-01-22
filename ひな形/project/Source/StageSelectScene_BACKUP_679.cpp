@@ -29,10 +29,12 @@ StageSelectScene::~StageSelectScene()
     {
         DeleteGraph(m_backgroundImage);
     }
-
+<<<<<<< HEAD
+=======
     DeleteSoundMem(CancelSoundHandle);
     DeleteSoundMem(CusorSoundHandle);
     //DeleteSoundMem(DecisionSoundHandle);
+>>>>>>> nm
 }
 
 void StageSelectScene::LoadStageData(int stageNumber)
@@ -113,14 +115,12 @@ void StageSelectScene::Update()
             m_selectedStage = (m_selectedStage - 1 + STAGE_COUNT) % STAGE_COUNT;
             m_keyWait = 0;
             //PlaySoundMem(/* カーソル移動音 */, DX_PLAYTYPE_BACK);
-            PlaySoundMem(CusorSoundHandle, DX_PLAYTYPE_BACK);
         }
         else if (CheckHitKey(KEY_INPUT_DOWN))
         {
             m_selectedStage = (m_selectedStage + 1) % STAGE_COUNT;
             m_keyWait = 0;
             //PlaySoundMem(/* カーソル移動音 */, DX_PLAYTYPE_BACK);
-            PlaySoundMem(CusorSoundHandle, DX_PLAYTYPE_BACK);
         }
     }
     // 決定キー
@@ -139,9 +139,11 @@ void StageSelectScene::Update()
 
         // ステージデータを読み込む
         LoadStageData(s_selectedStageNumber);
+<<<<<<< HEAD
         //PlaySoundMem(/* 決定音 */, DX_PLAYTYPE_BACK);
-        PlaySoundMem(DecisionSoundHandle, DX_PLAYTYPE_BACK);
+=======
 
+>>>>>>> nm
         // ★カウントダウンを削除し、即座にPlaySceneへ遷移★
         SceneManager::ChangeScene("PLAY");
     }
@@ -149,7 +151,6 @@ void StageSelectScene::Update()
     if (CheckHitKey(KEY_INPUT_O))
     {
         //PlaySoundMem(/* キャンセル音 */, DX_PLAYTYPE_BACK);
-        PlaySoundMem(CancelSoundHandle, DX_PLAYTYPE_BACK);
         SceneManager::ChangeScene("TITLE");
     }
 }
