@@ -208,7 +208,7 @@ void Stage2Data::Initialize() {
 
         // 4列の敵
         float sx = Field::STAGE_LEFT - 60.0f;
-        float sy = Field::STAGE_TOP - 60.0f;
+        float sy = Field::STAGE_TOP - 10.0f;
         wave.enemies.push_back({ 2, Field::STAGE_LEFT , Field::STAGE_TOP,
                                 static_cast<int>(Zako2Pattern::PATTERN_LEFT_TO_RIGHT), 0.0f });
         wave.enemies.push_back({ 2, Field::STAGE_LEFT , Field::STAGE_TOP,
@@ -216,7 +216,7 @@ void Stage2Data::Initialize() {
         wave.enemies.push_back({ 2, Field::STAGE_LEFT , Field::STAGE_TOP,
                                 static_cast<int>(Zako2Pattern::PATTERN_LEFT_TO_RIGHT), 1.2f });
         wave.enemies.push_back({ 2, Field::STAGE_LEFT , Field::STAGE_TOP,
-                               static_cast<int>(Zako2Pattern::PATTERN_LEFT_TO_RIGHT), 1.8f });
+                                static_cast<int>(Zako2Pattern::PATTERN_LEFT_TO_RIGHT),  1.8f });
 
         phase.waves.push_back(wave);
     }
@@ -231,12 +231,17 @@ void Stage2Data::Initialize() {
         // 第1波: 左から3体（★zako2使用★）
         WaveData wave1;
         wave1.waveDelay = 0.0f;
-        wave1.enemies.push_back({ 2, Field::STAGE_LEFT + 100.0f, Field::STAGE_TOP + 100.0f,
-                                 static_cast<int>(Zako2Pattern::PATTERN_LEFT_TO_RIGHT), 0.0f });
-        wave1.enemies.push_back({ 2, Field::STAGE_LEFT + 250.0f, Field::STAGE_TOP + 100.0f,
-                                 static_cast<int>(Zako2Pattern::PATTERN_LEFT_TO_RIGHT), 0.0f });
-        wave1.enemies.push_back({ 2, Field::STAGE_LEFT + 400.0f, Field::STAGE_TOP + 100.0f,
-                                 static_cast<int>(Zako2Pattern::PATTERN_LEFT_TO_RIGHT), 0.0f });
+        float sx = Field::STAGE_RIGHT + 60.0f;
+        float sy = Field::STAGE_TOP - 10.0f;
+        wave1.enemies.push_back({ 2, Field::STAGE_RIGHT , Field::STAGE_TOP,
+                                static_cast<int>(Zako2Pattern::PATTERN_RIGHT_TO_LEFT), 0.0f });
+        wave1.enemies.push_back({ 2, Field::STAGE_RIGHT , Field::STAGE_TOP,
+                                static_cast<int>(Zako2Pattern::PATTERN_RIGHT_TO_LEFT), 0.6f });
+        wave1.enemies.push_back({ 2, Field::STAGE_RIGHT , Field::STAGE_TOP,
+                                static_cast<int>(Zako2Pattern::PATTERN_RIGHT_TO_LEFT), 1.2f });
+        wave1.enemies.push_back({ 2, Field::STAGE_RIGHT , Field::STAGE_TOP,
+                                static_cast<int>(Zako2Pattern::PATTERN_RIGHT_TO_LEFT),  1.8f });
+
         phase.waves.push_back(wave1);
 
         // 第2波: 1秒後に右から3体（★zako2使用★）

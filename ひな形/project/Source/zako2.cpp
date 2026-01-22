@@ -56,16 +56,31 @@ zako2::zako2(float sx, float sy, Zako2Pattern pat)
     sFrequency = 0.03f;
     verticalSpeed = 0.0f;
 
-    // --- 円弧移動 初期化 ---
     isCurveMove = true;
-    curveRadius = 140.0f;          // カーブの大きさ（調整可）
+    curveRadius = 140.0f;
+    if (pattern == Zako2Pattern::PATTERN_RIGHT_TO_LEFT) {
+        // 開始位置は右上の端で固定（例）
+        x = sx;
+        y = sy;
 
-    // ★ 180度（左向き）からスタート
-    curveAngle = DX_PI_F;          // = 180°
+        // 円の中心は開始位置の左下よりさらに下にずらす（外側に回る）
+        curveCenterX = sx - curveRadius;
+        curveCenterY = sy + curveRadius + 40.0f;  // 下方向にずらし調整
 
-    // ★ 円の中心を「開始位置の右下」に置く
-    curveCenterX = sx + curveRadius;
-    curveCenterY = sy + curveRadius;
+        curveAngle = 0.0f;  // 右方向からスタート
+    }
+    else if (pattern == Zako2Pattern::PATTERN_LEFT_TO_RIGHT) {
+        // フェーズ1は変更なし
+        curveAngle = DX_PI_F;          // 180度
+        curveCenterX = sx + curveRadius;
+        curveCenterY = sy + curveRadius;
+    }
+    else {
+        // その他
+        curveAngle = DX_PI_F;
+        curveCenterX = sx + curveRadius;
+        curveCenterY = sy + curveRadius;
+    }
 
     if (pattern == Zako2Pattern::PATTERN_S_UP)
         verticalSpeed = -1.2f;   // 上へ
@@ -116,6 +131,29 @@ void zako2::Update()
         {
             // 水平直進
             x += 2.0f;
+        }
+    }
+    else if (pattern == Zako2Pattern::PATTERN_RIGHT_TO_LEFT)
+    {
+        if (isCurveMove)
+        {
+            // 角度を増やして90度まで動かす
+            curveAngle += 0.02f;
+
+            if (curveAngle >= DX_PI_F / 2.0f)  // 90度で終了
+            {
+                curveAngle = DX_PI_F / 2.0f;
+                isCurveMove = false;
+            }
+
+            // 円運動（中心は左下よりさらに下にある）
+            x = curveCenterX + cosf(curveAngle) * curveRadius;
+            y = curveCenterY + sinf(curveAngle) * curveRadius;
+        }
+        else
+        {
+            // 左方向に水平移動
+            x -= 2.0f;
         }
     }
     else
