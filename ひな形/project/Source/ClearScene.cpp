@@ -6,7 +6,7 @@ ClearScene::ClearScene()
     : m_clearImage(-1)
     , m_timer(0)
 {
-    m_clearImage = LoadGraph("Graphics/Clear.png");
+    m_clearImage = LoadGraph("data/image/Clear.jpg");
     // ★ステージ1開始からの累計時間を取得★
     m_timer = StageSelectScene::s_totalGameTimer;
 }
@@ -22,7 +22,6 @@ ClearScene::~ClearScene()
 void ClearScene::Update()
 {
     // ★m_timer++を削除（カウントアップしない）★
-
     if (CheckHitKey(KEY_INPUT_SPACE))
     {
         SceneManager::ChangeScene("STAGESELECT");
@@ -35,15 +34,16 @@ void ClearScene::Update()
 
 void ClearScene::Draw()
 {
-    DrawBox(0, 0, 1280, 720, GetColor(200, 220, 255), TRUE);
+    DrawBox(0, 0, 1280, 1280, GetColor(200, 220, 255), TRUE);
 
     if (m_clearImage != -1)
     {
-        DrawGraph(320, 200, m_clearImage, TRUE);
+        // 画像を画面いっぱいに拡大表示（800x800 → 1280x1280）
+        DrawExtendGraph(0, 0, 1280, 1280, m_clearImage, TRUE);
     }
     else
     {
-        DrawString(500, 300, "STAGE CLEAR!", GetColor(0, 0, 0));
+        DrawString(500, 600, "STAGE CLEAR!", GetColor(0, 0, 0));
     }
 
     // クリアタイム表示（ステージ1開始からの累計時間）
