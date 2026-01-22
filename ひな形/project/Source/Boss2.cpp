@@ -309,8 +309,8 @@ void Boss2::ShotBullet(float angle, float num)
 	// ==========================
 	else if (bulletPhase == BulletPhase2::PHASE_3)
 	{
-		const int lineCount = 6;
-		const float speed = 4.0f;
+		const int lineCount = 17;
+		const float speed = 3.0f;
 
 		for (int i = 0; i < lineCount; i++) {
 			float a = angle + (2.0f * 3.14159265f / lineCount) * i;
@@ -400,7 +400,7 @@ bool Boss2::IsHit(float bx, float by, int rad)
 
 	if (d < 60 + rad) {
 		PlaySoundMem(enemyDeathSoundHandle, DX_PLAYTYPE_BACK);
-		TakeDamage(100);
+		TakeDamage(5);
 		return true;
 	}
 	return false;

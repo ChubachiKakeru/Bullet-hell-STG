@@ -31,8 +31,8 @@ EnemyBullet2::EnemyBullet2(float sx, float sy, float vx, float vy, float bullets
     isAlive(true),
     frameCount(0)
 {
-    hImage = LoadGraph("data/image/yaiba.png");
-    hImageHoming = LoadGraph("data/image/yaiba3.png");
+    hImage = LoadGraph("data/image/fire.png");
+    hImageHoming = LoadGraph("data/image/flame.png");
     x = sx;
     y = sy;
     velocityX = vx;
@@ -155,7 +155,7 @@ void EnemyBullet2::Update() {
         }
 
         if (distance < hitRadius) {
-            p->TakeDamage(10);
+            p->TakeDamage(1);
             DestroyMe();
             return;
         }

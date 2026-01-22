@@ -163,7 +163,7 @@ void Player::Update()
     }
 
     // ボム発射（キーが押された瞬間のみ発射）
-    bool currentBombKeyPressed = CheckHitKey(KEY_INPUT_J);
+    bool currentBombKeyPressed = CheckHitKey(KEY_INPUT_SPACE);
     if (currentBombKeyPressed && !prevBombKeyPressed) {
         ShootBomb();
     }
