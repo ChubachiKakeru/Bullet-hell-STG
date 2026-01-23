@@ -167,6 +167,7 @@
     <ClInclude Include="Source\Enemy.h" />
     <ClInclude Include="Source\enemyBullet.h" />
     <ClInclude Include="Source\EnemyBullet2.h" />
+    <ClInclude Include="Source\EnemyBullet3.h" />
     <ClInclude Include="Source\EnemyManager.h" />
     <ClInclude Include="Source\Field.h" />
     <ClInclude Include="Source\GameOverScene.h" />
@@ -211,6 +212,7 @@
     <ClCompile Include="Source\Enemy.cpp" />
     <ClCompile Include="Source\enemyBullet.cpp" />
     <ClCompile Include="Source\EnemyBullet2.cpp" />
+    <ClCompile Include="Source\EnemyBullet3.cpp" />
     <ClCompile Include="Source\EnemyManager.cpp" />
     <ClCompile Include="Source\Field.cpp" />
     <ClCompile Include="Source\GameOverScene.cpp" />

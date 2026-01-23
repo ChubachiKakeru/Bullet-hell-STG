@@ -43,6 +43,7 @@
     <ClCompile Include="Source\EnemyBullet2.cpp" />
     <ClCompile Include="Source\Bomb.cpp" />
     <ClCompile Include="Source\Boss3.cpp" />
+    <ClCompile Include="Source\EnemyBullet3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imconfig.h" />
@@ -91,5 +92,6 @@
     <ClInclude Include="Source\EnemyBullet2.h" />
     <ClInclude Include="Source\Bomb.h" />
     <ClInclude Include="Source\Boss3.h" />
+    <ClInclude Include="Source\EnemyBullet3.h" />
   </ItemGroup>
 </Project>

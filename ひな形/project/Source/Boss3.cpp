@@ -1,13 +1,14 @@
 #include "Boss3.h"
 #include "Field.h"
-#include "EnemyBullet2.h"
+#include "EnemyBullet3.h"
 #include "Player.h"
 #include "../Library/GameObject.h"
 #include <cmath>
+#include <cstdlib>
 
 Boss3::Boss3() : Enemy()
 {
-    bossImage = LoadGraph("data/image/file/chara/boss3.png");
+    bossImage = LoadGraph("data/image/file/chara/boss2.png");
     x = 200.0f;
     y = 200.0f;
     centerX = 300.0f;
@@ -47,12 +48,22 @@ Boss3::Boss3() : Enemy()
     activeBeamCount = 0;
     beamSpawnTimer = 0.0f;
     beamSpawnInterval = 120.0f;
+    beamWaveType = 0;
     InitBeams();
 
     spiralAngle = 0.0f;
-    spiralSpeed = 0.08f;
+    spiralSpeed = 0.01047f;
     spiralReversed = false;
     spiralTimer = 0.0f;
+
+    phase4BarrageTimer = 0.0f;
+    phase4BarrageInterval = 45.0f;
+    phase4AimedTimer = 0.0f;
+    phase4AimedInterval = 240.0f;
+
+    for (int i = 0; i < 3; i++) {
+        waitingBullets[i].active = false;
+    }
 
     diagonalBeamTimer = 0.0f;
     diagonalBeamInterval = 180.0f;
@@ -60,11 +71,15 @@ Boss3::Boss3() : Enemy()
         diagonalBeams[i].active = false;
         diagonalBeams[i].timer = 0.0f;
     }
+
+    sideObjTimer = 0.0f;
+    sideObjMoveSpeed = 2.0f;
+    sideObjDirection = 1.0f;
 }
 
 Boss3::Boss3(float sx, float sy) : Enemy()
 {
-    bossImage = LoadGraph("data/image/file/chara/boss3.png");
+    bossImage = LoadGraph("data/image/file/chara/boss2.png");
     x = sx;
     y = sy;
     centerX = sx;
@@ -104,6 +119,7 @@ Boss3::Boss3(float sx, float sy) : Enemy()
     activeBeamCount = 0;
     beamSpawnTimer = 0.0f;
     beamSpawnInterval = 120.0f;
+    beamWaveType = 0;
     InitBeams();
 
     spiralAngle = 0.0f;
@@ -111,12 +127,25 @@ Boss3::Boss3(float sx, float sy) : Enemy()
     spiralReversed = false;
     spiralTimer = 0.0f;
 
+    phase4BarrageTimer = 0.0f;
+    phase4BarrageInterval = 45.0f;
+    phase4AimedTimer = 0.0f;
+    phase4AimedInterval = 240.0f;
+
     diagonalBeamTimer = 0.0f;
     diagonalBeamInterval = 180.0f;
     for (int i = 0; i < 2; i++) {
         diagonalBeams[i].active = false;
         diagonalBeams[i].timer = 0.0f;
     }
+
+    for (int i = 0; i < 3; i++) {
+        waitingBullets[i].active = false;
+    }
+
+    sideObjTimer = 0.0f;
+    sideObjMoveSpeed = 2.0f;
+    sideObjDirection = 1.0f;
 }
 
 Boss3::~Boss3()
@@ -141,6 +170,14 @@ void Boss3::Update()
         {
             spawnInvincible = false;
         }
+    }
+
+    sideObjTimer += sideObjMoveSpeed * sideObjDirection;
+    if (sideObjTimer >= 100.0f) {
+        sideObjDirection = -1.0f;
+    }
+    else if (sideObjTimer <= 0.0f) {
+        sideObjDirection = 1.0f;
     }
 
     CheckPhaseTransition();
@@ -206,11 +243,11 @@ void Boss3::OnPhaseChanged(int newPhase)
         x = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f - 60.0f;
         y = Field::STAGE_TOP + 20.0f;
         spiralAngle = 0.0f;
-        spiralSpeed = 0.08f;
+        spiralSpeed = 0.01047f;
         spiralReversed = false;
         spiralTimer = 0.0f;
         shotTimer = 0.0f;
-        shotInterval = 8.0f;
+        shotInterval = 20.0f;
         break;
 
     case BulletPhase3::PHASE_4:
@@ -219,6 +256,12 @@ void Boss3::OnPhaseChanged(int newPhase)
         scatterShotTimer = 0.0f;
         aimedShotTimer = 0.0f;
         diagonalBeamTimer = 0.0f;
+        diagonalBeamInterval = 180.0f;
+        phase4BarrageTimer = 0.0f;
+        phase4AimedTimer = 0.0f;
+        for (int i = 0; i < 3; i++) {
+            waitingBullets[i].active = false;
+        }
         for (int i = 0; i < 2; i++) {
             diagonalBeams[i].active = false;
             diagonalBeams[i].timer = 0.0f;
@@ -229,11 +272,13 @@ void Boss3::OnPhaseChanged(int newPhase)
 
 void Boss3::InitBeams()
 {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 9; i++) {
         beams[i].isActive = false;
         beams[i].isWarning = false;
         beams[i].warningTimer = 0.0f;
         beams[i].activeTimer = 0.0f;
+        beams[i].x = 0.0f;
+        beams[i].y = 0.0f;
         beams[i].angle = 0.0f;
     }
     activeBeamCount = 0;
@@ -264,12 +309,32 @@ void Boss3::UpdatePhase2()
     y = Field::STAGE_TOP + 20.0f;
 
     beamSpawnTimer += 1.0f;
-    if (beamSpawnTimer >= beamSpawnInterval && activeBeamCount < 4) {
+    if (beamSpawnTimer >= beamSpawnInterval) {
         SpawnBeam();
         beamSpawnTimer = 0.0f;
+        beamWaveType = (beamWaveType + 1) % 2;
     }
 
     UpdateBeams();
+
+    Player* player = FindGameObject<Player>();
+    if (player) {
+        float playerCenterX = player->GetX() + 75.0f;
+        float playerCenterY = player->GetY() + 75.0f;
+
+        for (int i = 0; i < 9; i++) {
+            if (beams[i].isActive) {
+                const float beamWidth = 75.0f;
+
+                if (playerCenterX >= beams[i].x - beamWidth / 2.0f &&
+                    playerCenterX <= beams[i].x + beamWidth / 2.0f &&
+                    playerCenterY >= Field::STAGE_TOP &&
+                    playerCenterY <= Field::STAGE_TOP + 1280) {
+                    player->TakeDamage(1);
+                }
+            }
+        }
+    }
 }
 
 void Boss3::UpdatePhase3()
@@ -279,9 +344,9 @@ void Boss3::UpdatePhase3()
 
     spiralTimer += 1.0f;
 
-    if (spiralTimer >= 300.0f && !spiralReversed) {
+    if (spiralTimer >= 300.0f) {
         spiralSpeed = -spiralSpeed;
-        spiralReversed = true;
+        spiralTimer = 0.0f;
     }
 
     spiralAngle += spiralSpeed;
@@ -298,18 +363,18 @@ void Boss3::UpdatePhase4()
     x = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f - 60.0f;
     y = Field::STAGE_TOP + 20.0f;
 
-    scatterShotTimer += 1.0f;
-    aimedShotTimer += 1.0f;
+    phase4BarrageTimer += 1.0f;
+    phase4AimedTimer += 1.0f;
     diagonalBeamTimer += 1.0f;
 
-    if (scatterShotTimer >= 40.0f) {
+    if (phase4BarrageTimer >= phase4BarrageInterval) {
         ShootScatterBullets();
-        scatterShotTimer = 0.0f;
+        phase4BarrageTimer = 0.0f;
     }
 
-    if (aimedShotTimer >= 80.0f) {
-        ShootAimedBullets();
-        aimedShotTimer = 0.0f;
+    if (phase4AimedTimer >= phase4AimedInterval) {
+        SpawnWaitingBullet();
+        phase4AimedTimer = 0.0f;
     }
 
     if (diagonalBeamTimer >= diagonalBeamInterval) {
@@ -317,20 +382,64 @@ void Boss3::UpdatePhase4()
         diagonalBeamTimer = 0.0f;
     }
 
+    UpdateWaitingBullets();
     UpdateDiagonalBeams();
+
+    // ×字ビームとプレイヤーの当たり判定
+    Player* player = FindGameObject<Player>();
+    if (player) {
+        float playerCenterX = player->GetX() + 75.0f;
+        float playerCenterY = player->GetY() + 75.0f;
+
+        for (int i = 0; i < 2; i++) {
+            if (diagonalBeams[i].active) {
+                const float beamWidth = 80.0f;
+
+                // ビームの始点と角度から、プレイヤーまでの距離を計算
+                float dx = playerCenterX - diagonalBeams[i].startX;
+                float dy = playerCenterY - diagonalBeams[i].startY;
+
+                // ビーム方向のベクトル
+                float beamDirX = cosf(diagonalBeams[i].angle);
+                float beamDirY = sinf(diagonalBeams[i].angle);
+
+                // プレイヤーのビーム上での位置（内積）
+                float t = dx * beamDirX + dy * beamDirY;
+
+                // ビーム上の最も近い点
+                float closestX = diagonalBeams[i].startX + beamDirX * t;
+                float closestY = diagonalBeams[i].startY + beamDirY * t;
+
+                // プレイヤーとビームの距離
+                float distX = playerCenterX - closestX;
+                float distY = playerCenterY - closestY;
+                float distance = sqrt(distX * distX + distY * distY);
+
+                // ビームの範囲内かつ幅内ならヒット
+                if (t >= 0 && t <= 2000.0f && distance < beamWidth / 2.0f) {
+                    player->TakeDamage(1);
+                }
+            }
+        }
+    }
 }
 
 void Boss3::ShootScatterBullets()
 {
-    const int bulletCount = 24;
-    float angleStep = (3.14159265f * 2.0f) / bulletCount;
+    const int bulletCount = 10;
+    float baseAngle = 3.14159265f / 2.0f;
+    float spreadAngle = 1.2f;
 
     for (int i = 0; i < bulletCount; i++) {
-        float angle = angleStep * i;
-        float vx = cosf(angle) * 3.0f;
-        float vy = sinf(angle) * 3.0f;
+        float t = (float)i / (bulletCount - 1);
+        float angle = baseAngle - spreadAngle * 0.5f + spreadAngle * t;
 
-        new EnemyBullet2(x + 32, y + 32, vx, vy, 6.0f, 0);
+        float vx = cosf(angle) * 4.0f;
+        float vy = sinf(angle) * 4.0f;
+
+        // 10%の確率で反射弾
+        bool enableReflect = (rand() % 10 == 0);
+        new EnemyBullet3(x + 32, y + 32, vx, vy, 6.0f, enableReflect);
     }
 }
 
@@ -341,46 +450,53 @@ void Boss3::ShootAimedBullets()
 
     float dx = player->GetX() - x;
     float dy = player->GetY() - y;
-    float baseAngle = atan2f(dy, dx);
+    float angle = atan2f(dy, dx);
 
-    const int bulletCount = 5;
-    const float spread = 0.6f;
+    float speed = 3.0f;
+    float vx = cosf(angle) * speed;
+    float vy = sinf(angle) * speed;
 
-    for (int i = 0; i < bulletCount; i++) {
-        float t = (float)i / (bulletCount - 1);
-        float angle = baseAngle - spread * 0.5f + spread * t;
-
-        float speed = 5.0f;
-        float vx = cosf(angle) * speed;
-        float vy = sinf(angle) * speed;
-
-        new EnemyBullet2(x + 32, y + 32, vx, vy, 12.0f, 1);
-    }
+    // 追尾弾は反射しない
+    new EnemyBullet3(x + 32, y + 32, vx, vy, 20.0f);
 }
 
 void Boss3::SpawnBeam()
 {
-    Player* player = FindGameObject<Player>();
-    if (!player) return;
+    InitBeams();
 
-    for (int i = 0; i < 4; i++) {
-        if (!beams[i].isActive && !beams[i].isWarning) {
+    if (beamWaveType == 0) {
+        float screenWidth = 840.0f;
+        float spacing = screenWidth / 6.0f;
+
+        for (int i = 0; i < 5; i++) {
             beams[i].isWarning = true;
             beams[i].warningTimer = 60.0f;
-
-            float dx = player->GetX() - (x + 32);
-            float dy = player->GetY() - (y + 32);
-            beams[i].angle = atan2f(dy, dx);
-
-            activeBeamCount++;
-            break;
+            beams[i].x = Field::STAGE_LEFT + spacing * (i + 1);
+            beams[i].y = Field::STAGE_TOP + 1280.0f;
+            beams[i].angle = -3.14159265f / 2.0f;
         }
+        activeBeamCount = 5;
+    }
+    else {
+        float screenWidth = 840.0f;
+        float spacing = screenWidth / 6.0f;
+
+        float delays[5] = { 0.0f, 15.0f, 30.0f, 15.0f, 0.0f };
+
+        for (int i = 0; i < 5; i++) {
+            beams[i].isWarning = true;
+            beams[i].warningTimer = 60.0f + delays[i];
+            beams[i].x = Field::STAGE_LEFT + spacing * (i + 1);
+            beams[i].y = Field::STAGE_TOP + 1280.0f;
+            beams[i].angle = -3.14159265f / 2.0f;
+        }
+        activeBeamCount = 5;
     }
 }
 
 void Boss3::UpdateBeams()
 {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 9; i++) {
         if (beams[i].isWarning) {
             beams[i].warningTimer -= 1.0f;
             if (beams[i].warningTimer <= 0.0f) {
@@ -393,7 +509,6 @@ void Boss3::UpdateBeams()
             beams[i].activeTimer -= 1.0f;
             if (beams[i].activeTimer <= 0.0f) {
                 beams[i].isActive = false;
-                activeBeamCount--;
             }
         }
     }
@@ -404,35 +519,141 @@ void Boss3::ShootSpiralBullets()
     const int arms = 6;
     float angleStep = (3.14159265f * 2.0f) / arms;
 
+    float bossCenterX = x + 60;
+    float bossCenterY = y + 60;
+
     for (int i = 0; i < arms; i++) {
         float angle = spiralAngle + angleStep * i;
-        float vx = cosf(angle) * 4.0f;
-        float vy = sinf(angle) * 4.0f;
 
-        new EnemyBullet2(x + 32, y + 32, vx, vy, 8.0f, 0);
+        float speed = 4.0f;
+        float vx = cosf(angle) * speed;
+        float vy = sinf(angle) * speed;
+
+        float spawnX = bossCenterX;
+        float spawnY = bossCenterY;
+
+        // より厳密な画面内チェック（120フレーム先まで予測）
+        float futureX = spawnX + vx * 120.0f;
+        float futureY = spawnY + vy * 120.0f;
+
+        const float SCREEN_WIDTH = 840.0f;
+        const float MARGIN = 100.0f;
+
+        // 画面内に収まる弾のみ発射
+        if (futureX >= MARGIN && futureX <= SCREEN_WIDTH - MARGIN &&
+            futureY >= MARGIN && futureY <= 1280 - MARGIN) {
+            new EnemyBullet3(spawnX, spawnY, vx, vy, 10.0f);
+        }
+    }
+}
+
+void Boss3::SpawnWaitingBullet()
+{
+    Player* player = FindGameObject<Player>();
+    if (!player) return;
+
+    for (int i = 0; i < 3; i++) {
+        if (!waitingBullets[i].active) {
+            waitingBullets[i].active = true;
+            waitingBullets[i].x = x + 32;
+            waitingBullets[i].y = y + 32;
+            waitingBullets[i].targetX = player->GetX();
+            waitingBullets[i].targetY = player->GetY();
+            waitingBullets[i].waitTimer = 120.0f;
+            break;
+        }
+    }
+}
+
+void Boss3::UpdateWaitingBullets()
+{
+    Player* player = FindGameObject<Player>();
+
+    for (int i = 0; i < 3; i++) {
+        if (waitingBullets[i].active) {
+            waitingBullets[i].waitTimer -= 1.0f;
+
+            if (waitingBullets[i].waitTimer <= 0.0f) {
+                if (player) {
+                    float dx = player->GetX() - waitingBullets[i].x;
+                    float dy = player->GetY() - waitingBullets[i].y;
+                    float angle = atan2f(dy, dx);
+
+                    float speed = 5.0f;
+                    float vx = cosf(angle) * speed;
+                    float vy = sinf(angle) * speed;
+
+                    // 待機弾は反射しない
+                    new EnemyBullet3(
+                        waitingBullets[i].x,
+                        waitingBullets[i].y,
+                        vx, vy,
+                        20.0f
+                    );
+                }
+
+                waitingBullets[i].active = false;
+            }
+        }
+    }
+}
+
+void Boss3::DrawWaitingBullets()
+{
+    for (int i = 0; i < 3; i++) {
+        if (waitingBullets[i].active) {
+            float blinkRate = waitingBullets[i].waitTimer / 120.0f;
+
+            if (((int)(waitingBullets[i].waitTimer / 10)) % 2 == 0) {
+                int alpha = (int)(200 * blinkRate);
+                SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+                DrawCircle(
+                    (int)waitingBullets[i].x,
+                    (int)waitingBullets[i].y,
+                    20,
+                    GetColor(255, 50, 50),
+                    TRUE
+                );
+                SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+                DrawCircle(
+                    (int)waitingBullets[i].x,
+                    (int)waitingBullets[i].y,
+                    20,
+                    GetColor(255, 200, 0),
+                    FALSE
+                );
+            }
+
+            SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+            DrawLine(
+                (int)waitingBullets[i].x,
+                (int)waitingBullets[i].y,
+                (int)waitingBullets[i].targetX,
+                (int)waitingBullets[i].targetY,
+                GetColor(255, 100, 100),
+                1
+            );
+            SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+        }
     }
 }
 
 void Boss3::SpawnDiagonalBeam()
 {
-    for (int i = 0; i < 2; i++) {
-        if (!diagonalBeams[i].active) {
-            diagonalBeams[i].active = true;
-            diagonalBeams[i].timer = 120.0f;
+    // 左上から右下
+    diagonalBeams[0].active = true;
+    diagonalBeams[0].timer = 120.0f;
+    diagonalBeams[0].startX = Field::STAGE_LEFT;
+    diagonalBeams[0].startY = Field::STAGE_TOP;
+    diagonalBeams[0].angle = 3.14159265f / 4.0f;  // 45度（右下）
 
-            if (i == 0) {
-                diagonalBeams[i].startX = Field::STAGE_LEFT;
-                diagonalBeams[i].startY = Field::STAGE_TOP;
-                diagonalBeams[i].angle = 3.14159265f / 4.0f;
-            }
-            else {
-                diagonalBeams[i].startX = Field::STAGE_RIGHT;
-                diagonalBeams[i].startY = Field::STAGE_TOP;
-                diagonalBeams[i].angle = 3.14159265f * 3.0f / 4.0f;
-            }
-            break;
-        }
-    }
+    // 右上から左下
+    diagonalBeams[1].active = true;
+    diagonalBeams[1].timer = 120.0f;
+    diagonalBeams[1].startX = Field::STAGE_RIGHT;
+    diagonalBeams[1].startY = Field::STAGE_TOP;
+    diagonalBeams[1].angle = 3.14159265f * 3.0f / 4.0f;  // 135度（左下）
 }
 
 void Boss3::UpdateDiagonalBeams()
@@ -449,7 +670,7 @@ void Boss3::UpdateDiagonalBeams()
 
 void Boss3::ShotBullet(float angle, float num)
 {
-    // 使用しない（各フェーズで個別処理）
+    // 使用しない
 }
 
 void Boss3::Draw()
@@ -465,12 +686,21 @@ void Boss3::Draw()
             DrawGraph((int)x, (int)y, bossImage, TRUE);
         }
 
+        int sideImage = LoadGraph("data/image/yaiba3.png");
+        if (sideImage != -1) {
+            float offsetY = sideObjTimer;
+            DrawGraph((int)(x - 100), (int)(y + offsetY), sideImage, TRUE);
+            DrawGraph((int)(x + 180), (int)(y + offsetY), sideImage, TRUE);
+            DeleteGraph(sideImage);
+        }
+
         if (bulletPhase == BulletPhase3::PHASE_2) {
             DrawBeams();
         }
 
         if (bulletPhase == BulletPhase3::PHASE_4) {
             DrawDiagonalBeams();
+            DrawWaitingBullets();
         }
 
         SetFontSize(40);
@@ -481,32 +711,36 @@ void Boss3::Draw()
 
 void Boss3::DrawBeams()
 {
-    for (int i = 0; i < 4; i++) {
+    const float beamWidth = 75.0f;
+
+    for (int i = 0; i < 9; i++) {
         if (beams[i].isWarning) {
             int alpha = (int)(255 * (beams[i].warningTimer / 60.0f));
-            SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+            if (((int)beams[i].warningTimer / 10) % 2 == 0) {
+                SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 
-            float endX = (x + 32) + cosf(beams[i].angle) * 1500.0f;
-            float endY = (y + 32) + sinf(beams[i].angle) * 1500.0f;
+                DrawLine((int)beams[i].x, (int)Field::STAGE_TOP,
+                    (int)beams[i].x, (int)(Field::STAGE_TOP + 1280),
+                    GetColor(255, 0, 0), 3);
 
-            DrawLine((int)(x + 32), (int)(y + 32), (int)endX, (int)endY, GetColor(255, 0, 0), 3);
-
-            SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+                SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+            }
         }
         else if (beams[i].isActive) {
-            float endX = (x + 32) + cosf(beams[i].angle) * 1500.0f;
-            float endY = (y + 32) + sinf(beams[i].angle) * 1500.0f;
+            SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
 
-            for (int w = -15; w <= 15; w += 5) {
-                float perpX = -sinf(beams[i].angle) * w;
-                float perpY = cosf(beams[i].angle) * w;
+            DrawBox((int)(beams[i].x - beamWidth / 2), (int)Field::STAGE_TOP,
+                (int)(beams[i].x + beamWidth / 2), (int)(Field::STAGE_TOP + 1280),
+                GetColor(100, 150, 255), TRUE);
 
-                DrawLine(
-                    (int)(x + 32 + perpX), (int)(y + 32 + perpY),
-                    (int)(endX + perpX), (int)(endY + perpY),
-                    GetColor(100, 150, 255), 2
-                );
-            }
+            SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+            DrawLine((int)(beams[i].x - beamWidth / 2), (int)Field::STAGE_TOP,
+                (int)(beams[i].x - beamWidth / 2), (int)(Field::STAGE_TOP + 1280),
+                GetColor(255, 200, 0), 2);
+            DrawLine((int)(beams[i].x + beamWidth / 2), (int)Field::STAGE_TOP,
+                (int)(beams[i].x + beamWidth / 2), (int)(Field::STAGE_TOP + 1280),
+                GetColor(255, 200, 0), 2);
         }
     }
 }
@@ -515,13 +749,18 @@ void Boss3::DrawDiagonalBeams()
 {
     for (int i = 0; i < 2; i++) {
         if (diagonalBeams[i].active) {
-            float beamLength = 1500.0f;
+            float beamLength = 2000.0f;
+            float beamWidth = 80.0f;
+
             float endX = diagonalBeams[i].startX + cosf(diagonalBeams[i].angle) * beamLength;
             float endY = diagonalBeams[i].startY + sinf(diagonalBeams[i].angle) * beamLength;
 
-            for (int w = -15; w <= 15; w += 5) {
-                float perpX = -sinf(diagonalBeams[i].angle) * w;
-                float perpY = cosf(diagonalBeams[i].angle) * w;
+            // ビーム本体（青い半透明）
+            SetDrawBlendMode(DX_BLENDMODE_ALPHA, 160);
+
+            for (int offset = -40; offset <= 40; offset += 3) {
+                float perpX = -sinf(diagonalBeams[i].angle) * offset;
+                float perpY = cosf(diagonalBeams[i].angle) * offset;
 
                 DrawLine(
                     (int)(diagonalBeams[i].startX + perpX),
@@ -531,10 +770,31 @@ void Boss3::DrawDiagonalBeams()
                     GetColor(100, 150, 255), 2
                 );
             }
+            SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+            // 縁取り（両端の黄色いライン）
+            float edge1X = -sinf(diagonalBeams[i].angle) * (beamWidth / 2.0f);
+            float edge1Y = cosf(diagonalBeams[i].angle) * (beamWidth / 2.0f);
+            float edge2X = -sinf(diagonalBeams[i].angle) * (-beamWidth / 2.0f);
+            float edge2Y = cosf(diagonalBeams[i].angle) * (-beamWidth / 2.0f);
+
+            DrawLine(
+                (int)(diagonalBeams[i].startX + edge1X),
+                (int)(diagonalBeams[i].startY + edge1Y),
+                (int)(endX + edge1X),
+                (int)(endY + edge1Y),
+                GetColor(255, 200, 0), 4
+            );
+            DrawLine(
+                (int)(diagonalBeams[i].startX + edge2X),
+                (int)(diagonalBeams[i].startY + edge2Y),
+                (int)(endX + edge2X),
+                (int)(endY + edge2Y),
+                GetColor(255, 200, 0), 4
+            );
         }
     }
 }
-
 void Boss3::TakeDamage(int dmg)
 {
     if (spawnInvincible) return;
@@ -555,7 +815,7 @@ bool Boss3::IsHit(float bx, float by, int rad)
     float d = sqrt(dx * dx + dy * dy);
 
     if (d < 60 + rad) {
-        TakeDamage(74);
+        TakeDamage(5);
         return true;
     }
     return false;

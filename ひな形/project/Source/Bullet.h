@@ -23,7 +23,7 @@ public:
     void Deactivate() { isActive = false; }
     void Hit();
 
-private:
+protected:
     int hImage;
     float x, y;
     float velocityX, velocityY;
