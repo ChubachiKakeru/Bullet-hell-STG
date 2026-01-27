@@ -1,6 +1,7 @@
 #include "Bomb.h"
 #include "enemyBullet.h"
 #include "EnemyBullet2.h"
+#include"EnemyBullet3.h"
 #include "Field.h"
 #include <cmath>
 
@@ -56,6 +57,21 @@ void Bomb::Update()
 
     // EnemyBullet2‚Æ‚Ì“–‚½‚è”»’è
     auto bullets2 = FindGameObjects<EnemyBullet2>();
+    for (auto* bullet : bullets2) {
+        if (bullet && bullet->IsActive()) {
+            float bulletCenterX = bullet->GetX() + 38.0f;
+            float bulletCenterY = bullet->GetY() + 41.5f;
+            float dx = bombCenterX - bulletCenterX;
+            float dy = bombCenterY - bulletCenterY;
+            float distance = sqrt(dx * dx + dy * dy);
+
+            if (distance < bombRadius + 40.0f) {
+                bullet->DestroyMe();
+            }
+        }
+    }
+
+    auto bullets3 = FindGameObjects<EnemyBullet3>();
     for (auto* bullet : bullets2) {
         if (bullet && bullet->IsActive()) {
             float bulletCenterX = bullet->GetX() + 38.0f;

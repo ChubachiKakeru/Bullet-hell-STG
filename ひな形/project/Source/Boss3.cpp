@@ -77,6 +77,7 @@ Boss3::Boss3() : Enemy()
     sideObjTimer = 0.0f;
     sideObjMoveSpeed = 2.0f;
     sideObjDirection = 1.0f;
+    sideObjShotTimer = 0.0f;
 }
 
 Boss3::Boss3(float sx, float sy) : Enemy()
@@ -150,6 +151,7 @@ Boss3::Boss3(float sx, float sy) : Enemy()
     sideObjTimer = 0.0f;
     sideObjMoveSpeed = 2.0f;
     sideObjDirection = 1.0f;
+    sideObjShotTimer = 0.0f;
 }
 
 Boss3::~Boss3()
@@ -184,13 +186,14 @@ void Boss3::Update()
         sideObjDirection = 1.0f;
     }
 
-    // サイドオブジェクトからの追尾弾発射（全フェーズで120フレーム間隔）
-   /* static float sideObjShotTimer = 0.0f;
-    sideObjShotTimer += 1.0f;
-    if (sideObjShotTimer >= 120.0f) {
-        ShootSideObjectBullets();
-        sideObjShotTimer = 0.0f;
-    }*/
+    // サイドオブジェクトからの追尾弾発射（フェーズ1と2でのみ120フレーム間隔）
+    if (bulletPhase == BulletPhase3::PHASE_1 || bulletPhase == BulletPhase3::PHASE_2) {
+        sideObjShotTimer += 1.0f;
+        if (sideObjShotTimer >= 120.0f) {
+            ShootSideObjectBullets();
+            sideObjShotTimer = 0.0f;
+        }
+    }
 
     CheckPhaseTransition();
 
@@ -304,23 +307,30 @@ void Boss3::UpdatePhase1()
     y = Field::STAGE_TOP + 20.0f;
 
     scatterShotTimer += 1.0f;
-    aimedShotTimer += 1.0f;
 
     if (scatterShotTimer >= scatterShotInterval) {
         ShootScatterBullets();
         scatterShotTimer = 0.0f;
     }
 
-    if (aimedShotTimer >= aimedShotInterval) {
-        ShootAimedBullets();
-        aimedShotTimer = 0.0f;
-    }
+    // フェーズ1ではボスからの追尾弾を削除（サイドオブジェクトから発射）
 }
 
 void Boss3::UpdatePhase2()
 {
     x = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f - 100.0f;  // 画像サイズ200に合わせて調整
     y = Field::STAGE_TOP + 20.0f;
+
+    // フェーズ2では追尾弾はサイドオブジェクトから発射
+
+    // ビームを常に左右に移動（毎フレーム更新）
+    beamOffsetX += 1.0f * moveDirection;  // 1ピクセルずつ移動
+    if (beamOffsetX >= 200.0f) {
+        moveDirection = -1.0f;  // 右端に達したら左へ
+    }
+    else if (beamOffsetX <= -200.0f) {
+        moveDirection = 1.0f;   // 左端に達したら右へ
+    }
 
     beamSpawnTimer += 1.0f;
     if (beamSpawnTimer >= beamSpawnInterval) {
@@ -456,8 +466,8 @@ void Boss3::ShootScatterBullets()
             new EnemyBullet3(x + 100, y + 100, vx, vy, 6.0f, false);  // 画像サイズ200の中心
         }
         else {
-            // フェーズ4では10%の確率で反射弾
-            bool enableReflect = (rand() % 10 == 0);
+            // フェーズ4では5%の確率で反射弾
+            bool enableReflect = (rand() % 20 == 0);  // 5% (1/20)
             new EnemyBullet3(x + 100, y + 100, vx, vy, 6.0f, enableReflect);  // 画像サイズ200の中心
         }
     }
@@ -484,15 +494,7 @@ void Boss3::SpawnBeam()
 {
     InitBeams();
 
-    // ビームを打つたびに左右に移動（±50ピクセル）
-    if (beamWaveType == 0) {
-        beamOffsetX += 50.0f;
-        if (beamOffsetX > 200.0f) beamOffsetX = 200.0f;
-    }
-    else {
-        beamOffsetX -= 50.0f;
-        if (beamOffsetX < -200.0f) beamOffsetX = -200.0f;
-    }
+    // beamOffsetXはUpdatePhase2で常に更新されるため、ここでは変更しない
 
     if (beamWaveType == 0) {
         float screenWidth = 840.0f;
@@ -501,7 +503,7 @@ void Boss3::SpawnBeam()
 
         for (int i = 0; i < 5; i++) {
             beams[i].isWarning = true;
-            beams[i].warningTimer = 60.0f;
+            beams[i].warningTimer = 30.0f;  // 予測線の時間を短縮（60→30フレーム）
             // 中央を基準にして配置し、オフセットを適用
             beams[i].x = centerX + spacing * (i - 2) + beamOffsetX;  // i-2で中央基準に
             beams[i].y = Field::STAGE_TOP + 1280.0f;
@@ -518,7 +520,7 @@ void Boss3::SpawnBeam()
 
         for (int i = 0; i < 5; i++) {
             beams[i].isWarning = true;
-            beams[i].warningTimer = 60.0f + delays[i];
+            beams[i].warningTimer = 30.0f + delays[i];  // 予測線の時間を短縮
             // 中央を基準にして配置し、オフセットを適用
             beams[i].x = centerX + spacing * (i - 2) + beamOffsetX;  // i-2で中央基準に
             beams[i].y = Field::STAGE_TOP + 1280.0f;
@@ -530,13 +532,22 @@ void Boss3::SpawnBeam()
 
 void Boss3::UpdateBeams()
 {
+    float screenWidth = 840.0f;
+    float centerX = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f;
+    float spacing = screenWidth / 6.0f;
+
     for (int i = 0; i < 9; i++) {
+        // 予測線とビームの位置を常に更新（左右の動きに追従）
+        if (beams[i].isWarning || beams[i].isActive) {
+            beams[i].x = centerX + spacing * (i - 2) + beamOffsetX;
+        }
+
         if (beams[i].isWarning) {
             beams[i].warningTimer -= 1.0f;
             if (beams[i].warningTimer <= 0.0f) {
                 beams[i].isWarning = false;
                 beams[i].isActive = true;
-                beams[i].activeTimer = 90.0f;
+                beams[i].activeTimer = 60.0f;  // ビームの時間を短縮（90→60フレーム）
             }
         }
         else if (beams[i].isActive) {
@@ -572,40 +583,40 @@ void Boss3::ShootSpiralBullets()
     }
 }
 
-//void Boss3::ShootSideObjectBullets()
-//{
-//    Player* player = FindGameObject<Player>();
-//    if (!player) return;
-//
-//    // 左右のサイドオブジェクトの位置を計算
-//    float offsetY = sideObjTimer;
-//    float leftSideX = x - 100;
-//    float leftSideY = y + offsetY + 50;  // 画像の中心付近から発射
-//    float rightSideX = x + 180;
-//    float rightSideY = y + offsetY + 50;
-//
-//    // プレイヤーの位置
-//    float playerX = player->GetX();
-//    float playerY = player->GetY();
-//
-//    // 左側サイドオブジェクトから追尾弾
-//    float leftDx = playerX - leftSideX;
-//    float leftDy = playerY - leftSideY;
-//    float leftAngle = atan2f(leftDy, leftDx);
-//    float leftSpeed = 3.5f;
-//    float leftVx = cosf(leftAngle) * leftSpeed;
-//    float leftVy = sinf(leftAngle) * leftSpeed;
-//    new EnemyBullet3(leftSideX, leftSideY, leftVx, leftVy, 20.0f);
-//
-//    // 右側サイドオブジェクトから追尾弾
-//    float rightDx = playerX - rightSideX;
-//    float rightDy = playerY - rightSideY;
-//    float rightAngle = atan2f(rightDy, rightDx);
-//    float rightSpeed = 3.5f;
-//    float rightVx = cosf(rightAngle) * rightSpeed;
-//    float rightVy = sinf(rightAngle) * rightSpeed;
-//    new EnemyBullet3(rightSideX, rightSideY, rightVx, rightVy, 20.0f);
-//}
+void Boss3::ShootSideObjectBullets()
+{
+    Player* player = FindGameObject<Player>();
+    if (!player) return;
+
+    // 左右のサイドオブジェクトの位置を計算
+    float offsetY = sideObjTimer;
+    float leftSideX = x - 100;
+    float leftSideY = y + offsetY + 50;  // 画像の中心付近から発射
+    float rightSideX = x + 180;
+    float rightSideY = y + offsetY + 50;
+
+    // プレイヤーの位置
+    float playerX = player->GetX();
+    float playerY = player->GetY();
+
+    // 左側サイドオブジェクトから追尾弾
+    float leftDx = playerX - leftSideX;
+    float leftDy = playerY - leftSideY;
+    float leftAngle = atan2f(leftDy, leftDx);
+    float leftSpeed = 3.5f;
+    float leftVx = cosf(leftAngle) * leftSpeed;
+    float leftVy = sinf(leftAngle) * leftSpeed;
+    new EnemyBullet3(leftSideX, leftSideY, leftVx, leftVy, 20.0f);
+
+    // 右側サイドオブジェクトから追尾弾
+    float rightDx = playerX - rightSideX;
+    float rightDy = playerY - rightSideY;
+    float rightAngle = atan2f(rightDy, rightDx);
+    float rightSpeed = 3.5f;
+    float rightVx = cosf(rightAngle) * rightSpeed;
+    float rightVy = sinf(rightAngle) * rightSpeed;
+    new EnemyBullet3(rightSideX, rightSideY, rightVx, rightVy, 20.0f);
+}
 
 void Boss3::SpawnWaitingBullet()
 {
@@ -811,13 +822,15 @@ void Boss3::DrawBeams()
 
     for (int i = 0; i < 9; i++) {
         if (beams[i].isWarning) {
-            int alpha = (int)(255 * (beams[i].warningTimer / 60.0f));
-            if (((int)beams[i].warningTimer / 10) % 2 == 0) {
+            // 予測線の時間を30フレーム基準に変更
+            int alpha = (int)(200 * (beams[i].warningTimer / 30.0f));
+            if (((int)beams[i].warningTimer / 5) % 2 == 0) {  // より速い点滅
                 SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 
-                DrawLine((int)beams[i].x, (int)Field::STAGE_TOP,
-                    (int)beams[i].x, (int)(Field::STAGE_TOP + 1280),
-                    GetColor(255, 0, 0), 3);
+                // 予測線もビームと同じ太さで描画（ボックスで描画）
+                DrawBox((int)(beams[i].x - beamWidth / 2), (int)Field::STAGE_TOP,
+                    (int)(beams[i].x + beamWidth / 2), (int)(Field::STAGE_TOP + 1280),
+                    GetColor(255, 0, 0), TRUE);
 
                 SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
             }

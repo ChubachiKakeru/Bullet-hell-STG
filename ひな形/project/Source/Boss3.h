@@ -90,6 +90,7 @@ private:
     float sideObjTimer;
     float sideObjMoveSpeed;
     float sideObjDirection;
+    float sideObjShotTimer;  // サイドオブジェクトからの発射タイマー
 public:
     Boss3();
     Boss3(float sx, float sy);
@@ -120,7 +121,7 @@ private:
     // フェーズ3の攻撃（螺旋弾）
     void ShootSpiralBullets();
     // サイドオブジェクトからの攻撃
-    //void ShootSideObjectBullets();
+    void ShootSideObjectBullets();
     // フェーズ4の攻撃
     void SpawnWaitingBullet();
     void UpdateWaitingBullets();
