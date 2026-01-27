@@ -117,8 +117,8 @@ void ShopScene::Draw()
 
     // ★デバッグ表示★
     DrawFormatString(10, 10, GetColor(255, 255, 0), "現在のステージ番号: %d", StageSelectScene::GetSelectedStageNumber());
-
-    DrawString(560, 100, "ショップ", GetColor(25, 255, 255));
+    SetFontSize(48);
+    DrawString(533, 200, "ショップ", GetColor(25, 255, 255));
 
     const char* items[] = {
         "体力UP",
@@ -130,10 +130,10 @@ void ShopScene::Draw()
     for (int i = 0; i < ITEM_COUNT; i++)
     {
         int color = (i == m_selectedItem) ? GetColor(255, 255, 0) : GetColor(200, 200, 200);
-        DrawString(550, 200 + i * 50, items[i], color);
+        DrawString(533, 400 + i * 50, items[i], color);
     }
-
-    DrawString(500, 600, "ENTER:決定 / ESC: ステージ2へ", GetColor(255, 255, 255));
+    SetFontSize(24);
+    DrawString(400, 600, "↑↓キーで選択/ ENTER:決定 / ESC: ステージ2へ", GetColor(255, 255, 255));
 
     if (m_isConfirm)
     {
