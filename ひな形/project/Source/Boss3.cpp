@@ -49,7 +49,7 @@ Boss3::Boss3() : Enemy()
     beamSpawnTimer = 0.0f;
     beamSpawnInterval = 120.0f;
     beamWaveType = 0;
-    beamOffsetX = 0.0f;
+    beamOffsetX = 0.0f;  // 中央から開始
     InitBeams();
 
     spiralAngle = 0.0f;
@@ -123,7 +123,7 @@ Boss3::Boss3(float sx, float sy) : Enemy()
     beamSpawnTimer = 0.0f;
     beamSpawnInterval = 120.0f;
     beamWaveType = 0;
-    beamOffsetX = 0.0f;
+    beamOffsetX = 0.0f;  // 中央から開始
     InitBeams();
 
     spiralAngle = 0.0f;
@@ -250,7 +250,7 @@ void Boss3::OnPhaseChanged(int newPhase)
     case BulletPhase3::PHASE_2:
         x = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f - 100.0f;  // 画像サイズ200に合わせて調整
         y = Field::STAGE_TOP + 20.0f;
-        beamOffsetX = 0.0f;
+        beamOffsetX = 0.0f;  // 中央から開始
         InitBeams();
         beamSpawnTimer = 0.0f;
         break;
@@ -263,7 +263,7 @@ void Boss3::OnPhaseChanged(int newPhase)
         spiralReversed = false;
         spiralTimer = 0.0f;
         shotTimer = 0.0f;
-        shotInterval = 15.0f;  // 発射間隔を短縮（20→15フレーム）
+        shotInterval = 10.0f;  // 発射間隔を短縮（15→10フレーム）
         break;
 
     case BulletPhase3::PHASE_4:
@@ -347,8 +347,9 @@ void Boss3::UpdatePhase2()
         float playerCenterY = player->GetY() + 75.0f;
 
         for (int i = 0; i < 9; i++) {
-            if (beams[i].isActive) {
-                const float beamWidth = 75.0f;
+            // ビームがアクティブ（予測線ではない）の時のみ当たり判定
+            if (beams[i].isActive && !beams[i].isWarning) {
+                const float beamWidth = 70.0f;
 
                 if (playerCenterX >= beams[i].x - beamWidth / 2.0f &&
                     playerCenterX <= beams[i].x + beamWidth / 2.0f &&
@@ -415,9 +416,10 @@ void Boss3::UpdatePhase4()
         float playerCenterX = player->GetX() + 75.0f;
         float playerCenterY = player->GetY() + 75.0f;
 
-        for (int i = 0; i < 4; i++) {  // 4本分に拡張
-            if (diagonalBeams[i].active) {
-                const float beamWidth = 80.0f;
+        for (int i = 0; i < 4; i++) {
+            // ビームがアクティブかつ予測線が終わった後のみ当たり判定
+            if (diagonalBeams[i].active && diagonalBeams[i].warningTimer <= 0.0f) {
+                const float beamWidth = 100.0f;
 
                 // ビームの始点と角度から、プレイヤーまでの距離を計算
                 float dx = playerCenterX - diagonalBeams[i].startX;
@@ -465,10 +467,30 @@ void Boss3::ShootScatterBullets()
         if (bulletPhase == BulletPhase3::PHASE_1) {
             new EnemyBullet3(x + 100, y + 100, vx, vy, 6.0f, false);  // 画像サイズ200の中心
         }
+        else if (bulletPhase == BulletPhase3::PHASE_4) {
+            // フェーズ4では横方向の弾のみ5%の確率で反射
+            // 角度が横方向（90度±30度の範囲）かどうかをチェック
+            float normalizedAngle = angle;
+            while (normalizedAngle > 3.14159265f) normalizedAngle -= 3.14159265f * 2.0f;
+            while (normalizedAngle < -3.14159265f) normalizedAngle += 3.14159265f * 2.0f;
+
+            // 左右方向の弾（-30度～30度、150度～210度）を判定
+            bool isHorizontal = (normalizedAngle >= -0.524f && normalizedAngle <= 0.524f) ||  // ±30度
+                (normalizedAngle >= 2.618f || normalizedAngle <= -2.618f);      // 180度±30度
+
+            if (isHorizontal) {
+                // 横方向の弾のみ5%の確率で反射
+                bool enableReflect = (rand() % 20 == 0);  // 5% (1/20)
+                new EnemyBullet3(x + 100, y + 100, vx, vy, 6.0f, enableReflect);
+            }
+            else {
+                // 横方向以外の弾は反射しない
+                new EnemyBullet3(x + 100, y + 100, vx, vy, 6.0f, false);
+            }
+        }
         else {
-            // フェーズ4では5%の確率で反射弾
-            bool enableReflect = (rand() % 20 == 0);  // 5% (1/20)
-            new EnemyBullet3(x + 100, y + 100, vx, vy, 6.0f, enableReflect);  // 画像サイズ200の中心
+            // フェーズ2、3では反射弾なし
+            new EnemyBullet3(x + 100, y + 100, vx, vy, 6.0f, false);
         }
     }
 }
@@ -501,9 +523,10 @@ void Boss3::SpawnBeam()
         float centerX = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f;  // 画面中央
         float spacing = screenWidth / 6.0f;
 
+        // 発射順に予測線を表示（各ビームに5フレームずつ遅延）
         for (int i = 0; i < 5; i++) {
             beams[i].isWarning = true;
-            beams[i].warningTimer = 30.0f;  // 予測線の時間を短縮（60→30フレーム）
+            beams[i].warningTimer = 30.0f + (4 - i) * 5.0f;  // 逆順で遅延を追加
             // 中央を基準にして配置し、オフセットを適用
             beams[i].x = centerX + spacing * (i - 2) + beamOffsetX;  // i-2で中央基準に
             beams[i].y = Field::STAGE_TOP + 1280.0f;
@@ -516,11 +539,12 @@ void Boss3::SpawnBeam()
         float centerX = (Field::STAGE_LEFT + Field::STAGE_RIGHT) / 2.0f;  // 画面中央
         float spacing = screenWidth / 6.0f;
 
-        float delays[5] = { 0.0f, 15.0f, 30.0f, 15.0f, 0.0f };
+        // 中央から外側に向かって発射（外→中→外の順）
+        float delays[5] = { 20.0f, 10.0f, 0.0f, 10.0f, 20.0f };
 
         for (int i = 0; i < 5; i++) {
             beams[i].isWarning = true;
-            beams[i].warningTimer = 30.0f + delays[i];  // 予測線の時間を短縮
+            beams[i].warningTimer = 30.0f + delays[i];
             // 中央を基準にして配置し、オフセットを適用
             beams[i].x = centerX + spacing * (i - 2) + beamOffsetX;  // i-2で中央基準に
             beams[i].y = Field::STAGE_TOP + 1280.0f;
@@ -675,13 +699,20 @@ void Boss3::DrawWaitingBullets()
         if (waitingBullets[i].active) {
             float blinkRate = waitingBullets[i].waitTimer / 120.0f;
 
-            if (((int)(waitingBullets[i].waitTimer / 10)) % 2 == 0) {
+            // 出現直後（120～90フレーム）のみ1回点滅、それ以降は常に表示
+            bool shouldDraw = true;
+            if (waitingBullets[i].waitTimer > 90.0f) {
+                // 出現直後の30フレームで1回点滅
+                shouldDraw = (waitingBullets[i].waitTimer <= 105.0f);
+            }
+
+            if (shouldDraw) {
                 int alpha = (int)(200 * blinkRate);
                 SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
                 DrawCircle(
                     (int)waitingBullets[i].x,
                     (int)waitingBullets[i].y,
-                    20,
+                    30,  // サイズを20→30に拡大
                     GetColor(255, 50, 50),
                     TRUE
                 );
@@ -690,7 +721,7 @@ void Boss3::DrawWaitingBullets()
                 DrawCircle(
                     (int)waitingBullets[i].x,
                     (int)waitingBullets[i].y,
-                    20,
+                    30,  // サイズを20→30に拡大
                     GetColor(255, 200, 0),
                     FALSE
                 );
@@ -703,7 +734,7 @@ void Boss3::DrawWaitingBullets()
                 (int)waitingBullets[i].targetX,
                 (int)waitingBullets[i].targetY,
                 GetColor(255, 100, 100),
-                1
+                2  // 線の太さを1→2に
             );
             SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
         }
@@ -818,21 +849,44 @@ void Boss3::Draw()
 
 void Boss3::DrawBeams()
 {
-    const float beamWidth = 75.0f;
+    const float beamWidth = 70.0f;  // 100.0f → 70.0fに減少
 
     for (int i = 0; i < 9; i++) {
         if (beams[i].isWarning) {
-            // 予測線の時間を30フレーム基準に変更
-            int alpha = (int)(200 * (beams[i].warningTimer / 30.0f));
-            if (((int)beams[i].warningTimer / 5) % 2 == 0) {  // より速い点滅
-                SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+            // warningTimerの初期値によって点滅タイミングを調整
+            // 各ビームは異なるwarningTimerを持つため、順番に表示される
+            float initialTimer = 30.0f;  // 基本の予測線時間
+            float currentRatio = beams[i].warningTimer / initialTimer;
 
-                // 予測線もビームと同じ太さで描画（ボックスで描画）
-                DrawBox((int)(beams[i].x - beamWidth / 2), (int)Field::STAGE_TOP,
-                    (int)(beams[i].x + beamWidth / 2), (int)(Field::STAGE_TOP + 1280),
-                    GetColor(255, 0, 0), TRUE);
+            // 予測線が開始されるまで非表示
+            bool hasStarted = (beams[i].warningTimer <= (initialTimer + 20.0f));
 
-                SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+            if (hasStarted) {
+                // 開始後、最初の10フレーム相当で1回点滅
+                float timeSinceStart = (initialTimer + 20.0f) - beams[i].warningTimer;
+                bool shouldDraw = true;
+
+                if (timeSinceStart < 10.0f) {
+                    // 最初の5フレームで点滅
+                    shouldDraw = (timeSinceStart <= 5.0f);
+                }
+
+                if (shouldDraw) {
+                    // warningTimerが減少するほど透明度を上げる（より見やすく）
+                    int alpha = 200;
+                    if (beams[i].warningTimer > initialTimer) {
+                        alpha = (int)(200 * (1.0f - ((beams[i].warningTimer - initialTimer) / 20.0f)));
+                    }
+
+                    SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+
+                    // 予測線もビームと同じ太さで描画（ボックスで描画）
+                    DrawBox((int)(beams[i].x - beamWidth / 2), (int)Field::STAGE_TOP,
+                        (int)(beams[i].x + beamWidth / 2), (int)(Field::STAGE_TOP + 1280),
+                        GetColor(255, 0, 0), TRUE);
+
+                    SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+                }
             }
         }
         else if (beams[i].isActive) {
@@ -846,10 +900,10 @@ void Boss3::DrawBeams()
 
             DrawLine((int)(beams[i].x - beamWidth / 2), (int)Field::STAGE_TOP,
                 (int)(beams[i].x - beamWidth / 2), (int)(Field::STAGE_TOP + 1280),
-                GetColor(255, 200, 0), 2);
+                GetColor(255, 200, 0), 3);  // 線の太さを2→3に
             DrawLine((int)(beams[i].x + beamWidth / 2), (int)Field::STAGE_TOP,
                 (int)(beams[i].x + beamWidth / 2), (int)(Field::STAGE_TOP + 1280),
-                GetColor(255, 200, 0), 2);
+                GetColor(255, 200, 0), 3);  // 線の太さを2→3に
         }
     }
 }
@@ -859,7 +913,7 @@ void Boss3::DrawDiagonalBeams()
     for (int i = 0; i < 4; i++) {  // 4本分に拡張
         if (diagonalBeams[i].active) {
             float beamLength = 2000.0f;
-            float beamWidth = 80.0f;
+            float beamWidth = 100.0f;  // 80.0f → 100.0fに拡大
 
             // ビームを両方向に延長（ボスから前後に伸びる）
             float endX1 = diagonalBeams[i].startX + cosf(diagonalBeams[i].angle) * beamLength;
@@ -869,17 +923,24 @@ void Boss3::DrawDiagonalBeams()
 
             // 予測線（警告表示）
             if (diagonalBeams[i].warningTimer > 0.0f) {
-                int alpha = (int)(200 * (diagonalBeams[i].warningTimer / 60.0f));
-                if (((int)(diagonalBeams[i].warningTimer / 10)) % 2 == 0) {
+                // 出現直後（60～40フレーム）のみ1回点滅、それ以降は常に表示
+                bool shouldDraw = true;
+                if (diagonalBeams[i].warningTimer > 40.0f) {
+                    // 出現直後の20フレームで1回点滅
+                    shouldDraw = (diagonalBeams[i].warningTimer <= 50.0f);
+                }
+
+                if (shouldDraw) {
+                    int alpha = (int)(200 * (diagonalBeams[i].warningTimer / 60.0f));
                     SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 
-                    // 赤い予測線を描画
+                    // 赤い予測線を描画（太さを拡大）
                     DrawLine(
                         (int)endX2,
                         (int)endY2,
                         (int)endX1,
                         (int)endY1,
-                        GetColor(255, 0, 0), 3
+                        GetColor(255, 0, 0), 5  // 3 → 5に拡大
                     );
 
                     SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
@@ -890,7 +951,7 @@ void Boss3::DrawDiagonalBeams()
                 // ビーム本体（青い半透明）
                 SetDrawBlendMode(DX_BLENDMODE_ALPHA, 160);
 
-                for (int offset = -40; offset <= 40; offset += 3) {
+                for (int offset = -50; offset <= 50; offset += 3) {  // -40～40 → -50～50に拡大
                     float perpX = -sinf(diagonalBeams[i].angle) * offset;
                     float perpY = cosf(diagonalBeams[i].angle) * offset;
 
@@ -916,14 +977,14 @@ void Boss3::DrawDiagonalBeams()
                     (int)(endY2 + edge1Y),
                     (int)(endX1 + edge1X),
                     (int)(endY1 + edge1Y),
-                    GetColor(255, 200, 0), 4
+                    GetColor(255, 200, 0), 5  // 4 → 5に拡大
                 );
                 DrawLine(
                     (int)(endX2 + edge2X),
                     (int)(endY2 + edge2Y),
                     (int)(endX1 + edge2X),
                     (int)(endY1 + edge2Y),
-                    GetColor(255, 200, 0), 4
+                    GetColor(255, 200, 0), 5  // 4 → 5に拡大
                 );
             }
         }

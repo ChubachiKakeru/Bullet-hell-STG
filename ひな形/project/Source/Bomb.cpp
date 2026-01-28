@@ -72,7 +72,7 @@ void Bomb::Update()
     }
 
     auto bullets3 = FindGameObjects<EnemyBullet3>();
-    for (auto* bullet : bullets2) {
+    for (auto* bullet : bullets3) {
         if (bullet && bullet->IsActive()) {
             float bulletCenterX = bullet->GetX() + 38.0f;
             float bulletCenterY = bullet->GetY() + 41.5f;
