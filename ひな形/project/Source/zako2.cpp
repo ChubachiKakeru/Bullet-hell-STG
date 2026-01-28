@@ -25,7 +25,7 @@ zako2::zako2(float sx, float sy, Zako2Pattern pat)
     y = sy;
     pattern = pat;
     moveTimer = 0;
-    shotTimer = 0;
+    shotTimer = SHOT_INTERVAL;
     shotInterval = SHOT_INTERVAL;
     moveSpeed = 0.0f;
     isActive = true;
@@ -52,7 +52,7 @@ zako2::zako2(float sx, float sy, Zako2Pattern pat)
 
     baseX = sx;
     baseY = sy;
-    sAmplitude = 120.0f;
+    sAmplitude = (Field::STAGE_RIGHT - Field::STAGE_LEFT) * 0.35f; // 画面幅の35%
     sFrequency = 0.03f;
     verticalSpeed = 0.0f;
 
@@ -189,14 +189,48 @@ void zako2::Update()
         }
     }
 
-    if (pattern == Zako2Pattern::PATTERN_S_UP ||
-        pattern == Zako2Pattern::PATTERN_S_DOWN)
+    if (pattern == Zako2Pattern::PATTERN_S_DOWN)
     {
-        moveTimer++;
+        // ==============================
+        // 調整用パラメータ
+        // ==============================
+        const float TOTAL_TIME = 540.0f;   // ★360 → 540 にしてゆっくり（約9秒）
+        const float X_OFFSET = 40.0f;       // ★右に40pxずらす（必要なら調整）
 
-        y += verticalSpeed;
-        x = baseX + sinf(moveTimer * sFrequency) * sAmplitude;
+        float t = moveTimer / TOTAL_TIME; // 0.0 ～ 1.0
+
+        if (t >= 1.0f)
+        {
+            // 中央下で消える（右にオフセット）
+            float centerX = (Field::STAGE_LEFT + Field::STAGE_RIGHT) * 0.5f + X_OFFSET;
+            x = centerX;
+            y = Field::STAGE_BOTTOM + 80.0f;
+            isActive = false;
+            isDead = true;
+            return;
+        }
+
+        float centerX = (Field::STAGE_LEFT + Field::STAGE_RIGHT) * 0.5f + X_OFFSET;
+
+        float top = Field::STAGE_TOP - 40.0f;
+        float bottom = Field::STAGE_BOTTOM + 40.0f;
+
+        // 縦は一定速度
+        y = top + (bottom - top) * t;
+
+        // 横振れ幅
+        float amplitude = (Field::STAGE_RIGHT - Field::STAGE_LEFT) * 0.35f;
+
+        // S字（1回だけ）
+        float angle = t * DX_PI_F * 2.0f - DX_PI_F / 2.0f;
+
+        x = centerX + sinf(angle) * amplitude;
+
+        moveTimer++;
+        return;
     }
+
+
 
     // 画面外判定（画面外に出たら削除）
     if (x < Field::STAGE_LEFT - 70.0f || x > Field::STAGE_RIGHT + 70.0f) {
