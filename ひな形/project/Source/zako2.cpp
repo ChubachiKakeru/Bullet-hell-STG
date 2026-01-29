@@ -12,8 +12,8 @@ namespace {
     constexpr float S_AMPLITUDE = 120.0f;   // 横振れ幅
     constexpr float S_FREQUENCY = 0.03f;    // S字の細かさ
     constexpr float VERTICAL_SPEED = -1.2f; // 上方向へ進む
-    constexpr int BURST_INTERVAL = 12;      // 連射の間隔（0.2秒）
-    constexpr int BURST_COUNT = 4;           // 4連射
+    constexpr int BURST_INTERVAL = 30;      // 連射の間隔（0.2秒）
+    constexpr int BURST_COUNT = 2;           // 4連射
     constexpr int SHOT_WAIT = 240;           // 4秒ごとに攻撃
 }
 
