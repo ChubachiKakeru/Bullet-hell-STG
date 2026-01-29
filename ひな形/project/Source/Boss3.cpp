@@ -323,8 +323,8 @@ void Boss3::UpdatePhase2()
 
     // フェーズ2では追尾弾はサイドオブジェクトから発射
 
-    // ビームを常に左右に移動（毎フレーム更新）
-    beamOffsetX += 1.0f * moveDirection;  // 1ピクセルずつ移動
+    // ビームを常に左右に移動（毎フレーム更新）- 移動速度を1.5に増加
+    beamOffsetX += 1.5f * moveDirection;  // 1ピクセル → 1.5ピクセルに増加
     if (beamOffsetX >= 200.0f) {
         moveDirection = -1.0f;  // 右端に達したら左へ
     }
@@ -341,15 +341,17 @@ void Boss3::UpdatePhase2()
 
     UpdateBeams();
 
+    // 当たり判定はDrawBeamsで描画されているビームのみに適用
+    // （予測線には当たり判定なし）
     Player* player = FindGameObject<Player>();
     if (player) {
         float playerCenterX = player->GetX() + 75.0f;
         float playerCenterY = player->GetY() + 75.0f;
 
         for (int i = 0; i < 9; i++) {
-            // ビームがアクティブ（予測線ではない）の時のみ当たり判定
+            // ビームがアクティブかつ予測線ではない時のみ当たり判定
             if (beams[i].isActive && !beams[i].isWarning) {
-                const float beamWidth = 70.0f;
+                const float beamWidth = 50.0f;
 
                 if (playerCenterX >= beams[i].x - beamWidth / 2.0f &&
                     playerCenterX <= beams[i].x + beamWidth / 2.0f &&
@@ -468,25 +470,9 @@ void Boss3::ShootScatterBullets()
             new EnemyBullet3(x + 100, y + 100, vx, vy, 6.0f, false);  // 画像サイズ200の中心
         }
         else if (bulletPhase == BulletPhase3::PHASE_4) {
-            // フェーズ4では横方向の弾のみ5%の確率で反射
-            // 角度が横方向（90度±30度の範囲）かどうかをチェック
-            float normalizedAngle = angle;
-            while (normalizedAngle > 3.14159265f) normalizedAngle -= 3.14159265f * 2.0f;
-            while (normalizedAngle < -3.14159265f) normalizedAngle += 3.14159265f * 2.0f;
-
-            // 左右方向の弾（-30度～30度、150度～210度）を判定
-            bool isHorizontal = (normalizedAngle >= -0.524f && normalizedAngle <= 0.524f) ||  // ±30度
-                (normalizedAngle >= 2.618f || normalizedAngle <= -2.618f);      // 180度±30度
-
-            if (isHorizontal) {
-                // 横方向の弾のみ5%の確率で反射
-                bool enableReflect = (rand() % 20 == 0);  // 5% (1/20)
-                new EnemyBullet3(x + 100, y + 100, vx, vy, 6.0f, enableReflect);
-            }
-            else {
-                // 横方向以外の弾は反射しない
-                new EnemyBullet3(x + 100, y + 100, vx, vy, 6.0f, false);
-            }
+            // フェーズ4では全ての弾の5%を反射弾に
+            bool enableReflect = (rand() % 20 == 0);  // 5% (1/20)
+            new EnemyBullet3(x + 100, y + 100, vx, vy, 6.0f, enableReflect);
         }
         else {
             // フェーズ2、3では反射弾なし
@@ -849,7 +835,7 @@ void Boss3::Draw()
 
 void Boss3::DrawBeams()
 {
-    const float beamWidth = 70.0f;  // 100.0f → 70.0fに減少
+    const float beamWidth = 50.0f;  // 70.0f → 50.0fに減少
 
     for (int i = 0; i < 9; i++) {
         if (beams[i].isWarning) {
