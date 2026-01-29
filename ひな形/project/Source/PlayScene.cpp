@@ -25,6 +25,7 @@ PlayScene::PlayScene() {
 
     stage1SoundHandle = LoadSoundMem(GAME_STAGE1_SOUND_PATH);
     stage2SoundHandle = LoadSoundMem(GAME_STAGE2_SOUND_PATH);
+    stage3SoundHandle = LoadSoundMem(GAME_STAGE3_SOUND_PATH);
 
     switch (selectedStage)
     {
@@ -39,7 +40,7 @@ PlayScene::PlayScene() {
         m_countdownNumber = 3;
         break;
     case 3:  // ★追加★
-        PlaySoundMem(stage2SoundHandle, DX_PLAYTYPE_LOOP);
+        PlaySoundMem(stage3SoundHandle, DX_PLAYTYPE_LOOP);
         m_countdownTimer = 60 * 3;
         m_countdownNumber = 3;
         break;
@@ -68,6 +69,7 @@ PlayScene::~PlayScene()
 {
     DeleteSoundMem(stage1SoundHandle);
     DeleteSoundMem(stage2SoundHandle);
+    DeleteSoundMem(stage3SoundHandle);
     // 弾の削除は各Bulletクラスのデストラクタで処理される想定
 }
 
@@ -286,8 +288,8 @@ void PlayScene::DrawCountdown()
 {
     // ステージ番号表示
     int stageNumber = StageSelectScene::GetSelectedStageNumber();
-    SetFontSize(48);
-    DrawFormatString(400, 150, GetColor(255, 255, 255),
+    SetFontSize(75);
+    DrawFormatString(145, 50, GetColor(0, 255, 135),
         "=== STAGE %d ===", stageNumber);
     SetFontSize(16);
 
@@ -303,12 +305,12 @@ void PlayScene::DrawCountdown()
         // 透明度アニメーション（255 → 180）
         int alpha = (int)(180 + 75 * progress);
 
-        SetFontSize((int)(150 * scale));
+        SetFontSize((int)(200 * scale));
 
         unsigned int color = GetColor(255, 255, alpha);
 
         int yOffset = (int)(20 * (scale - 1.0f));
-        DrawFormatString(580, 280 - yOffset, color, "%d", m_countdownNumber);
+        DrawFormatString(373, 230 - yOffset, color, "%d", m_countdownNumber);
 
         SetFontSize(16);
     }
@@ -329,10 +331,10 @@ void PlayScene::DrawCountdown()
     }
 
     // 操作説明
-    SetFontSize(24);
-    DrawString(380, 480, "WASDキー: 移動 / Hキー: ショット",
-        GetColor(200, 200, 200));
-    DrawString(450, 520, "カウント中も操作可能！",
+    SetFontSize(40);
+    DrawString(105, 550, "WASDキー: 移動 / Hキー: ショット",
+        GetColor(0, 255, 135));
+    DrawString(200, 600, "カウント中も操作可能！",
         GetColor(255, 255, 100));
 
     SetFontSize(16);

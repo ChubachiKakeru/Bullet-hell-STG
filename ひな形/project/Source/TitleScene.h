@@ -28,12 +28,14 @@ private:
     int m_secretKeyWait;                         // キー入力待機時間
     bool m_secretUnlocked;                       // 隠しステージ解放フラグ
 
-    // サウンドパス
+    //  サウンドパス
     const char* GAME_TITLE_SOUND_PATH = "data/Sound/title.mp3";      //タイトルジングル
+    const char* GAME_DECISION_SOUND_PATH = "data/Sound/decision.mp3";  //決定ジングル
+
 
     // サウンドハンドル
     int titleSoundHandle;		//	タイトルサウンドハンドル
-
+    int DecisionSoundHandle;    // 決定サウンドハンドル
     // ★隠しコマンドのチェック関数（追加）★
     void CheckSecretCommand();
 };

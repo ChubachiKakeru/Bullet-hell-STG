@@ -52,8 +52,10 @@ private:
     // サウンドパス
     const char* GAME_STAGE1_SOUND_PATH = "data/Sound/stage1.mp3";      //1面ジングル
     const char* GAME_STAGE2_SOUND_PATH = "data/Sound/stage2.mp3";      //2面ジングル
+    const char* GAME_STAGE3_SOUND_PATH = "data/Sound/title.mp3";      //3面ジングル
 
     //  サウンドハンドル
     int stage1SoundHandle;		//	1面サウンドハンドル
     int stage2SoundHandle;		//	2面サウンドハンドル
+    int stage3SoundHandle;		//	3面サウンドハンドル
 };

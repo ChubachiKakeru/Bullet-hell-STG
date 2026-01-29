@@ -41,9 +41,10 @@ void GameOverScene::Draw()
     }
     else
     {
+        SetFontSize(60);
         // デバッグ用テキスト表示
         DrawString(400, 300, "GAME OVER", GetColor(255, 0, 0));
+        SetFontSize(20);
     }
-
     DrawString(450, 500, "SPACE: タイトルへ戻る", GetColor(255, 255, 255));
 }

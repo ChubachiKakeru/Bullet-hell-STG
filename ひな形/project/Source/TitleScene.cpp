@@ -17,6 +17,7 @@ TitleScene::TitleScene()
     m_titleImage = LoadGraph("data/image/title.png");
     titleSoundHandle = LoadSoundMem(GAME_TITLE_SOUND_PATH);
     PlaySoundMem(titleSoundHandle, DX_PLAYTYPE_LOOP);
+    DecisionSoundHandle = LoadSoundMem(GAME_DECISION_SOUND_PATH);
 }
 
 TitleScene::~TitleScene()
@@ -26,6 +27,7 @@ TitleScene::~TitleScene()
         DeleteGraph(m_titleImage);
     }
     DeleteSoundMem(titleSoundHandle);
+    DeleteSoundMem(DecisionSoundHandle);
 }
 
 // ★隠しコマンドチェック関数（追加）★
@@ -112,6 +114,7 @@ void TitleScene::Update()
     // ★Pキーが押されたらフェードアウト開始★
     if (!m_startPressed && CheckHitKey(KEY_INPUT_P))
     {
+        PlaySoundMem(DecisionSoundHandle, DX_PLAYTYPE_BACK);
         m_startPressed = true;
         m_fadeOutTimer = 0;
         StageSelectScene::ResetTotalTimer();
@@ -199,7 +202,7 @@ void TitleScene::Draw()
         DrawString(screenWidth / 2 - 50, screenHeight / 2 - 100, "GAME TITLE", GetColor(255, 255, 255));
     }
 
-    int textStartY = 850;
+    int textStartY = 950;
 
     // ★「P: ゲーム開始」の描画★
     if (m_startPressed)

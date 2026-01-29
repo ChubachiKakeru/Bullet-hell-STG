@@ -50,8 +50,12 @@ void ClearScene::Draw()
     int clearTimeSeconds = m_timer / 60; // 60FPSを想定
     int minutes = clearTimeSeconds / 60;
     int seconds = clearTimeSeconds % 60;
-    DrawFormatString(450, 400, GetColor(0, 0, 0), "クリアタイム: %02d:%02d", minutes, seconds);
+    DrawFormatString(150, 300, GetColor(0, 0, 0), "クリアタイム: %02d:%02d", minutes, seconds);
 
-    DrawString(400, 500, "SPACE: ステージ選択へ", GetColor(0, 0, 0));
-    DrawString(400, 530, "ESC: タイトルへ戻る", GetColor(0, 0, 0));
+    DrawString(150, 350, "SPACE: ステージ選択へ", GetColor(0, 0, 0));
+    DrawString(160, 400, "ESC: タイトルへ戻る", GetColor(0, 0, 0));
+    SetFontSize(35);
+    DrawString(50, 600, "「助けてくれてありがとう、\n"
+        "  私の可愛い人形さん」", GetColor(0, 0, 0));
+    SetFontSize(20);
 }

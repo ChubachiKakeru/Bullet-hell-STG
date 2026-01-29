@@ -15,15 +15,15 @@ public:
     int  m_yesNoSelect;  // 0: はい / 1: いいえ
     int m_selectItem;
     int  m_state;
-   ShopScene(Player*p): player(player){}
+    ShopScene(Player* p) : player(player) {}
 
-  /* void irsHp() {
-       player->AddHp(1);
-   }
+    /* void irsHp() {
+         player->AddHp(1);
+     }
 
-   void irsBomb() {
-       player->AddBomb(1);
-   }*/
+     void irsBomb() {
+         player->AddBomb(1);
+     }*/
 
 private:
     int m_backgroundImage;
@@ -32,4 +32,13 @@ private:
     bool prevPush;
 
     Player* player;
+    // サウンドパス
+    const char* GAME_CANCEL_SOUND_PATH = "data/Sound/cancel.mp3";      //キャンセルジングル
+    const char* GAME_CURSOR_SOUND_PATH = "data/Sound/cursor.mp3";      //選択ジングル
+    const char* GAME_DECISION_SOUND_PATH = "data/Sound/decision.mp3";  //決定ジングル
+
+    //  サウンドハンドル
+    int CancelSoundHandle;      // キャンセルサウンドハンドル
+    int CusorSoundHandle;       // 選択サウンドハンドル
+    int DecisionSoundHandle;    // 決定サウンドハンドル
 };

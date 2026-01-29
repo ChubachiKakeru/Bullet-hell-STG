@@ -16,6 +16,10 @@ ShopScene::ShopScene()
     , m_isConfirm(false), m_yesNoSelect(0)
 {
     m_backgroundImage = LoadGraph("data/image/shop.jpg");
+
+    CancelSoundHandle = LoadSoundMem(GAME_CANCEL_SOUND_PATH);
+    CusorSoundHandle = LoadSoundMem(GAME_CURSOR_SOUND_PATH);
+    DecisionSoundHandle = LoadSoundMem(GAME_DECISION_SOUND_PATH);
 }
 
 ShopScene::~ShopScene()
@@ -24,6 +28,9 @@ ShopScene::~ShopScene()
     {
         DeleteGraph(m_backgroundImage);
     }
+    DeleteSoundMem(CancelSoundHandle);
+    DeleteSoundMem(CusorSoundHandle);
+    //DeleteSoundMem(DecisionSoundHandle);
 }
 
 void ShopScene::Update()
@@ -40,17 +47,20 @@ void ShopScene::Update()
             {
                 m_selectedItem = (m_selectedItem - 1 + ITEM_COUNT) % ITEM_COUNT;
                 keyWait = 0;
+                PlaySoundMem(CusorSoundHandle, DX_PLAYTYPE_BACK);
             }
             if (CheckHitKey(KEY_INPUT_DOWN))
             {
                 m_selectedItem = (m_selectedItem + 1) % ITEM_COUNT;
                 keyWait = 0;
+                PlaySoundMem(CusorSoundHandle, DX_PLAYTYPE_BACK);
             }
         }
         if (!m_isConfirm)
         {
             if (CheckHitKey(KEY_INPUT_RETURN) && !prevPush)
             {
+                PlaySoundMem(DecisionSoundHandle, DX_PLAYTYPE_BACK);
                 m_isConfirm = true;
                 m_yesNoSelect = 0;
                 keyWait = 0;
@@ -89,29 +99,29 @@ void ShopScene::Update()
             }
         }
     }
-            // ★ ここに書く ★
-            if (CheckHitKey(KEY_INPUT_RETURN) && !prevPush)
+    // ★ ここに書く ★
+    if (CheckHitKey(KEY_INPUT_RETURN) && !prevPush)
+    {
+        if (m_yesNoSelect == 0)
+        {
+            switch (m_selectedItem)
             {
-                if (m_yesNoSelect == 0)
-                {
-                    switch (m_selectedItem)
-                    {
-                    case 0:
-                        Player::UpgradeMaxHP(1);
-                        break;
-                    case 1:
-                        Player::UpgradeInitialBombCount(5);
-                        break;
-                    }
-                }
-
-
-
-                m_isConfirm = false; // ダイアログを閉じる
-                keyWait = 0;
-                prevPush = true;
+            case 0:
+                Player::UpgradeMaxHP(1);
+                break;
+            case 1:
+                Player::UpgradeInitialBombCount(5);
+                break;
             }
-    
+        }
+
+
+
+        m_isConfirm = false; // ダイアログを閉じる
+        keyWait = 0;
+        prevPush = true;
+    }
+
     if (!!CheckHitKey(KEY_INPUT_RETURN))
     {
         prevPush = false;
@@ -155,11 +165,11 @@ void ShopScene::Draw()
 
     // ★デバッグ表示★
     DrawFormatString(10, 10, GetColor(255, 255, 0), "現在のステージ番号: %d", StageSelectScene::GetSelectedStageNumber());
-    SetFontSize(48);
-    DrawString(533, 200, "ショップ", GetColor(25, 255, 255));
-    SetFontSize(24);
+    SetFontSize(50);
+    DrawString(535, 180, "ショップ", GetColor(25, 255, 255));
     DrawFormatString(10, 50, GetColor(255, 255, 255), "現在の最大HP: %d", Player::GetStaticMaxHP());
-    DrawFormatString(10, 80, GetColor(255, 255, 255), "現在の初期ボム数: %d", Player::GetStaticInitialBombCount());
+    DrawFormatString(10, 100, GetColor(255, 255, 255), "現在の初期ボム数: %d", Player::GetStaticInitialBombCount());
+    SetFontSize(24);
 
     const char* items[] = {
         "体力+1",
@@ -170,22 +180,23 @@ void ShopScene::Draw()
 
     for (int i = 0; i < ITEM_COUNT; i++)
     {
+        SetFontSize(60);
         int color = (i == m_selectedItem) ? GetColor(255, 255, 0) : GetColor(200, 200, 200);
-        DrawString(533, 400 + i * 50, items[i], color);
+        DrawString(530, 500 + i * 100, items[i], color);
     }
-    SetFontSize(24);
-    DrawString(400, 600, "↑↓キーで選択/ ENTER:決定 / ESC: ステージ2へ", GetColor(255, 255, 255));
+    SetFontSize(40);
+    DrawString(200, 1000, "↑↓キーで選択/ ENTER:決定 / ESC: ステージ2へ", GetColor(255, 255, 255));
 
     if (m_isConfirm)
     {
-        DrawBox(340, 250, 940, 420, GetColor(0, 0, 0), TRUE);
-        DrawBox(340, 250, 940, 420, GetColor(255, 255, 255), FALSE);
-        DrawString(520, 300, "このアイテムを購入しますか？", GetColor(255, 255, 255));
+        DrawBox(340, 270, 940, 500, GetColor(0, 0, 0), TRUE);
+        DrawBox(340, 270, 940, 500, GetColor(255, 255, 255), FALSE);
+        DrawString(355, 350, "このアイテムを購入しますか？", GetColor(255, 255, 255));
 
         int yesColor = (m_yesNoSelect == 0) ? GetColor(255, 255, 0) : GetColor(200, 200, 200);
         int noColor = (m_yesNoSelect == 1) ? GetColor(255, 255, 0) : GetColor(200, 200, 200);
 
-        DrawString(550, 360, "はい", yesColor);
-        DrawString(650, 360, "いいえ", noColor);
+        DrawString(470, 430, "はい", yesColor);
+        DrawString(700, 430, "いいえ", noColor);
     }
 }
