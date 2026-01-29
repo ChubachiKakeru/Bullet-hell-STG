@@ -1,7 +1,9 @@
 #include "ShopScene.h"
+#include "Player.h"
+#include"Bomb.h"
 #include "../Library/SceneManager.h"
 #include "StageSelectScene.h"
-#include <DxLib.h>
+
 
 enum ShopState
 {
@@ -26,6 +28,7 @@ ShopScene::~ShopScene()
 
 void ShopScene::Update()
 {
+    static bool prevPush = false;
     static int keyWait = 0;
     keyWait++;
 
@@ -44,19 +47,36 @@ void ShopScene::Update()
                 keyWait = 0;
             }
         }
+        if (!m_isConfirm)
+        {
+            if (CheckHitKey(KEY_INPUT_RETURN) && !prevPush)
+            {
+                m_isConfirm = true;
+                m_yesNoSelect = 0;
+                keyWait = 0;
+                prevPush = true;
+            }
+        }
+
+
 
         if (CheckHitKey(KEY_INPUT_RETURN))
         {
             m_isConfirm = true;
             m_yesNoSelect = 0; // 「はい」を初期選択
+            m_yesNoSelect = false;
+            m_yesNoSelect = 1;
             keyWait = 0;
         }
+
+
 
         if (CheckHitKey(KEY_INPUT_ESCAPE))
         {
             // ステージ2へ遷移（既にs_selectedStageNumberは2なのでそのままPLAYへ）
             SceneManager::ChangeScene("PLAY");
         }
+
     }
     else
     {
@@ -68,16 +88,33 @@ void ShopScene::Update()
                 keyWait = 0;
             }
         }
-
-        if (CheckHitKey(KEY_INPUT_RETURN))
-        {
-            if (m_yesNoSelect == 0)
+    }
+            // ★ ここに書く ★
+            if (CheckHitKey(KEY_INPUT_RETURN) && !prevPush)
             {
-                // アイテム購入処理
+                if (m_yesNoSelect == 0)
+                {
+                    switch (m_selectedItem)
+                    {
+                    case 0:
+                        Player::UpgradeMaxHP(1);
+                        break;
+                    case 1:
+                        Player::UpgradeInitialBombCount(5);
+                        break;
+                    }
+                }
+
+
+
+                m_isConfirm = false; // ダイアログを閉じる
+                keyWait = 0;
+                prevPush = true;
             }
-            m_isConfirm = false;
-            keyWait = 0;
-        }
+    
+    if (!!CheckHitKey(KEY_INPUT_RETURN))
+    {
+        prevPush = false;
     }
 }
 
@@ -109,6 +146,7 @@ void ShopScene::Draw()
 
         // 描画（877:620の比率を維持したまま画面いっぱいに拡大）
         DrawExtendGraph(drawX, drawY, drawX + drawWidth, drawY + drawHeight, m_backgroundImage, TRUE);
+
     }
     else
     {
@@ -119,10 +157,13 @@ void ShopScene::Draw()
     DrawFormatString(10, 10, GetColor(255, 255, 0), "現在のステージ番号: %d", StageSelectScene::GetSelectedStageNumber());
     SetFontSize(48);
     DrawString(533, 200, "ショップ", GetColor(25, 255, 255));
+    SetFontSize(24);
+    DrawFormatString(10, 50, GetColor(255, 255, 255), "現在の最大HP: %d", Player::GetStaticMaxHP());
+    DrawFormatString(10, 80, GetColor(255, 255, 255), "現在の初期ボム数: %d", Player::GetStaticInitialBombCount());
 
     const char* items[] = {
-        "体力UP",
-        "Bome増加",
+        "体力+1",
+        "Bome+5",
         //  "攻撃速度UP",
         // "Bome範囲",
     };

@@ -5,24 +5,27 @@
 #include "enemyBullet.h"
 #include "EnemyBullet2.h"
 #include "Screen.h"
+#include"ShopScene.h"
 #include "Common.h"
 #include <cmath>
 
+int Player::s_maxHp = 100;           // 初期最大HP
+int Player::s_initialBombCount = 10;  // 初期ボム数
 // ========================================
 // 定数
 // ========================================
-namespace {
-    constexpr float MOVE_SPEED = 7.0f;
-    constexpr float SHOT_COOLDOWN = 50.0f;
-    constexpr int INITIAL_HP = 100;
-    constexpr float PLAYER_COLLISION_RADIUS = 30.0f;
-    constexpr float PLAYER_CENTER_OFFSET = 60.0f;
-    constexpr float BULLET_SPEED = -10.0f;
-    constexpr float BULLET_RADIUS = 8.0f;
-
-    constexpr float BOMB_SIZE = 150.0f;
-    constexpr float BOMB_SPEED = -10.0f;
-}
+//namespace {
+//    constexpr float MOVE_SPEED = 7.0f;
+//    constexpr float SHOT_COOLDOWN = 50.0f;
+//    constexpr int INITIAL_HP = 100;
+//    constexpr float PLAYER_COLLISION_RADIUS = 30.0f;
+//    constexpr float PLAYER_CENTER_OFFSET = 60.0f;
+//    constexpr float BULLET_SPEED = -10.0f;
+//    constexpr float BULLET_RADIUS = 8.0f;
+//
+//    constexpr float BOMB_SIZE = 150.0f;
+//    constexpr float BOMB_SPEED = -10.0f;
+//};
 
 // ========================================
 // コンストラクタ / デストラクタ
@@ -48,13 +51,16 @@ Player::Player() : GameObject()
     isActive = true;
 
     // ボム関連
-    bombCount = 10;
+   // bombCount = 10;
+    bombCount = s_initialBombCount;
     bombSize = BOMB_SIZE;
     bombSpeed = BOMB_SPEED;
     prevBombKeyPressed = false;
 
     // ★無敵時間の初期化★
     invincibleTimer = 0;
+    maxHp = s_maxHp;
+    hp = maxHp;  // 最大HPで開始
 }
 
 Player::Player(int sx, int sy) : Player()
@@ -144,6 +150,40 @@ void Player::ShootBomb()
     PlaySoundMem(playerBombSoundHandle, DX_PLAYTYPE_BACK);
 }
 
+void Player::AddHP(int amount)
+{
+    hp += amount;
+    if (hp > maxHp) hp = maxHp;  // 最大HPを超えない
+}
+
+void Player::AddMaxHP(int amount)
+{
+    maxHp += amount;
+    hp += amount;  // 最大HPが増えた分、現在HPも回復
+}
+
+void Player::AddBomb(int amount)
+{
+    bombCount += amount;
+}
+
+void Player::UpgradeMaxHP(int amount)
+{
+    s_maxHp += amount;
+}
+
+
+void Player::UpgradeInitialBombCount(int amount)
+{
+    s_initialBombCount += amount;
+}
+
+void Player::ResetUpgrades()
+{
+    s_maxHp = 100;
+    s_initialBombCount = 10;
+}
+
 // ========================================
 // 更新処理
 // ========================================
@@ -208,7 +248,8 @@ void Player::Draw()
 
     SetFontSize(40);
     DrawFormatString(920, 350, GetColor(0, 255, 255), "=== PLAYER ===");
-    DrawFormatString(925, 400, GetColor(0, 255, 255), "PLAYER HP: %d", hp);
+   // DrawFormatString(925, 400, GetColor(0, 255, 255), "PLAYER HP: %d", hp);
+    DrawFormatString(925, 400, GetColor(0, 255, 255), "HP: %d/%d", hp, maxHp);
     DrawFormatString(980, 450, GetColor(0, 255, 255), "BOMB: %d", bombCount);
 
     // ★デバッグ用: 無敵時間表示★

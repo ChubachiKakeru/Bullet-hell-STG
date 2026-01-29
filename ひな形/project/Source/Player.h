@@ -28,9 +28,33 @@ public:
     bool IsActive() const { return isActive; }
     void ShootBullet();
     void ShootBomb();
-    void AddBomb(int num) { bombCount += num; }
+  //  void AddBomb(int num) { bombCount += num; }
     int GetBombCount() const { return bombCount; }
     bool IsInvincible() const { return invincibleTimer > 0; }  // ★追加★
+    static constexpr float MOVE_SPEED = 7.0f;
+    static constexpr float SHOT_COOLDOWN = 50.0f;
+    static  constexpr int INITIAL_HP = 100;
+    static constexpr float PLAYER_COLLISION_RADIUS = 30.0f;
+    static constexpr float PLAYER_CENTER_OFFSET = 60.0f;
+    static constexpr float BULLET_SPEED = -10.0f;
+    static constexpr float BULLET_RADIUS = 8.0f;
+
+    static constexpr float BOMB_SIZE = 150.0f;
+    static constexpr float BOMB_SPEED = -10.0f;
+    int bombCount;
+
+    int GetMaxHP() const { return maxHp; }  // ★追加★
+    // ★ショップ用の関数（現在のプレイヤーインスタンスに適用）★
+    void AddHP(int amount);          // HP回復
+    void AddMaxHP(int amount);       // 最大HP増加（現在HPも回復）
+    void AddBomb(int amount);        // ボム追加（既存のものがあればOK）
+
+    static void UpgradeMaxHP(int amount);           // 最大HPの永続強化
+    static void UpgradeInitialBombCount(int amount); // 初期ボム数の永続強化
+    static void ResetUpgrades();                     // 強化をリセット
+    // ★静的変数のゲッター★
+    static int GetStaticMaxHP() { return s_maxHp; }
+    static int GetStaticInitialBombCount() { return s_initialBombCount; }
 
 private:
     int hImage;
@@ -43,9 +67,10 @@ private:
     float size;
     int hp;
     bool isActive;
+    int maxHp;
 
     // ボム関連
-    int bombCount;
+   // int bombCount;
     float bombSize;
     float bombSpeed;
     bool prevBombKeyPressed;
@@ -63,4 +88,7 @@ private:
     int playerHitSoundHandle;
     int playerShotSoundHandle;
     int playerBombSoundHandle;
+
+    static int s_maxHp;              // 最大HP（ショップで強化可能）
+    static int s_initialBombCount;   // 初期ボム数（ショップで強化可能）
 };

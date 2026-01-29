@@ -367,7 +367,7 @@ bool Boss1::IsHit(float bx, float by, int rad)
 
     if (d < 100 + rad) {
         PlaySoundMem(enemyDeathSoundHandle, DX_PLAYTYPE_BACK);
-        TakeDamage(5);
+        TakeDamage(300);
         return true;
     }
     return false;

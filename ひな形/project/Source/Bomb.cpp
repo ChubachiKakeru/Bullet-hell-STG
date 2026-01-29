@@ -1,4 +1,5 @@
 #include "Bomb.h"
+#include"ShopScene.h"
 #include "enemyBullet.h"
 #include "EnemyBullet2.h"
 #include"EnemyBullet3.h"
