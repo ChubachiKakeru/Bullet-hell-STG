@@ -164,7 +164,7 @@ void Boss2::CheckPhaseTransition()
 
 void Boss2::OnPhaseChanged(int newPhase)
 {
-	printfDx("フェーズ %d に移行！HP: %d\n", newPhase, currentHp);
+	printfDx(" ", newPhase, currentHp); //フェーズ %d に移行！HP: %d\n
 
 	// フェーズごとの初期化
 	switch (bulletPhase) {

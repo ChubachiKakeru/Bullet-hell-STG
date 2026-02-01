@@ -237,7 +237,7 @@ void Boss3::CheckPhaseTransition()
 
 void Boss3::OnPhaseChanged(int newPhase)
 {
-    printfDx("フェーズ %d に移行！HP: %d\n", newPhase, currentHp);
+    printfDx(" ", newPhase, currentHp); //フェーズ %d に移行！HP: %d\n
 
     switch (bulletPhase) {
     case BulletPhase3::PHASE_1:
