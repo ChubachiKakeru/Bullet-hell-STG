@@ -9,7 +9,7 @@
 #include "Common.h"
 #include <cmath>
 
-int Player::s_maxHp = 100;           // 初期最大HP
+int Player::s_maxHp = 10;           // 初期最大HP
 int Player::s_initialBombCount = 10;  // 初期ボム数
 // ========================================
 // 定数
@@ -249,7 +249,7 @@ void Player::Draw()
     SetFontSize(40);
     DrawFormatString(920, 350, GetColor(0, 255, 255), "=== PLAYER ===");
    // DrawFormatString(925, 400, GetColor(0, 255, 255), "PLAYER HP: %d", hp);
-    DrawFormatString(925, 400, GetColor(0, 255, 255), "HP: %d/%d", hp, maxHp);
+    DrawFormatString(970, 400, GetColor(0, 255, 255), "HP: %d/%d", hp, maxHp);
     DrawFormatString(980, 450, GetColor(0, 255, 255), "BOMB: %d", bombCount);
 
     // ★デバッグ用: 無敵時間表示★

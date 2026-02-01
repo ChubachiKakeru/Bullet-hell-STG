@@ -33,7 +33,7 @@ public:
     bool IsInvincible() const { return invincibleTimer > 0; }  // Åöí«â¡Åö
     static constexpr float MOVE_SPEED = 7.0f;
     static constexpr float SHOT_COOLDOWN = 50.0f;
-    static  constexpr int INITIAL_HP = 100;
+    static  constexpr int INITIAL_HP = 10;
     static constexpr float PLAYER_COLLISION_RADIUS = 30.0f;
     static constexpr float PLAYER_CENTER_OFFSET = 60.0f;
     static constexpr float BULLET_SPEED = -10.0f;

@@ -10,13 +10,13 @@ bool StageData::LoadFromCSV(const std::string& filename) {
     CsvReader csv(filename);
 
     if (csv.GetLines() == 0) {
-        printfDx("CSVファイルの読み込みに失敗: %s\n", filename.c_str());
+        printfDx(" ", filename.c_str()); //CSVファイルの読み込みに失敗: %s\n
         return false;
     }
 
     ParseCSVData(csv);
 
-    printfDx("CSVファイル読み込み完了: %s (%d phases)\n",
+    printfDx(" ", //CSVファイル読み込み完了: %s (%d phases)\n
         filename.c_str(), phases.size());
     return true;
 }

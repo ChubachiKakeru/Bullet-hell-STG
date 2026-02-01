@@ -149,7 +149,7 @@ void EnemyManager::UpdateWaveSpawning() {
                 }
                 waveSpawned = true;
 
-                printfDx("Wave %d spawned (Phase %d, Stage %d)\n",
+                printfDx(" ", //Wave %d spawned (Phase %d, Stage %d)\n
                     currentWaveIndex + 1, currentPhaseIndex + 1, currentStageNumber);
             }
         }
@@ -206,13 +206,13 @@ void EnemyManager::SpawnEnemy(const EnemySpawnData& data) {
         break;
 
     default:
-        printfDx("不明な敵タイプ: %d\n", data.enemyType);
+        printfDx(" ", data.enemyType); //不明な敵タイプ: %d\n
         break;
     }
 
     if (newEnemy) {
         enemies.push_back(newEnemy);
-        printfDx("敵生成: タイプ%d X=%.1f Y=%.1f パターン=%d\n",
+        printfDx(" ", //敵生成: タイプ%d X=%.1f Y=%.1f パターン=%d\n
             data.enemyType, data.spawnX, data.spawnY, data.pattern);
     }
 }
@@ -257,7 +257,7 @@ void EnemyManager::AdvanceToNextPhase() {
     phaseCleared = false;
     phaseTransitionTimer = 0.0f;
 
-    printfDx("Advance to Phase %d (Stage %d)\n", currentPhaseIndex + 1, currentStageNumber);
+    printfDx(" ", currentPhaseIndex + 1, currentStageNumber); //Advance to Phase %d (Stage %d)\n
 }
 
 void EnemyManager::RemoveDeadEnemies() {
@@ -277,7 +277,7 @@ void EnemyManager::DrawDebugInfo() {
     int phaseIndex = static_cast<int>(currentPhase);
 
     if (!m_gameStarted) {
-        DrawString(10, 40, "COUNTDOWN...", GetColor(255, 255, 0));
+        DrawString(10, 40, " ", GetColor(255, 255, 0)); //COUNTDOWN...
     }
 
     DrawFormatString(10, 60, GetColor(255, 255, 0),
