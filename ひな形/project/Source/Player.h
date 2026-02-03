@@ -62,6 +62,11 @@ public:
     static int GetStaticMaxHP() { return s_maxHp; }
     static int GetStaticInitialBombCount() { return s_initialBombCount; }
 
+    // ===== 回復系（ショップ用）=====
+    void HealHP(int amount);
+    void HealBomb(int amount);
+
+
     // ステージ開始時の初期化
     void ResetStatus(bool inherit, int prevHp = 0, int prevBomb = 0);
 

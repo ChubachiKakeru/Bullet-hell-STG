@@ -28,9 +28,9 @@ private:
     int m_backgroundImage;
     int m_selectedItem;
     static const int ITEM_COUNT = 2;
-    bool prevPush;
 
     Player* player;
+    bool prevPush;
     // サウンドパス
     const char* GAME_CANCEL_SOUND_PATH = "data/Sound/cancel.mp3";      //キャンセルジングル
     const char* GAME_CURSOR_SOUND_PATH = "data/Sound/cursor.mp3";      //選択ジングル

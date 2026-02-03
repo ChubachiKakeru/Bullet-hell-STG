@@ -175,6 +175,21 @@ void Player::ResetUpgrades()
     s_initialBombCount = 10;
 }
 
+void Player::HealHP(int amount)
+{
+    hp += amount;
+    if (hp > maxHp) hp = maxHp;
+}
+
+void Player::HealBomb(int amount)
+{
+    bombCount += amount;
+    if (bombCount > s_initialBombCount)
+        bombCount = s_initialBombCount;
+}
+
+
+
 
 // ========================================
 // XVˆ—

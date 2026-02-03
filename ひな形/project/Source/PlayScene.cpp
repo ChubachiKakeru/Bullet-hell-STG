@@ -119,6 +119,35 @@ void PlayScene::SpawnWave(StageData* stageData)
 // ========================================
 void PlayScene::Update()
 {
+    // ★ シーン開始時の回復（1回だけ）
+    static bool isFirstUpdate = true;
+
+    if (isFirstUpdate)
+    {
+        Player* player = FindGameObject<Player>();
+        Common* common = FindGameObject<Common>();
+
+        if (player && common)
+        {
+            // HP回復
+            int hp = player->GetCurrentHp() + common->carryHp;
+            if (hp > player->GetMaxHP())
+                hp = player->GetMaxHP();
+            player->SetCurrentHp(hp);
+
+            // ボム回復
+            int bomb = player->GetCurrentBomb() + common->carryBomb;
+            if (bomb > Player::GetStaticInitialBombCount())
+                bomb = Player::GetStaticInitialBombCount();
+            player->SetCurrentBomb(bomb);
+
+            // ★ 使い切る
+            common->carryHp = 0;
+            common->carryBomb = 0;
+        }
+
+        isFirstUpdate = false;
+    }
     // タイトルへの遷移
     if (CheckHitKey(KEY_INPUT_O)) {
         SceneManager::ChangeScene("TITLE");

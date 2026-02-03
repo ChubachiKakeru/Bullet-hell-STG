@@ -40,36 +40,17 @@ ShopScene::~ShopScene()
 
 void ShopScene::Update()
 {
-    static bool prevPush = false;
     static int keyWait = 0;
     keyWait++;
 
-    static bool isFirstUpdate = true;
+    bool enter = CheckHitKey(KEY_INPUT_RETURN);
 
-    if (isFirstUpdate)
-    {
-        Common* common = FindGameObject<Common>();
-        if (common && player)
-        {
-            int newHp = player->GetCurrentHp() + common->carryHp;
-            if (newHp > 10) newHp = 10;
-            player->SetCurrentHp(newHp);
+    // ★ Player を毎フレーム取得
+    player = FindGameObject<Player>();
 
-            int newBomb = player->GetCurrentBomb() + common->carryBomb;
-            if (newBomb > 10) newBomb = 10;
-            player->SetCurrentBomb(newBomb);
-
-            // 引き継ぎ値は使い切る
-            common->carryHp = 0;
-            common->carryBomb = 0;
-        }
-        isFirstUpdate = false;
-    }
-
-
-    // -------------------------
-   // 確認ウィンドウが出ていない状態
-   // -------------------------
+    // =========================
+    // 通常状態
+    // =========================
     if (!m_isConfirm)
     {
         if (keyWait > 10)
@@ -78,38 +59,29 @@ void ShopScene::Update()
             {
                 m_selectedItem = (m_selectedItem - 1 + ITEM_COUNT) % ITEM_COUNT;
                 keyWait = 0;
-                PlaySoundMem(CusorSoundHandle, DX_PLAYTYPE_BACK);
             }
             if (CheckHitKey(KEY_INPUT_DOWN))
             {
                 m_selectedItem = (m_selectedItem + 1) % ITEM_COUNT;
                 keyWait = 0;
-                PlaySoundMem(CusorSoundHandle, DX_PLAYTYPE_BACK);
             }
         }
 
-
-
-        // ★ 確認ウィンドウを開く
-        if (CheckHitKey(KEY_INPUT_RETURN) && !prevPush)
+        if (enter && !prevPush)
         {
-            PlaySoundMem(DecisionSoundHandle, DX_PLAYTYPE_BACK);
             m_isConfirm = true;
             m_yesNoSelect = 0;
             keyWait = 0;
-            prevPush = true;
         }
-
-
 
         if (CheckHitKey(KEY_INPUT_ESCAPE))
         {
             SceneManager::ChangeScene("PLAY");
         }
     }
-    // -------------------------
-    // 確認ウィンドウ表示中
-    // -------------------------
+    // =========================
+    // 確認ウィンドウ
+    // =========================
     else
     {
         if (keyWait > 10)
@@ -121,40 +93,37 @@ void ShopScene::Update()
             }
         }
 
-
-
-        // ★ はい／いいえ決定
-        if (CheckHitKey(KEY_INPUT_RETURN) && !prevPush)
+        if (enter && !prevPush)
         {
-            if (m_yesNoSelect == 0)
+            if (m_yesNoSelect == 0) // はい
             {
-                switch (m_selectedItem)
+                Common* common = FindGameObject<Common>();
+                if (common)
                 {
-                case 0:
-                    Player::UpgradeMaxHP(1);
-                    break;
-                case 1:
-                    Player::UpgradeInitialBombCount(5);
-                    break;
+                    switch (m_selectedItem)
+                    {
+                    case 0: // HP +1
+                        Player::UpgradeMaxHP(1); // 永続強化
+                        common->carryHp += 1;    // ★回復予約
+                        break;
+
+                    case 1: // Bomb +1
+                        Player::UpgradeInitialBombCount(1); // 永続強化
+                        common->carryBomb += 1;              // ★回復予約
+                        break;
+                    }
                 }
             }
 
 
-
             m_isConfirm = false;
             keyWait = 0;
-            prevPush = true;
         }
     }
 
-
-
-    // ★ キー離し判定
-    if (!CheckHitKey(KEY_INPUT_RETURN))
-    {
-        prevPush = false;
-    }
+    prevPush = enter;
 }
+
 
 void ShopScene::Draw()
 {
@@ -192,16 +161,13 @@ void ShopScene::Draw()
     }
 
     // ★デバッグ表示★
-    DrawFormatString(10, 10, GetColor(255, 255, 0), "現在のステージ番号: %d", StageSelectScene::GetSelectedStageNumber());
     SetFontSize(50);
     DrawString(535, 180, "ショップ", GetColor(25, 255, 255));
-    DrawFormatString(10, 50, GetColor(255, 255, 255), "現在の最大HP: %d", Player::GetStaticMaxHP());
-    DrawFormatString(10, 100, GetColor(255, 255, 255), "現在の初期ボム数: %d", Player::GetStaticInitialBombCount());
     SetFontSize(24);
 
     const char* items[] = {
         "体力+1",
-        "Bome+5",
+        "Bome+1",
         //  "攻撃速度UP",
         // "Bome範囲",
     };
