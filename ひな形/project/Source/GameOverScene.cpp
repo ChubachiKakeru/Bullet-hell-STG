@@ -7,7 +7,7 @@ GameOverScene::GameOverScene()
     , m_timer(0)
 {
     // TODO: 実際の画像パスに変更してください
-    m_gameOverImage = LoadGraph("Graphics/GameOver.png");
+    m_gameOverImage = LoadGraph("data/image/gameover.png");
 }
 
 GameOverScene::~GameOverScene()
@@ -37,14 +37,11 @@ void GameOverScene::Draw()
     // ゲームオーバー画像を表示
     if (m_gameOverImage != -1)
     {
-        DrawGraph(320, 200, m_gameOverImage, TRUE);
-    }
-    else
-    {
-        SetFontSize(60);
+        DrawGraph(150, 100, m_gameOverImage, TRUE);
+        SetFontSize(100);
         // デバッグ用テキスト表示
-        DrawString(400, 300, "GAME OVER", GetColor(255, 0, 0));
+        DrawString(50, 75, "GAME OVER", GetColor(255, 0, 0));
         SetFontSize(20);
     }
-    DrawString(450, 500, "SPACE: タイトルへ戻る", GetColor(255, 255, 255));
+    DrawString(100, 1000, "SPACE: タイトルへ戻る", GetColor(255, 255, 255));
 }
