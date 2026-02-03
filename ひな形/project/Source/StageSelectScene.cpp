@@ -155,7 +155,7 @@ void StageSelectScene::Draw()
 
     if (m_backgroundImage != -1)
     {
-        DrawGraph(0, 0, m_backgroundImage, FALSE);
+        DrawGraph(0, 50, m_backgroundImage, FALSE);
     }
     else
     {
