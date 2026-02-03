@@ -12,6 +12,7 @@
 int Player::s_maxHp = 10;           // 初期最大HP
 int Player::s_initialBombCount = 10;  // 初期ボム数
 
+
 // ========================================
 // コンストラクタ / デストラクタ
 // ========================================
@@ -138,36 +139,42 @@ void Player::ShootBomb()
 void Player::AddHP(int amount)
 {
     hp += amount;
-    if (hp > maxHp) hp = maxHp;  // 最大HPを超えない
+    if (hp > maxHp) hp = maxHp;  // 最大HPを超えないように制限
 }
 
 void Player::AddMaxHP(int amount)
 {
-    maxHp += amount;
-    hp += amount;  // 最大HPが増えた分、現在HPも回復
+    s_maxHp += amount;
+    if (s_maxHp > 10) s_maxHp = 10;  // 上限10に制限
+
+    maxHp = s_maxHp;
+    hp = maxHp;  // 最大HP増加分で現在HPも回復
 }
 
 void Player::AddBomb(int amount)
 {
     bombCount += amount;
+    if (bombCount > s_initialBombCount) bombCount = s_initialBombCount;  // 最大ボム数を超えない
 }
 
 void Player::UpgradeMaxHP(int amount)
 {
     s_maxHp += amount;
+    if (s_maxHp > 10) s_maxHp = 10;  // 上限10に制限
 }
-
 
 void Player::UpgradeInitialBombCount(int amount)
 {
     s_initialBombCount += amount;
+    if (s_initialBombCount > 10) s_initialBombCount = 10;  // 上限10に制限
 }
 
 void Player::ResetUpgrades()
 {
-    s_maxHp = 100;
+    s_maxHp = 10;
     s_initialBombCount = 10;
 }
+
 
 // ========================================
 // 更新処理
@@ -231,6 +238,7 @@ void Player::ResetStatus(bool inherit, int prevHp, int prevBomb)
     if (bombCount > s_initialBombCount) bombCount = s_initialBombCount;
 }
 
+
 // ========================================
 // 描画
 // ========================================
@@ -238,6 +246,8 @@ void Player::Draw()
 {
     // ★無敵時間中は点滅表示★
     if (invincibleTimer > 0 && (invincibleTimer / 5) % 2 == 0) {
+        // 5フレームごとに点滅（描画をスキップ）
+        // 何も描画しない
     }
     else {
         DrawGraph((int)x, (int)y, hImage, TRUE);

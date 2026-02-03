@@ -3,16 +3,22 @@
 #include"Bomb.h"
 #include "../Library/SceneManager.h"
 #include "StageSelectScene.h"
+#include "Common.h"
 
 
 enum ShopState
 {
+    //    SHOP_SELECT,
     SHOP_CONFIRM
 };
 
 ShopScene::ShopScene()
     : m_backgroundImage(-1), m_selectedItem(0)
-    , m_isConfirm(false), m_yesNoSelect(0)
+    , m_isConfirm(false), m_yesNoSelect(0),
+    m_selectItem(0),   // 追加
+    m_state(0),        // 追加
+    prevPush(false),   // 追加
+    player(0)
 {
     m_backgroundImage = LoadGraph("data/image/shop.jpg");
 
@@ -29,6 +35,7 @@ ShopScene::~ShopScene()
     }
     DeleteSoundMem(CancelSoundHandle);
     DeleteSoundMem(CusorSoundHandle);
+    //DeleteSoundMem(DecisionSoundHandle);
 }
 
 void ShopScene::Update()
@@ -37,6 +44,32 @@ void ShopScene::Update()
     static int keyWait = 0;
     keyWait++;
 
+    static bool isFirstUpdate = true;
+
+    if (isFirstUpdate)
+    {
+        Common* common = FindGameObject<Common>();
+        if (common && player)
+        {
+            int newHp = player->GetCurrentHp() + common->carryHp;
+            if (newHp > 10) newHp = 10;
+            player->SetCurrentHp(newHp);
+
+            int newBomb = player->GetCurrentBomb() + common->carryBomb;
+            if (newBomb > 10) newBomb = 10;
+            player->SetCurrentBomb(newBomb);
+
+            // 引き継ぎ値は使い切る
+            common->carryHp = 0;
+            common->carryBomb = 0;
+        }
+        isFirstUpdate = false;
+    }
+
+
+    // -------------------------
+   // 確認ウィンドウが出ていない状態
+   // -------------------------
     if (!m_isConfirm)
     {
         if (keyWait > 10)
@@ -54,38 +87,29 @@ void ShopScene::Update()
                 PlaySoundMem(CusorSoundHandle, DX_PLAYTYPE_BACK);
             }
         }
-        if (!m_isConfirm)
+
+
+
+        // ★ 確認ウィンドウを開く
+        if (CheckHitKey(KEY_INPUT_RETURN) && !prevPush)
         {
-            if (CheckHitKey(KEY_INPUT_RETURN) && !prevPush)
-            {
-                PlaySoundMem(DecisionSoundHandle, DX_PLAYTYPE_BACK);
-                m_isConfirm = true;
-                m_yesNoSelect = 0;
-                keyWait = 0;
-                prevPush = true;
-            }
-        }
-
-
-
-        if (CheckHitKey(KEY_INPUT_RETURN))
-        {
+            PlaySoundMem(DecisionSoundHandle, DX_PLAYTYPE_BACK);
             m_isConfirm = true;
-            m_yesNoSelect = 0; // 「はい」を初期選択
-            m_yesNoSelect = false;
-            m_yesNoSelect = 1;
+            m_yesNoSelect = 0;
             keyWait = 0;
+            prevPush = true;
         }
 
 
 
         if (CheckHitKey(KEY_INPUT_ESCAPE))
         {
-            // ステージ2へ遷移（既にs_selectedStageNumberは2なのでそのままPLAYへ）
             SceneManager::ChangeScene("PLAY");
         }
-
     }
+    // -------------------------
+    // 確認ウィンドウ表示中
+    // -------------------------
     else
     {
         if (keyWait > 10)
@@ -96,31 +120,37 @@ void ShopScene::Update()
                 keyWait = 0;
             }
         }
-    }
-    // ★ ここに書く ★
-    if (CheckHitKey(KEY_INPUT_RETURN) && !prevPush)
-    {
-        if (m_yesNoSelect == 0)
+
+
+
+        // ★ はい／いいえ決定
+        if (CheckHitKey(KEY_INPUT_RETURN) && !prevPush)
         {
-            switch (m_selectedItem)
+            if (m_yesNoSelect == 0)
             {
-            case 0:
-                Player::UpgradeMaxHP(1);
-                break;
-            case 1:
-                Player::UpgradeInitialBombCount(5);
-                break;
+                switch (m_selectedItem)
+                {
+                case 0:
+                    Player::UpgradeMaxHP(1);
+                    break;
+                case 1:
+                    Player::UpgradeInitialBombCount(5);
+                    break;
+                }
             }
+
+
+
+            m_isConfirm = false;
+            keyWait = 0;
+            prevPush = true;
         }
-
-
-
-        m_isConfirm = false; // ダイアログを閉じる
-        keyWait = 0;
-        prevPush = true;
     }
 
-    if (!!CheckHitKey(KEY_INPUT_RETURN))
+
+
+    // ★ キー離し判定
+    if (!CheckHitKey(KEY_INPUT_RETURN))
     {
         prevPush = false;
     }
