@@ -1,109 +1,268 @@
-#pragma once
-#include "../Library/GameObject.h"
-#include <vector>
+#include "Player.h"
+#include "Field.h"
+#include "playerBullet.h"
+#include "Bomb.h"
+#include "enemyBullet.h"
+#include "EnemyBullet2.h"
+#include "Screen.h"
+#include"ShopScene.h"
+#include "Common.h"
+#include <cmath>
 
-class Field;
-class enemyBullet;
-class EnemyBullet2;
-class Bomb;
+int Player::s_maxHp = 10;           // 初期最大HP
+int Player::s_initialBombCount = 10;  // 初期ボム数
 
-class Player : public GameObject
+
+// ========================================
+// コンストラクタ / デストラクタ
+// ========================================
+Player::Player() : GameObject()
 {
-public:
-    Player();
-    Player(int sx, int sy);
-    ~Player();
-    void Initialize(float startX, float startY, Field* fieldPtr);
-    void Update() override;
-    void Draw() override;
-    float GetX() const { return x; }
-    float GetY() const { return y; }
-    bool IsAlive() const { return isActive; }
-    float GetCenterX() const { return x; }
-    float GetCenterY() const { return y; }
-    float GetSize() const { return size; }
-    void TakeDamage(int damage);
-    int GetHP() const { return hp; }
-    bool IsHit(float bx, float by, int rad);
-    bool IsActive() const { return isActive; }
-    void ShootBullet();
-    void ShootBomb();
-    //  void AddBomb(int num) { bombCount += num; }
-    int GetBombCount() const { return bombCount; }
-    bool IsInvincible() const { return invincibleTimer > 0; }  // ★追加★
-    static constexpr float MOVE_SPEED = 7.0f;
-    static constexpr float SHOT_COOLDOWN = 50.0f;
-    static  constexpr int INITIAL_HP = 10;
-    static constexpr float PLAYER_COLLISION_RADIUS = 30.0f;
-    static constexpr float PLAYER_CENTER_OFFSET = 60.0f;
-    static constexpr float BULLET_SPEED = -10.0f;
-    static constexpr float BULLET_RADIUS = 8.0f;
+    hImage = LoadGraph("data/image/file/chara/player.png");
+    hBombImage = LoadGraph("data/image/bomb.png");
 
-    static constexpr float BOMB_SIZE = 150.0f;
-    static constexpr float BOMB_SPEED = -10.0f;
-    int bombCount;
+    // ===== SEロード =====
+    playerHitSoundHandle = LoadSoundMem(GAME_PHIT_SOUND_PATH);
+    playerShotSoundHandle = LoadSoundMem(GAME_PSHOT_SOUND_PATH);
+    playerBombSoundHandle = LoadSoundMem(GAME_PBOMB_SOUND_PATH);
 
-    int GetCurrentHp() const { return hp; }
-    void SetCurrentHp(int newHp) { hp = (newHp > maxHp) ? maxHp : newHp; }
+    x = 300;
+    y = 900;
+    velocity = 0;
+    onGround = false;
+    shotTimer = 0.0f;
+    hp = INITIAL_HP;
+    size = 50.0f;
 
-    int GetCurrentBomb() const { return bombCount; }
-    void SetCurrentBomb(int newBomb) { bombCount = (newBomb > s_initialBombCount) ? s_initialBombCount : newBomb; }
-
-    int GetMaxHP() const { return maxHp; }  // ★追加★
-    // ★ショップ用の関数（現在のプレイヤーインスタンスに適用）★
-    void AddHP(int amount);          // HP回復
-    // 最大HPは10が上限なのでAddMaxHPで増やすときは必ず上限をチェック
-    void AddMaxHP(int amount);
-    void AddBomb(int amount);
-    static void UpgradeMaxHP(int amount);
-    static void UpgradeInitialBombCount(int amount);
-    static void ResetUpgrades();                     // 強化をリセット
-    // ★静的変数のゲッター★
-    static int GetStaticMaxHP() { return s_maxHp; }
-    static int GetStaticInitialBombCount() { return s_initialBombCount; }
-
-    // ステージ開始時の初期化
-    void ResetStatus(bool inherit, int prevHp = 0, int prevBomb = 0);
-
-    // ★ ショップ用（インスタンスに効く）★
-    void HealHP(int amount);
-    void HealBomb(int amount);
-
-
-
-private:
-    int hImage;
-    int hBombImage;
-    float x, y;
-    float velocity;
-    bool onGround;
-    Field* field;
-    float shotTimer;
-    float size;
-    int hp;
-    bool isActive;
-    int maxHp;
+    isActive = true;
 
     // ボム関連
-   // int bombCount;
-    float bombSize;
-    float bombSpeed;
-    bool prevBombKeyPressed;
+   // bombCount = 10;
+    bombCount = s_initialBombCount;
+    bombSize = BOMB_SIZE;
+    bombSpeed = BOMB_SPEED;
+    prevBombKeyPressed = false;
 
-    // ★無敵時間関連を追加★
-    int invincibleTimer;
-    static constexpr int INVINCIBLE_DURATION = 120;  // 無敵時間（2秒 = 120フレーム）
+    // ★無敵時間の初期化★
+    invincibleTimer = 0;
+    maxHp = s_maxHp;
+    hp = maxHp;  // 最大HPで開始
+}
 
-    // サウンドパス
-    const char* GAME_PHIT_SOUND_PATH = "data/Sound/playerhit.mp3";
-    const char* GAME_PSHOT_SOUND_PATH = "data/Sound/playerattack.mp3";
-    const char* GAME_PBOMB_SOUND_PATH = "data/Sound/bombattack.mp3";
+Player::Player(int sx, int sy) : Player()
+{
+    x = sx;
+    y = sy;
+}
 
-    // サウンドハンドル
-    int playerHitSoundHandle;
-    int playerShotSoundHandle;
-    int playerBombSoundHandle;
+Player::~Player()
+{
+    if (hImage != -1) DeleteGraph(hImage);
+    if (hBombImage != -1) DeleteGraph(hBombImage);
+    DeleteSoundMem(playerHitSoundHandle);
+    DeleteSoundMem(playerShotSoundHandle);
+    DeleteSoundMem(playerBombSoundHandle);
+}
 
-    static int s_maxHp;              // 最大HP（ショップで強化可能）
-    static int s_initialBombCount;   // 初期ボム数（ショップで強化可能）
-};
+// ========================================
+// ダメージ処理
+// ========================================
+void Player::TakeDamage(int damage)
+{
+    // ★無敵時間中はダメージを受けない★
+    if (invincibleTimer > 0) return;
+
+    hp -= damage;
+    PlaySoundMem(playerHitSoundHandle, DX_PLAYTYPE_BACK);
+
+    // ★ダメージを受けたら無敵時間を設定★
+    invincibleTimer = INVINCIBLE_DURATION;
+
+    if (hp <= 0) {
+        hp = 0;
+        StopSoundFile();
+        SceneManager::ChangeScene("GAMEOVER");
+    }
+}
+
+// ========================================
+// 当たり判定
+// ========================================
+bool Player::IsHit(float bx, float by, int rad)
+{
+    // ★無敵時間中は当たり判定をスキップ★
+    if (invincibleTimer > 0) return false;
+
+    float dx = bx - (x + PLAYER_CENTER_OFFSET);
+    float dy = by - (y + PLAYER_CENTER_OFFSET);
+    float distance = sqrt(dx * dx + dy * dy);
+
+    if (distance < PLAYER_COLLISION_RADIUS + rad) {
+        TakeDamage(0);
+        return true;
+    }
+    return false;
+}
+
+// ========================================
+// 弾発射
+// ========================================
+void Player::ShootBullet()
+{
+    int bulletX = (int)x + 50 / 2;
+    int bulletY = (int)y + 50 / 2;
+    new playerBullet(bulletX, bulletY, 0, BULLET_SPEED, BULLET_RADIUS);
+
+    PlaySoundMem(playerShotSoundHandle, DX_PLAYTYPE_BACK);
+}
+
+// ========================================
+// ボム発射（変わり種弾として扱う）
+// ========================================
+void Player::ShootBomb()
+{
+    if (bombCount <= 0) return;
+
+    bombCount--;
+
+    float startX = x + size / 2.0f - BOMB_SIZE / 2.0f;
+    float startY = y - BOMB_SIZE;
+
+    float bombVY = -8.0f;
+    float bombVX = 0.0f;
+
+    new Bomb(startX, startY, bombVX, bombVY, BOMB_SIZE);
+
+    PlaySoundMem(playerBombSoundHandle, DX_PLAYTYPE_BACK);
+}
+
+void Player::AddHP(int amount)
+{
+    hp += amount;
+    if (hp > maxHp) hp = maxHp;  // 最大HPを超えないように制限
+}
+
+void Player::AddMaxHP(int amount)
+{
+    s_maxHp += amount;
+    if (s_maxHp > 10) s_maxHp = 10;  // 上限10に制限
+
+    maxHp = s_maxHp;
+    hp = maxHp;  // 最大HP増加分で現在HPも回復
+}
+
+void Player::AddBomb(int amount)
+{
+    bombCount += amount;
+    if (bombCount > s_initialBombCount) bombCount = s_initialBombCount;  // 最大ボム数を超えない
+}
+
+void Player::UpgradeMaxHP(int amount)
+{
+    s_maxHp += amount;
+    if (s_maxHp > 10) s_maxHp = 10;  // 上限10に制限
+}
+
+void Player::UpgradeInitialBombCount(int amount)
+{
+    s_initialBombCount += amount;
+    if (s_initialBombCount > 10) s_initialBombCount = 10;  // 上限10に制限
+}
+
+void Player::ResetUpgrades()
+{
+    s_maxHp = 10;
+    s_initialBombCount = 10;
+}
+
+
+// ========================================
+// 更新処理
+// ========================================
+void Player::Update()
+{
+    Field* field = FindGameObject<Field>();
+    if (!field) return;
+
+    // ★無敵時間を減らす★
+    if (invincibleTimer > 0) {
+        invincibleTimer--;
+    }
+
+    // 移動
+    if (CheckHitKey(KEY_INPUT_D)) x += MOVE_SPEED;
+    if (CheckHitKey(KEY_INPUT_A)) x -= MOVE_SPEED;
+    if (CheckHitKey(KEY_INPUT_W)) y -= MOVE_SPEED;
+    if (CheckHitKey(KEY_INPUT_S)) y += MOVE_SPEED;
+
+    // ステージ境界内に制限
+    if (x < Field::STAGE_LEFT) x = Field::STAGE_LEFT;
+    if (x > Field::STAGE_RIGHT - 50 / 2) x = Field::STAGE_RIGHT - 50 / 2;
+    if (y < Field::STAGE_TOP) y = Field::STAGE_TOP;
+    if (y > Screen::HEIGHT - 100) y = Screen::HEIGHT - 100;
+
+    // 弾発射
+    shotTimer += 1.0f;
+    if (CheckHitKey(KEY_INPUT_H) && shotTimer >= SHOT_COOLDOWN) {
+        ShootBullet();
+        shotTimer = 0.0f;
+    }
+
+    // ボム発射
+    bool currentBombKeyPressed = CheckHitKey(KEY_INPUT_SPACE);
+    if (currentBombKeyPressed && !prevBombKeyPressed) {
+        ShootBomb();
+    }
+    prevBombKeyPressed = currentBombKeyPressed;
+}
+
+void Player::ResetStatus(bool inherit, int prevHp, int prevBomb)
+{
+    maxHp = s_maxHp;
+
+    if (inherit)
+    {
+        // ★ ステージ1 → 2 のみ引き継ぎ
+        hp = prevHp;
+        bombCount = prevBomb;
+    }
+    else
+    {
+        // ★ それ以外は初期化
+        hp = maxHp;
+        bombCount = s_initialBombCount;
+    }
+
+    // ★ 安全対策（ショップで強化しても超えない）
+    if (hp > maxHp) hp = maxHp;
+    if (bombCount > s_initialBombCount) bombCount = s_initialBombCount;
+}
+
+
+// ========================================
+// 描画
+// ========================================
+void Player::Draw()
+{
+    // ★無敵時間中は点滅表示★
+    if (invincibleTimer > 0 && (invincibleTimer / 5) % 2 == 0) {
+        // 5フレームごとに点滅（描画をスキップ）
+        // 何も描画しない
+    }
+    else {
+        DrawGraph((int)x, (int)y, hImage, TRUE);
+    }
+
+    Field* field = FindGameObject<Field>();
+
+    if (isActive) {
+        // 当たり判定の円(水色) ★無敵中は赤色に変更★
+        int circleColor = (invincibleTimer > 0) ? GetColor(255, 0, 0) : GetColor(0, 255, 255);
+        DrawCircle((float)x + 78, (float)y + 50, (int)BULLET_RADIUS + 10.0f, circleColor, FALSE);
+    }
+
+    SetFontSize(40);
+    DrawFormatString(920, 350, GetColor(0, 255, 255), "=== PLAYER ===");
+    DrawFormatString(970, 400, GetColor(0, 255, 255), "HP: %d/%d", hp, maxHp);
+    DrawFormatString(980, 450, GetColor(0, 255, 255), "BOMB: %d", bombCount);
+}

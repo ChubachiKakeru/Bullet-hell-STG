@@ -40,14 +40,36 @@ ShopScene::~ShopScene()
 
 void ShopScene::Update()
 {
+    static bool prevPush = false;
     static int keyWait = 0;
     keyWait++;
 
-    bool enter = CheckHitKey(KEY_INPUT_RETURN);
+    static bool isFirstUpdate = true;
 
-    // =========================
-    // 通常状態
-    // =========================
+    if (isFirstUpdate)
+    {
+        Common* common = FindGameObject<Common>();
+        if (common && player)
+        {
+            int newHp = player->GetCurrentHp() + common->carryHp;
+            if (newHp > 10) newHp = 10;
+            player->SetCurrentHp(newHp);
+
+            int newBomb = player->GetCurrentBomb() + common->carryBomb;
+            if (newBomb > 10) newBomb = 10;
+            player->SetCurrentBomb(newBomb);
+
+            // 引き継ぎ値は使い切る
+            common->carryHp = 0;
+            common->carryBomb = 0;
+        }
+        isFirstUpdate = false;
+    }
+
+
+    // -------------------------
+   // 確認ウィンドウが出ていない状態
+   // -------------------------
     if (!m_isConfirm)
     {
         if (keyWait > 10)
@@ -66,23 +88,28 @@ void ShopScene::Update()
             }
         }
 
-        // ENTER → 確認ウィンドウを開く
-        if (enter && !prevPush)
+
+
+        // ★ 確認ウィンドウを開く
+        if (CheckHitKey(KEY_INPUT_RETURN) && !prevPush)
         {
             PlaySoundMem(DecisionSoundHandle, DX_PLAYTYPE_BACK);
             m_isConfirm = true;
             m_yesNoSelect = 0;
             keyWait = 0;
+            prevPush = true;
         }
+
+
 
         if (CheckHitKey(KEY_INPUT_ESCAPE))
         {
             SceneManager::ChangeScene("PLAY");
         }
     }
-    // =========================
-    // 確認ウィンドウ中
-    // =========================
+    // -------------------------
+    // 確認ウィンドウ表示中
+    // -------------------------
     else
     {
         if (keyWait > 10)
@@ -94,40 +121,40 @@ void ShopScene::Update()
             }
         }
 
-        // ENTER → 決定
-        if (enter && !prevPush)
-        {
-            if (m_yesNoSelect == 0) // はい
-            {
-                Common* common = FindGameObject<Common>();
-                if (common)
-                {
-                    switch (m_selectedItem)
-                    {
-                    case 0: // HP +1
-                        Player::UpgradeMaxHP(1); // 永続強化
-                        common->carryHp += 1;    // ★回復予約
-                        break;
 
-                    case 1: // Bomb +1
-                        Player::UpgradeInitialBombCount(1); // 永続強化
-                        common->carryBomb += 1;              // ★回復予約
-                        break;
-                    }
+
+        // ★ はい／いいえ決定
+        if (CheckHitKey(KEY_INPUT_RETURN) && !prevPush)
+        {
+            if (m_yesNoSelect == 0)
+            {
+                switch (m_selectedItem)
+                {
+                case 0:
+                    Player::UpgradeMaxHP(1);
+                    break;
+                case 1:
+                    Player::UpgradeInitialBombCount(5);
+                    break;
                 }
             }
 
 
-            // ★ 必ず閉じる ★
+
             m_isConfirm = false;
             keyWait = 0;
+            prevPush = true;
         }
     }
 
-    // ★ ENTERキー押下管理（これが超重要）
-    prevPush = enter;
-}
 
+
+    // ★ キー離し判定
+    if (!CheckHitKey(KEY_INPUT_RETURN))
+    {
+        prevPush = false;
+    }
+}
 
 void ShopScene::Draw()
 {
@@ -164,19 +191,23 @@ void ShopScene::Draw()
         DrawBox(0, 0, screenWidth, screenHeight, GetColor(100, 50, 50), TRUE);
     }
 
+    // ★デバッグ表示★
+    DrawFormatString(10, 10, GetColor(255, 255, 0), "現在のステージ番号: %d", StageSelectScene::GetSelectedStageNumber());
+    SetFontSize(50);
+    DrawString(535, 180, "ショップ", GetColor(25, 255, 255));
+    DrawFormatString(10, 50, GetColor(255, 255, 255), "現在の最大HP: %d", Player::GetStaticMaxHP());
+    DrawFormatString(10, 100, GetColor(255, 255, 255), "現在の初期ボム数: %d", Player::GetStaticInitialBombCount());
+    SetFontSize(24);
+
     const char* items[] = {
         "体力+1",
-        "Bome+1",
+        "Bome+5",
         //  "攻撃速度UP",
         // "Bome範囲",
     };
 
     for (int i = 0; i < ITEM_COUNT; i++)
     {
-        SetFontSize(50);
-        DrawString(535, 180, "ショップ", GetColor(25, 255, 255));
-        SetFontSize(24);
-
         SetFontSize(60);
         int color = (i == m_selectedItem) ? GetColor(255, 255, 0) : GetColor(200, 200, 200);
         DrawString(530, 500 + i * 100, items[i], color);
