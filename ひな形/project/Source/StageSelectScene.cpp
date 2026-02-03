@@ -2,6 +2,7 @@
 #include "StageSelectScene.h"
 #include "../Library/SceneManager.h"
 #include "DxLib.h"
+#include "Common.h"
 
 // 静的メンバの初期化
 int StageSelectScene::s_selectedStageNumber = 1;
@@ -130,14 +131,21 @@ void StageSelectScene::Update()
 
         s_selectedStageNumber = m_selectedStage + 1;
 
+        // ★追加：ステージセレクト直行は引き継ぎ無効
+        Common* common = FindGameObject<Common>();
+        if (common)
+        {
+            common->prevStage = -1;
+            common->carryHp = 0;
+            common->carryBomb = 0;
+        }
+
         if (s_selectedStageNumber == 1)
         {
             s_totalGameTimer = 0;
         }
 
         LoadStageData(s_selectedStageNumber);
-        PlaySoundMem(DecisionSoundHandle, DX_PLAYTYPE_BACK);
-
         SceneManager::ChangeScene("PLAY");
     }
 

@@ -209,6 +209,28 @@ void Player::Update()
     prevBombKeyPressed = currentBombKeyPressed;
 }
 
+void Player::ResetStatus(bool inherit, int prevHp, int prevBomb)
+{
+    maxHp = s_maxHp;
+
+    if (inherit)
+    {
+        // ★ ステージ1 → 2 のみ引き継ぎ
+        hp = prevHp;
+        bombCount = prevBomb;
+    }
+    else
+    {
+        // ★ それ以外は初期化
+        hp = maxHp;
+        bombCount = s_initialBombCount;
+    }
+
+    // ★ 安全対策（ショップで強化しても超えない）
+    if (hp > maxHp) hp = maxHp;
+    if (bombCount > s_initialBombCount) bombCount = s_initialBombCount;
+}
+
 // ========================================
 // 描画
 // ========================================

@@ -55,6 +55,9 @@ public:
     static int GetStaticMaxHP() { return s_maxHp; }
     static int GetStaticInitialBombCount() { return s_initialBombCount; }
 
+    // ステージ開始時の初期化
+    void ResetStatus(bool inherit, int prevHp = 0, int prevBomb = 0);
+
 private:
     int hImage;
     int hBombImage;

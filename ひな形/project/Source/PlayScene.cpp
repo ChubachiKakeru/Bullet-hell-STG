@@ -21,7 +21,26 @@ PlayScene::PlayScene() {
 
     BackGround* bg = new BackGround();
     new Field();
-    new Player();
+
+    Common* common = FindGameObject<Common>();
+    Player* player = new Player();
+
+    bool inherit = false;
+
+    // ★ ステージ1 → ステージ2 のみ引き継ぎ
+    if (common &&
+        common->prevStage == 1 &&
+        StageSelectScene::GetSelectedStageNumber() == 2)
+    {
+        inherit = true;
+    }
+
+    player->ResetStatus(
+        inherit,
+        common ? common->carryHp : 0,
+        common ? common->carryBomb : 0
+    );
+
 
     stage1SoundHandle = LoadSoundMem(GAME_STAGE1_SOUND_PATH);
     stage2SoundHandle = LoadSoundMem(GAME_STAGE2_SOUND_PATH);
@@ -183,11 +202,19 @@ void PlayScene::UpdateStageClear()
     {
         int currentStage = StageSelectScene::GetSelectedStageNumber();
 
-        if (currentStage == 1)  // ステージ1クリア後はショップへ
+        if (currentStage == 1)  // ★ステージ1クリア
         {
-            StageSelectScene::GoToNextStage();
+            Common* common = FindGameObject<Common>();
+            Player* player = FindGameObject<Player>();
+
+            // ★④ 引き継ぎ情報を保存
+            common->prevStage = 1;
+            common->carryHp = player->GetHP();
+            common->carryBomb = player->GetBombCount();
+
+            StageSelectScene::GoToNextStage(); // → SHOP → Stage2
         }
-        else  // ステージ2、3はすべてクリア画面へ
+        else
         {
             SceneManager::ChangeScene("CLEAR");
         }
