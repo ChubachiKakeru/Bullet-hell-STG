@@ -28,7 +28,6 @@ public:
     bool IsActive() const { return isActive; }
     void ShootBullet();
     void ShootBomb();
-  //  void AddBomb(int num) { bombCount += num; }
     int GetBombCount() const { return bombCount; }
     bool IsInvincible() const { return invincibleTimer > 0; }  // š’Ç‰Áš
     static constexpr float MOVE_SPEED = 7.0f;
@@ -70,7 +69,6 @@ private:
     int maxHp;
 
     // ƒ{ƒ€ŠÖ˜A
-   // int bombCount;
     float bombSize;
     float bombSpeed;
     bool prevBombKeyPressed;

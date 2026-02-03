@@ -20,20 +20,6 @@ vector < vector<int>>maps = {
 
 Field::Field()
 {
-	/*hImage = LoadGraph("data/image/bgchar.png");
-	x = 0;
-	y = 600;
-	scrollX = 0;
-	for (int y = 0; y < maps.size(); y++)
-	{
-		for (int x = 0; x < maps[y].size(); x++)
-		{
-			if (maps[y][x] == 2)
-			{
-				new Player(x * 64, y * 64 + 400);
-			}
-		}
-	}*/
 }
 
 Field::~Field()

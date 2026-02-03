@@ -93,16 +93,6 @@ void zako1::Draw()
         // 100x100の画像の中心をx, yに合わせる
         DrawGraph((int)(x - 50), (int)(y - 50), zakoImage, TRUE);
     }
-
-    // デバッグ用：当たり判定を表示
-    if (isActive) {
-        // 当たり判定の円（赤）
-        DrawCircle((int)x, (int)y, (int)RADIUS, GetColor(255, 0, 0), FALSE);
-
-        // 中心点（黄色）
-        DrawCircle((int)x, (int)y, 3, GetColor(255, 255, 0), TRUE);
-
-    }
 }
 bool zako1::IsHit(float bx, float by, int rad)
 {

@@ -11,21 +11,6 @@
 
 int Player::s_maxHp = 10;           // 初期最大HP
 int Player::s_initialBombCount = 10;  // 初期ボム数
-// ========================================
-// 定数
-// ========================================
-//namespace {
-//    constexpr float MOVE_SPEED = 7.0f;
-//    constexpr float SHOT_COOLDOWN = 50.0f;
-//    constexpr int INITIAL_HP = 100;
-//    constexpr float PLAYER_COLLISION_RADIUS = 30.0f;
-//    constexpr float PLAYER_CENTER_OFFSET = 60.0f;
-//    constexpr float BULLET_SPEED = -10.0f;
-//    constexpr float BULLET_RADIUS = 8.0f;
-//
-//    constexpr float BOMB_SIZE = 150.0f;
-//    constexpr float BOMB_SPEED = -10.0f;
-//};
 
 // ========================================
 // コンストラクタ / デストラクタ
@@ -231,8 +216,6 @@ void Player::Draw()
 {
     // ★無敵時間中は点滅表示★
     if (invincibleTimer > 0 && (invincibleTimer / 5) % 2 == 0) {
-        // 5フレームごとに点滅（描画をスキップ）
-        // 何も描画しない
     }
     else {
         DrawGraph((int)x, (int)y, hImage, TRUE);
@@ -248,12 +231,6 @@ void Player::Draw()
 
     SetFontSize(40);
     DrawFormatString(920, 350, GetColor(0, 255, 255), "=== PLAYER ===");
-   // DrawFormatString(925, 400, GetColor(0, 255, 255), "PLAYER HP: %d", hp);
     DrawFormatString(970, 400, GetColor(0, 255, 255), "HP: %d/%d", hp, maxHp);
     DrawFormatString(980, 450, GetColor(0, 255, 255), "BOMB: %d", bombCount);
-
-    // ★デバッグ用: 無敵時間表示★
-    // if (invincibleTimer > 0) {
-    //     DrawFormatString(925, 500, GetColor(255, 0, 0), "INVINCIBLE: %d", invincibleTimer);
-    // }
 }

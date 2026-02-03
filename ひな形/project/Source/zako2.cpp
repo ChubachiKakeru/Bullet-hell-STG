@@ -298,18 +298,4 @@ void zako2::Draw()
         // 100x100の画像の中心をx, yに合わせる
         DrawGraph((int)(x - 50), (int)(y - 50), zakoImage, TRUE);
     }
-
-    // デバッグ用：当たり判定を表示
-#ifdef _DEBUG
-    if (isActive) {
-        // 当たり判定の円（赤）
-        DrawCircle((int)x, (int)y, (int)RADIUS, GetColor(255, 0, 0), FALSE);
-        // 中心点（黄色）
-        DrawCircle((int)x, (int)y, 3, GetColor(255, 255, 0), TRUE);
-        // 画像の矩形範囲（緑）
-        DrawBox((int)(x - 50), (int)(y - 50),
-            (int)(x + 50), (int)(y + 50),
-            GetColor(0, 255, 0), FALSE);
-    }
-#endif
 }

@@ -8,7 +8,6 @@ CsvReader::CsvReader(std::string filename)
 	std::ifstream::pos_type t;
 	std::ifstream ifs(filename);
 	if (!ifs) return;
-	//auto t = ifs.tellg();
 	// BOM Skip‚·‚é
 	unsigned char BOMS[] = { 0xEF, 0xBB, 0xBF };
 	bool found = true;

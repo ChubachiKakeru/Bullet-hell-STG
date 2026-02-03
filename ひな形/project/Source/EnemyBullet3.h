@@ -18,5 +18,4 @@ public:
 private:
     bool canReflect;
     int reflectCount;
-    // hImage, x, y, velocityX, velocityY, size, isActive, isAlive ‚ÍŠî’êƒNƒ‰ƒX‚©‚çŒp³
 };

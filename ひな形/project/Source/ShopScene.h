@@ -17,14 +17,6 @@ public:
     int  m_state;
     ShopScene(Player* p) : player(player) {}
 
-    /* void irsHp() {
-         player->AddHp(1);
-     }
-
-     void irsBomb() {
-         player->AddBomb(1);
-     }*/
-
 private:
     int m_backgroundImage;
     int m_selectedItem;

@@ -1,9 +1,3 @@
-/// <summary>
-/// CoGフレームワーク
-/// WinMain()から始まります
-/// </summary>
-/// <author>N.Hanai</author>
-/// 
 #define _CRTDBG_MAP_ALLOC
 #ifdef _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>

@@ -1,10 +1,5 @@
 #pragma once
 
-/// <summary>
-/// シーンの基底クラス
-/// </summary>
-/// <author>N.Hanai</author>
-
 #include <list>
 #include "GameObject.h"
 

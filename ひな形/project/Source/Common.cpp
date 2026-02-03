@@ -14,12 +14,4 @@ Common::~Common()
 
 void Common::Draw()
 {
-	//ImGui::Begin("Common");
-	//ImGui::InputInt("StageNumber", &stageNumber);
-	//ImGui::Checkbox("noDead", &noDead);
-	//ImGui::End();
-	//ImGui::Begin("Common");
-	//ImGui::InputInt("StageNumber", &stageNumber);
-	//ImGui::Checkbox("noDead", &noDead);
-	//ImGui::End();
 }

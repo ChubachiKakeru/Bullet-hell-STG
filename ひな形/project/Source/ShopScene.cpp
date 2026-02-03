@@ -7,7 +7,6 @@
 
 enum ShopState
 {
-    //    SHOP_SELECT,
     SHOP_CONFIRM
 };
 
@@ -30,7 +29,6 @@ ShopScene::~ShopScene()
     }
     DeleteSoundMem(CancelSoundHandle);
     DeleteSoundMem(CusorSoundHandle);
-    //DeleteSoundMem(DecisionSoundHandle);
 }
 
 void ShopScene::Update()

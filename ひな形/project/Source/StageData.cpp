@@ -86,13 +86,6 @@ void Stage1Data::Initialize() {
         WaveData wave;
         wave.waveDelay = 0.0f;  // フェーズ開始と同時
 
-        // 旧コード（参考用）:
-        // phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + -100.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
-        // phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 50.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
-        // phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 200.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
-        // phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 350.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
-        // phaseSpawnData[0].push_back({ 0, Field::STAGE_LEFT + 500.0f, Field::STAGE_TOP + 50.0f, Zako1Pattern::PATTERN_LEFT_TO_RIGHT });
-
         wave.enemies.push_back({ 0, Field::STAGE_LEFT + -100.0f, Field::STAGE_TOP + 50.0f,
                                 static_cast<int>(Zako1Pattern::PATTERN_LEFT_TO_RIGHT), 0.0f });
         wave.enemies.push_back({ 0, Field::STAGE_LEFT + 50.0f, Field::STAGE_TOP + 50.0f,
@@ -157,8 +150,6 @@ void Stage1Data::Initialize() {
                                  static_cast<int>(Zako1Pattern::PATTERN_LEFT_TO_RIGHT), 0.0f });
 
         // ウェーブ2: 2秒後に右から3体
-        // WaveData wave2;
-        //wave2.waveDelay = 2.0f;  // 第1波から2秒後
 
         float rightStart = Field::STAGE_RIGHT - 100.0f;
         wave1.enemies.push_back({ 0, rightStart - 200.0f, Field::STAGE_TOP + 70.0f,
@@ -286,9 +277,6 @@ void Stage2Data::Initialize() {
 
         // ★Boss2が実装されている場合: enemyType = 3★
          wave.enemies.push_back({ 3, centerX - 60.0f, Field::STAGE_TOP + 20.0f, 0, 0.0f });
-
-        // ★Boss2が未実装の場合: 一時的にBoss1を使用★
-        //wave.enemies.push_back({ 1, centerX - 60.0f, Field::STAGE_TOP + 20.0f, 0, 0.0f });
 
         phase.waves.push_back(wave);
     }

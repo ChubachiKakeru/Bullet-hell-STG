@@ -43,8 +43,6 @@ void StageSelectScene::LoadStageData(int stageNumber)
     case 1:
         if (!s_stage1.LoadFromCSV("data/stage1.csv"))
         {
-            //printfDx("Stage1 CSV not found, using hardcoded data\n");
-            //s_stage1.Initialize();
         }
         s_currentStageData = &s_stage1;
         break;
@@ -52,8 +50,6 @@ void StageSelectScene::LoadStageData(int stageNumber)
     case 2:
         if (!s_stage2.LoadFromCSV("data/stage2.csv"))
         {
-            //printfDx("Stage2 CSV not found, using hardcoded data\n");
-            //s_stage2.Initialize();
         }
         s_currentStageData = &s_stage2;
         break;
@@ -61,8 +57,6 @@ void StageSelectScene::LoadStageData(int stageNumber)
     case 3:  // Åöí«â¡Åö
         if (!s_stage3.LoadFromCSV("data/stage3.csv"))
         {
-            //printfDx("Stage3 CSV not found, using hardcoded data\n");
-            //s_stage3.Initialize();
         }
         s_currentStageData = &s_stage3;
         break;

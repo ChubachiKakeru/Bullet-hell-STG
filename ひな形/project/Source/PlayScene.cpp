@@ -70,7 +70,6 @@ PlayScene::~PlayScene()
     DeleteSoundMem(stage1SoundHandle);
     DeleteSoundMem(stage2SoundHandle);
     DeleteSoundMem(stage3SoundHandle);
-    // 弾の削除は各Bulletクラスのデストラクタで処理される想定
 }
 
 // ========================================
@@ -92,7 +91,6 @@ void PlayScene::SpawnWave(StageData* stageData)
     {
         for (const auto& enemyData : wave.enemies)
         {
-            // 敵生成処理
         }
     }
 }
@@ -134,8 +132,6 @@ void PlayScene::Update()
 // ========================================
 void PlayScene::UpdateCountdown()
 {
-    // ★カウントダウン中もPlayer、Field、BackGroundは更新される★
-    // （GameObjectシステムで自動的に更新される想定）
 
     // カウントダウンタイマーを減らす
     m_countdownTimer--;
@@ -156,7 +152,6 @@ void PlayScene::UpdateCountdown()
             em->StartGame();  // ★ゲーム開始を通知★
         }
 
-        //PlaySoundMem(/* スタート音 */, DX_PLAYTYPE_BACK);
     }
 }
 
@@ -276,9 +271,6 @@ void PlayScene::Draw()
             }
         }
     }
-
-    // 注意: GameObjectシステムで各オブジェクトのDraw()が自動的に呼ばれる想定
-    // 背景、自機、敵、弾などは常に描画される
 }
 
 // ========================================
