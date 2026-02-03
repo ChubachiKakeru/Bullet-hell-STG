@@ -59,11 +59,13 @@ void ShopScene::Update()
             {
                 m_selectedItem = (m_selectedItem - 1 + ITEM_COUNT) % ITEM_COUNT;
                 keyWait = 0;
+                PlaySoundMem(CusorSoundHandle, DX_PLAYTYPE_BACK);
             }
             if (CheckHitKey(KEY_INPUT_DOWN))
             {
                 m_selectedItem = (m_selectedItem + 1) % ITEM_COUNT;
                 keyWait = 0;
+                PlaySoundMem(CusorSoundHandle, DX_PLAYTYPE_BACK);
             }
         }
 
@@ -77,6 +79,7 @@ void ShopScene::Update()
         if (CheckHitKey(KEY_INPUT_ESCAPE))
         {
             SceneManager::ChangeScene("PLAY");
+            PlaySoundMem(DecisionSoundHandle, DX_PLAYTYPE_BACK);
         }
     }
     // =========================
@@ -90,6 +93,7 @@ void ShopScene::Update()
             {
                 m_yesNoSelect = 1 - m_yesNoSelect;
                 keyWait = 0;
+                PlaySoundMem(CusorSoundHandle, DX_PLAYTYPE_BACK);
             }
         }
 
@@ -97,6 +101,7 @@ void ShopScene::Update()
         {
             if (m_yesNoSelect == 0) // ‚Í‚¢
             {
+                PlaySoundMem(DecisionSoundHandle, DX_PLAYTYPE_BACK);
                 Common* common = FindGameObject<Common>();
                 if (common)
                 {

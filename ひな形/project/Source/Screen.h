@@ -8,8 +8,8 @@ namespace Screen
 {
 	static const int WIDTH = 1280;
 	static const int HEIGHT = 1280;
-//	static const BOOL WINDOW_MODE = FALSE;
-	static const BOOL WINDOW_MODE = TRUE;
+	static const BOOL WINDOW_MODE = FALSE;
+//	static const BOOL WINDOW_MODE = TRUE;
 	static const char* WINDOW_NAME = "project";
 //	static const float WINDOW_EXTEND = 1.0f;
 	static const float WINDOW_EXTEND = 1.0f;
