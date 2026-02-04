@@ -217,7 +217,7 @@ void Player::Update()
     if (y > Screen::HEIGHT - 100) y = Screen::HEIGHT - 100;
 
     // ’e”­ŽË
-    shotTimer += 1.0f;
+    shotTimer += 1.5f;
     if (CheckHitKey(KEY_INPUT_H) && shotTimer >= SHOT_COOLDOWN) {
         ShootBullet();
         shotTimer = 0.0f;
